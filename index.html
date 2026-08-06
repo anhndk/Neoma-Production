@@ -309,6 +309,8 @@
   const navItems = Array.from(navEl.children);
 
   let step = 0;           // jarak antar slide (kabeh slide wis podho ukurane)
+  let centerOffsets = [];  // 🚀 CACHE: posisi "tengah" saben slide, diitung SEPISAN wae
+                            // (dudu saben frame pas drag) — iki sing ngilangi rasa "abot/ngelag"
   let currentIndex = N;   // posisi aktif sing wis "ngunci" (settled), miwiti ing set tengah
   let liveActiveIdx = N;  // posisi aktif sing katon nyata-nyata pas isih drag
   let posX = 0, startX = 0, startPosX = 0, isDown = false;
@@ -317,14 +319,23 @@
   let pendingFixTimeout = null;
 
   function measure(){
+    // maca layar (offsetLeft) MUNG ing kene, sepisan wae, banjur diselehke
+    // ing array. Sabanjure kabeh itungan mung nganggo angka sing wis
+    // kasimpen iki (tanpa maca layar maneh) — luwih entheng kanggo HP.
     step = track.children[N + 1].offsetLeft - track.children[N].offsetLeft;
+    const wrapCenter = wrap.clientWidth / 2;
+    const firstEl = track.children[0];
+    const firstCenter = wrapCenter - (firstEl.offsetLeft + firstEl.offsetWidth / 2);
+    centerOffsets = [];
+    for(let i = 0; i < track.children.length; i++){
+      centerOffsets.push(firstCenter - i * step);
+    }
   }
 
   // titik transform supaya slide index `i` pas ing tengah slider-wrap
+  // (saiki mung njupuk saka cache, dudu maca layar maneh)
   function centerOffset(i){
-    const el = track.children[i];
-    const wrapCenter = wrap.clientWidth / 2;
-    return wrapCenter - (el.offsetLeft + el.offsetWidth / 2);
+    return centerOffsets[i];
   }
 
   function setX(x){
@@ -334,10 +345,10 @@
 
   function computeNearest(posXValue){
     let bestIdx = 0, bestDist = Infinity;
-    allSlides().forEach((el, i) => {
-      const dist = Math.abs(centerOffset(i) - posXValue);
+    for(let i = 0; i < centerOffsets.length; i++){
+      const dist = Math.abs(centerOffsets[i] - posXValue);
       if(dist < bestDist){ bestDist = dist; bestIdx = i; }
-    });
+    }
     return bestIdx;
   }
 
@@ -470,15 +481,27 @@
     isDown = false;
     wrap.classList.remove('dragging');
 
-    const dragDeltaIndex = -(posX - startPosX) / step;
-    let indexShift = Math.round(dragDeltaIndex);
+    // sepira "persen" lebar siji slide sing wis kok geser (bisa desimal,
+    // contone 0.3 tegese lagi 30% dalan menyang slide sabanjure)
+    const rawDelta = -(posX - startPosX) / step;
+    const base = Math.trunc(rawDelta);
+    const frac = rawDelta - base;
 
-    if(Math.abs(velocity) > FLING_VELOCITY){
-      const flingDir = velocity < 0 ? 1 : -1;
-      if(indexShift === 0 || Math.sign(indexShift) === flingDir){
-        indexShift += flingDir;
-      }
+    // ⚙️ SWIPE_THRESHOLD: sepira % lebar slide sing dibutuhake ben dianggep
+    // "pindah". 0.22 tegese cukup geser ~22% lebar slide wae, ORA KUDU
+    // nganti tengah. Cilikke angka iki ben luwih "entheng/gampang mlaku",
+    // gedhekke ben luwih "kenceng/kudu digeser tenanan".
+    const SWIPE_THRESHOLD = 0.22;
+    let indexShift = base;
+    if(Math.abs(frac) >= SWIPE_THRESHOLD){
+      indexShift += Math.sign(frac);
     }
+
+    // flick cepet: senajan gesermu cendhak, nek kenceng tetep dianggep pindah
+    if(indexShift === 0 && Math.abs(velocity) > FLING_VELOCITY){
+      indexShift = velocity < 0 ? 1 : -1;
+    }
+
     indexShift = Math.max(-3, Math.min(3, indexShift));
 
     goToIndex(currentIndex + indexShift, true);
