@@ -127,12 +127,13 @@
     background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
     pointer-events:none;
     opacity: 0;                 /* deskripsi didhelikake dhisik... */
-    transform: translateY(6px);
-    transition: opacity .35s ease, transform .35s ease;
+    transform: translateY(22px);
+    transition: opacity .3s ease, transform .3s ease;   /* pas ilang: cepet */
   }
   .slide.active .cap{
     opacity: 1;                 /* ...banjur mung katon pas active */
     transform: translateY(0);
+    transition: opacity .4s ease .12s, transform .4s ease .12s; /* pas metu: rada telat + alus, dadi katon "muncul saka ngisor" */
   }
   /* ---- 🔗 "tag" saiki dadi link script, gedhe, putih, hover cyan ---- */
   .slide .cap .tag a{
@@ -274,20 +275,26 @@
   const originalSlides = Array.from(track.children);
   const N = originalSlides.length;
 
-  // ---------- PENGATURAN FISIKA (silakan diedit) ----------
-  const FRICTION   = 0.94;
+  // ---------- PENGATURAN (silakan diedit) ----------
   const DRAG_SPEED = 1;
-  const MIN_VELOCITY_TO_MOVE = 0.15;
-  const CLICK_THRESHOLD = 6; // px — gesere kurang saka iki dianggep KLIK, ora drag
+  const CLICK_THRESHOLD = 6;   // px — gesere kurang saka iki dianggep KLIK, ora drag
+  const FLING_VELOCITY = 8;    // secepet apa flick-e ben oleh "bonus" mlumpat siji slide ekstra
+  const HYSTERESIS = 0.12;     // 0–0.5 : luwih gedhe = luwih angel gonta-ganti active pas isih drag (ngirangi "blink")
   // ----------------------------------------------------------
 
   // ---------- GAWE LOOP: clone sadurunge lan sawise ----------
-  const cloneSet = () => originalSlides.map(s => s.cloneNode(true));
-  const before = cloneSet();
-  const after  = cloneSet();
-  before.forEach(c => track.insertBefore(c, track.firstChild));
-  after.forEach(c => track.appendChild(c));
-  // saiki track.children isine 3×N: [before][asli][after]
+  // PENTING: clone kudu diselehke KANTHI URUTAN SING PADHA karo asline.
+  // Nganggo documentFragment supaya urutane ora kebalik pas diselehke
+  // ing ngarep (bug sadurunge: insertBefore bola-bali gawe urutan
+  // "before" kebalik, akibate konten loop dadi salah lan "mlumpat dhewe").
+  function cloneSetFragment(){
+    const frag = document.createDocumentFragment();
+    originalSlides.forEach(s => frag.appendChild(s.cloneNode(true)));
+    return frag;
+  }
+  track.insertBefore(cloneSetFragment(), track.firstChild);
+  track.appendChild(cloneSetFragment());
+  // saiki track.children isine 3×N: [before][asli][after], KABEH URUTANE SEPADHAN
 
   const allSlides = () => Array.from(track.children);
 
@@ -301,16 +308,16 @@
   });
   const navItems = Array.from(navEl.children);
 
-  let setWidth = 0;      // jembar siji "set" (N slide + gap)
-  let currentIndex = N;  // posisi aktif ing array 3×N, miwiti ing set tengah
+  let step = 0;           // jarak antar slide (kabeh slide wis podho ukurane)
+  let currentIndex = N;   // posisi aktif sing wis "ngunci" (settled), miwiti ing set tengah
+  let liveActiveIdx = N;  // posisi aktif sing katon nyata-nyata pas isih drag
   let posX = 0, startX = 0, startPosX = 0, isDown = false;
-  let velocity = 0, lastX = 0, lastT = 0, rafMomentum = null;
+  let velocity = 0, lastX = 0, lastT = 0;
   let movedDistance = 0;
+  let pendingFixTimeout = null;
 
   function measure(){
-    const firstOriginal = track.children[N];
-    const firstAfterClone = track.children[N * 2];
-    setWidth = firstAfterClone.offsetLeft - firstOriginal.offsetLeft;
+    step = track.children[N + 1].offsetLeft - track.children[N].offsetLeft;
   }
 
   // titik transform supaya slide index `i` pas ing tengah slider-wrap
@@ -325,30 +332,69 @@
     track.style.transform = `translate3d(${posX}px,0,0)`;
   }
 
-  // golek slide sing PALING CEDHAK tengah layar, banjur ngatur .active
-  function refreshActive(){
-    const els = allSlides();
+  function computeNearest(posXValue){
     let bestIdx = 0, bestDist = Infinity;
-    els.forEach((el, i) => {
-      const dist = Math.abs(centerOffset(i) - posX);
+    allSlides().forEach((el, i) => {
+      const dist = Math.abs(centerOffset(i) - posXValue);
       if(dist < bestDist){ bestDist = dist; bestIdx = i; }
     });
-    els.forEach((el, i) => el.classList.toggle('active', i === bestIdx));
-    const realIdx = bestIdx % N;
-    navItems.forEach((it, i) => it.classList.toggle('active', i === realIdx));
     return bestIdx;
+  }
+
+  function applyActive(idx){
+    allSlides().forEach((el, i) => el.classList.toggle('active', i === idx));
+    const realIdx = ((idx % N) + N) % N;
+    navItems.forEach((it, i) => it.classList.toggle('active', i === realIdx));
+  }
+
+  // versi "instan" — dienggo pas lompatan loop sing kudune ORA KATON.
+  // Iki mateni transisi cap sedhela wae ben tulisan ora melu nge-fade
+  // in/out pas swap DOM (clone -> asli), sing sadurunge nyebabke "kedip".
+  function applyActiveInstant(idx){
+    allSlides().forEach((el, i) => {
+      const shouldBeActive = (i === idx);
+      if(el.classList.contains('active') !== shouldBeActive){
+        const cap = el.querySelector('.cap');
+        if(cap) cap.style.transition = 'none';
+        el.classList.toggle('active', shouldBeActive);
+        if(cap){ void cap.offsetWidth; cap.style.transition = ''; }
+      }
+    });
+    const realIdx = ((idx % N) + N) % N;
+    navItems.forEach((it, i) => it.classList.toggle('active', i === realIdx));
+  }
+
+  // dipanggil pas isih drag: mung ganti "active" yen jelas-jelas wis luwih
+  // cedhak (nganggo hysteresis), supaya ora gonta-ganti kesusu -> ora blink
+  function refreshActiveLive(){
+    const candidate = computeNearest(posX);
+    if(candidate !== liveActiveIdx){
+      const distCandidate = Math.abs(centerOffset(candidate) - posX);
+      const distCurrent   = Math.abs(centerOffset(liveActiveIdx) - posX);
+      if(distCurrent - distCandidate > step * HYSTERESIS){
+        liveActiveIdx = candidate;
+      }
+    }
+    applyActive(liveActiveIdx);
   }
 
   function goToIndex(i, withTransition){
     currentIndex = i;
+    liveActiveIdx = i;
+    if(pendingFixTimeout){ clearTimeout(pendingFixTimeout); pendingFixTimeout = null; }
     track.style.transition = withTransition
       ? 'transform .55s cubic-bezier(.2,.8,.2,1)'
       : 'none';
     setX(centerOffset(i));
-    refreshActive();
     if(withTransition){
-      setTimeout(()=>{ track.style.transition = ''; fixLoopRange(); }, 560);
+      applyActive(i);
+      pendingFixTimeout = setTimeout(()=>{
+        track.style.transition = '';
+        fixLoopRange();
+        pendingFixTimeout = null;
+      }, 560);
     } else {
+      applyActiveInstant(i);
       requestAnimationFrame(()=> track.style.transition = '');
     }
   }
@@ -356,28 +402,19 @@
   // yen currentIndex wis kejlungup metu saka "set tengah", tarik meneh
   // diam-diam (tanpa transisi/katon) supaya loop-e ora entek stok clone
   function fixLoopRange(){
+    let shifted = false;
     if(currentIndex < N){
-      currentIndex += N;
-      track.style.transition = 'none';
-      setX(centerOffset(currentIndex));
-      requestAnimationFrame(()=> track.style.transition = '');
+      currentIndex += N; shifted = true;
     } else if(currentIndex >= N * 2){
-      currentIndex -= N;
+      currentIndex -= N; shifted = true;
+    }
+    if(shifted){
       track.style.transition = 'none';
       setX(centerOffset(currentIndex));
+      liveActiveIdx = currentIndex;
+      applyActiveInstant(currentIndex);
       requestAnimationFrame(()=> track.style.transition = '');
     }
-    refreshActive();
-  }
-
-  function snapToNearest(){
-    const els = allSlides();
-    let bestIdx = 0, bestDist = Infinity;
-    els.forEach((el, i) => {
-      const dist = Math.abs(centerOffset(i) - posX);
-      if(dist < bestDist){ bestDist = dist; bestIdx = i; }
-    });
-    goToIndex(bestIdx, true);
   }
 
   function goToRealIndex(realIdx){
@@ -392,23 +429,11 @@
     goToIndex(best, true);
   }
 
-  function momentumLoop(){
-    if(Math.abs(velocity) < MIN_VELOCITY_TO_MOVE){
-      cancelAnimationFrame(rafMomentum);
-      snapToNearest();
-      return;
-    }
-    velocity *= FRICTION;
-    setX(posX + velocity);
-    refreshActive();
-    rafMomentum = requestAnimationFrame(momentumLoop);
-  }
-
   function pointerDown(e){
     isDown = true;
     movedDistance = 0;
     wrap.classList.add('dragging');
-    cancelAnimationFrame(rafMomentum);
+    if(pendingFixTimeout){ clearTimeout(pendingFixTimeout); pendingFixTimeout = null; }
     track.style.transition = '';
     const p = e.touches ? e.touches[0] : e;
     startX = p.clientX;
@@ -424,7 +449,7 @@
     const dx = (p.clientX - startX) * DRAG_SPEED;
     movedDistance = Math.abs(dx);
     setX(startPosX + dx);
-    refreshActive(); // <-- iki sing gawe grayscale/warna owah "live" pas digeser
+    refreshActiveLive();
 
     const now = Date.now();
     const dt = now - lastT;
@@ -435,15 +460,28 @@
     }
   }
 
+  // ---------- IKI SING NGGANTI "MOMENTUM MLAKU DHEWE" ----------
+  // Saiki, pas dilepas, langsung diitung PISAN slide endi sing dituju
+  // (adhedasar adoh-e geseran + kecepetan pungkasan), banjur langsung
+  // "nyemplak" siji transisi alus menyang kono. Ora ana maneh gerakan
+  // bebas sing bisa kebablasen terus kudu mbalik.
   function pointerUp(){
     if(!isDown) return;
     isDown = false;
     wrap.classList.remove('dragging');
-    if(Math.abs(velocity) > MIN_VELOCITY_TO_MOVE){
-      rafMomentum = requestAnimationFrame(momentumLoop);
-    } else {
-      snapToNearest();
+
+    const dragDeltaIndex = -(posX - startPosX) / step;
+    let indexShift = Math.round(dragDeltaIndex);
+
+    if(Math.abs(velocity) > FLING_VELOCITY){
+      const flingDir = velocity < 0 ? 1 : -1;
+      if(indexShift === 0 || Math.sign(indexShift) === flingDir){
+        indexShift += flingDir;
+      }
     }
+    indexShift = Math.max(-3, Math.min(3, indexShift));
+
+    goToIndex(currentIndex + indexShift, true);
   }
 
   // Mouse
