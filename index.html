@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neoma — Production</title>
+<!-- 🖋️ FONT SCRIPT (tulisan kaya kaligrafi/tulisan tangan) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     🔧 PENGATURAN GAMPANG (EDIT NENG KENE WAE)
+     ============================================================ */
+  :root{
+    --accent: #ff5d3b;      /* werna utama (tombol, aksen, active) */
+    --bg: #0e0e10;          /* werna background gelap */
+    --card-bg: #17171a;     /* werna kertu/slide */
+    --text: #f4f2ee;        /* werna tulisan */
+    --muted: #9a9a9f;       /* werna tulisan sing luwih peteng */
+    --radius: 18px;         /* mlengkung pojokan kertu */
+    --slide-gap: 20px;      /* jarak antar slide */
+    --slide-cyan: #22e6e6;      /* 🎨 werna hover tulisan script (tag) */
+    --slide-desc-color: #ffffff; /* 🎨 werna tulisan deskripsi (h3) */
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 24px 6vw; gap:16px;
+    flex-wrap: nowrap; /* supaya panah tetep neng tengen, ora mlumpat ngisor */
+  }
+  header .logo{
+    width:130px; height:65px;     /* rasio 2:1 (horizontal) */
+    flex: 0 0 auto;
+    border-radius:14px;
+    object-fit:contain;
+    /* ganti src gambar ing HTML, utawa tinggal kothak iki yen durung ana logo */
+    background: var(--bg);
+    border: 0px dashed rgba(255,255,255,.2);
+  }
+
+  /* ---------- 🡄 🡆 TOMBOL PANAH ---------- */
+  .nav-arrows{ display:flex; gap:10px; flex:0 0 auto; }
+  .nav-arrows button{
+    width:44px; height:44px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.15);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size:1.1rem;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
+  }
+  .nav-arrows button:hover{ border-color: var(--accent); color: var(--accent); }
+  .nav-arrows button:active{ transform: scale(.92); }
+
+  /* ============================================================
+     🎯 SLIDER — draggable, momentum, LOOP TANPA PEDHOT,
+     lan "center-focus": sing ditengah dadi highlight.
+     ============================================================ */
+
+  .slider-wrap{
+    padding: 34px 0 30px;
+    cursor: grab;
+    overflow: hidden; /* wajib, supaya clone ora katon mlembar */
+  }
+  .slider-wrap.dragging{ cursor: grabbing; }
+
+  .slider-track{
+    display: flex;
+    align-items:center;
+    gap: var(--slide-gap);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    will-change: transform;
+  }
+
+  .slide{
+    flex: 0 0 auto;
+    width: 320px;                 /* ukuran kabeh slide, SERAGAM */
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    overflow: hidden;
+    position: relative;
+    display:block;
+    transition: opacity .35s ease;
+  }
+
+  @media (max-width: 720px){
+    .slide{ width: 74vw; }
+  }
+
+  .slide img{
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    pointer-events:none;
+    transition: filter .4s ease, opacity .4s ease;
+  }
+
+  /* -------- ⭐ IKI SING NGATUR "CENTER-FOCUS" -------- */
+  /* Sisih kiwa-tengen: grayscale + rada peteng */
+  .slide:not(.active) img{
+    filter: grayscale(1);
+    opacity: .55;
+  }
+  /* Sing ditengah: warna asli, deskripsi katon */
+  .slide.active img{
+    filter: grayscale(0);
+    opacity: 1;
+  }
+
+  .slide .cap{
+    position:absolute; left:0; right:0; bottom:0;
+    padding: 18px;
+    background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
+    pointer-events:none;
+    opacity: 0;                 /* deskripsi didhelikake dhisik... */
+    transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .slide.active .cap{
+    opacity: 1;                 /* ...banjur mung katon pas active */
+    transform: translateY(0);
+  }
+  /* ---- 🔗 "tag" saiki dadi link script, gedhe, putih, hover cyan ---- */
+  .slide .cap .tag a{
+    font-family: 'Alex Brush', cursive;
+    font-size: 1.9rem;
+    line-height: 1;
+    color: #ffffff;
+    font-weight: 400;
+    text-decoration: none;
+    pointer-events: auto;    /* mung tulisan iki sing bisa diklik */
+    display: inline-block;
+    transition: color .25s ease;
+  }
+  .slide .cap .tag a:hover{
+    color: var(--slide-cyan);   /* ora underline, mung ganti werna */
+  }
+
+  /* ---- deskripsi (biyen judul) saiki mung teks, cilik lan thin ---- */
+  .slide .cap h3{
+    font-size: .78rem;
+    font-weight: 300;
+    letter-spacing: .01em;
+    color: var(--slide-desc-color);
+    margin-top: 2px;
+  }
+
+  /* ---------- 🏷️ NAVIGASI LABEL ING NGISOR ---------- */
+  .nav-labels{
+    display:flex;
+    margin: 30px 6vw 0;
+    border-top: 1px solid rgba(255,255,255,.14);
+  }
+  .nav-item{
+    flex:1;
+    text-align:center;
+    padding: 16px 8px 0;
+    position:relative;
+    cursor:pointer;
+    color: var(--muted);
+    font-size:.85rem;
+    background:none; border:none; font-family:inherit;
+  }
+  .nav-item::before{
+    content:'';
+    position:absolute; top:-1px; left:0; right:0; height:2px;
+    background: transparent;
+    transition: background .3s ease;
+  }
+  .nav-item.active{ color: var(--accent); }
+  .nav-item.active::before{ background: var(--accent); }
+  @media (max-width: 720px){
+    .nav-item{ font-size:.72rem; }
+    header{ padding: 18px 5vw; gap:10px; }
+    header .logo{ width:96px; height:48px; border-radius:11px; }
+    .nav-arrows button{ width:38px; height:38px; font-size:1rem; }
+  }
+
+  /* ---------- © FOOTER ---------- */
+  footer{
+    text-align: center;
+    padding: 40px 6vw 28px;
+    color: var(--muted);
+    font-size: .8rem;
+  }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <!-- ✏️ GANTI src IKI KARO GAMBAR LOGOMU (rasio 2:1, contone 400x200px) -->
+    <img class="logo" src="images/neoma_logo_clr.png" alt="Logo">
+    <div class="nav-arrows">
+      <button id="prevBtn" aria-label="Sadurunge">←</button>
+      <button id="nextBtn" aria-label="Sabanjure">→</button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       ✏️ EDIT KONTEN SLIDE NENG KENE
+       - <a href="...">Alam</a>  ing njero .tag  -> iki sing bisa diklik, ngarah menyang page
+       - <h3>Segara Wengi</h3>   -> iki mung deskripsi, ora bisa diklik
+       - class="slide"      -> ukuran kabeh slide wis seragam, ganti neng CSS .slide{ width: ... }
+       - src="..."          -> gambar
+       - data-label="..."   -> tulisan sing katon ing navigasi ngisor
+       ============================================================ -->
+  <div class="slider-wrap" id="sliderWrap">
+    <div class="slider-track" id="sliderTrack">
+
+      <div class="slide" data-label="Wedding Invitation">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80" alt="">
+        <div class="cap"><div class="tag"><a href="halaman-alam.html">Wedding Invitation</a></div><h3>Cetak Undangan Pernikahan</h3></div>
+      </div>
+
+      <div class="slide" data-label="Web Wedding Invitation">
+        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80" alt="">
+        <div class="cap"><div class="tag"><a href="halaman-kutha.html">Web Wedding Invitation</a></div><h3>Undangan Pernikahan Berbasis Web</h3></div>
+      </div>
+
+      <div class="slide" data-label="Percetakan">
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80" alt="">
+        <div class="cap"><div class="tag"><a href="halaman-gunung.html">Percetakan</a></div><h3>Layanan Percetakan</h3></div>
+      </div>
+
+      <div class="slide" data-label="Branding">
+        <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800&q=80" alt="">
+        <div class="cap"><div class="tag"><a href="halaman-alas.html">Branding & Digital Marketing</a></div><h3>Layanan Branding & Digital Marketing</h3></div>
+      </div>
+
+      <div class="slide" data-label="Kontak">
+        <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80" alt="">
+        <div class="cap"><div class="tag"><a href="halaman-pantai.html">Kontak</a></div><h3>Hubungi Kami</h3></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="nav-labels" id="navLabels"></div>
+
+  <!-- ✏️ EDIT TULISAN COPYRIGHT NENG KENE -->
+  <footer>&copy; Neoma Production 2026</footer>
+
+<script>
+/* ============================================================
+   🧠 LOGIKA SLIDER
+   - Drag + momentum + loop tanpa pedhot (koyo sadurunge)
+   - BARU: "center-focus" -> slide sing paling cedhak tengah
+     layar dadi .active (warna + deskripsi katon), liyane
+     grayscale. Sawise dilepas/mandheg, otomatis "nyemplak"
+     (snap) supaya slide sing paling cedhak ana persis tengah.
+   - BARU: tombol panah + navigasi label ing ngisor.
+   ============================================================ */
+(function(){
+  const wrap   = document.getElementById('sliderWrap');
+  const track  = document.getElementById('sliderTrack');
+  const navEl  = document.getElementById('navLabels');
+  const prevBtn= document.getElementById('prevBtn');
+  const nextBtn= document.getElementById('nextBtn');
+  const originalSlides = Array.from(track.children);
+  const N = originalSlides.length;
+
+  // ---------- PENGATURAN FISIKA (silakan diedit) ----------
+  const FRICTION   = 0.94;
+  const DRAG_SPEED = 1;
+  const MIN_VELOCITY_TO_MOVE = 0.15;
+  const CLICK_THRESHOLD = 6; // px — gesere kurang saka iki dianggep KLIK, ora drag
+  // ----------------------------------------------------------
+
+  // ---------- GAWE LOOP: clone sadurunge lan sawise ----------
+  const cloneSet = () => originalSlides.map(s => s.cloneNode(true));
+  const before = cloneSet();
+  const after  = cloneSet();
+  before.forEach(c => track.insertBefore(c, track.firstChild));
+  after.forEach(c => track.appendChild(c));
+  // saiki track.children isine 3×N: [before][asli][after]
+
+  const allSlides = () => Array.from(track.children);
+
+  // ---------- GAWE NAVIGASI LABEL (miturut slide asli) ----------
+  originalSlides.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-item' + (i === 0 ? ' active' : '');
+    btn.textContent = s.dataset.label || ('Slide ' + (i+1));
+    btn.addEventListener('click', () => goToRealIndex(i));
+    navEl.appendChild(btn);
+  });
+  const navItems = Array.from(navEl.children);
+
+  let setWidth = 0;      // jembar siji "set" (N slide + gap)
+  let currentIndex = N;  // posisi aktif ing array 3×N, miwiti ing set tengah
+  let posX = 0, startX = 0, startPosX = 0, isDown = false;
+  let velocity = 0, lastX = 0, lastT = 0, rafMomentum = null;
+  let movedDistance = 0;
+
+  function measure(){
+    const firstOriginal = track.children[N];
+    const firstAfterClone = track.children[N * 2];
+    setWidth = firstAfterClone.offsetLeft - firstOriginal.offsetLeft;
+  }
+
+  // titik transform supaya slide index `i` pas ing tengah slider-wrap
+  function centerOffset(i){
+    const el = track.children[i];
+    const wrapCenter = wrap.clientWidth / 2;
+    return wrapCenter - (el.offsetLeft + el.offsetWidth / 2);
+  }
+
+  function setX(x){
+    posX = x;
+    track.style.transform = `translate3d(${posX}px,0,0)`;
+  }
+
+  // golek slide sing PALING CEDHAK tengah layar, banjur ngatur .active
+  function refreshActive(){
+    const els = allSlides();
+    let bestIdx = 0, bestDist = Infinity;
+    els.forEach((el, i) => {
+      const dist = Math.abs(centerOffset(i) - posX);
+      if(dist < bestDist){ bestDist = dist; bestIdx = i; }
+    });
+    els.forEach((el, i) => el.classList.toggle('active', i === bestIdx));
+    const realIdx = bestIdx % N;
+    navItems.forEach((it, i) => it.classList.toggle('active', i === realIdx));
+    return bestIdx;
+  }
+
+  function goToIndex(i, withTransition){
+    currentIndex = i;
+    track.style.transition = withTransition
+      ? 'transform .55s cubic-bezier(.2,.8,.2,1)'
+      : 'none';
+    setX(centerOffset(i));
+    refreshActive();
+    if(withTransition){
+      setTimeout(()=>{ track.style.transition = ''; fixLoopRange(); }, 560);
+    } else {
+      requestAnimationFrame(()=> track.style.transition = '');
+    }
+  }
+
+  // yen currentIndex wis kejlungup metu saka "set tengah", tarik meneh
+  // diam-diam (tanpa transisi/katon) supaya loop-e ora entek stok clone
+  function fixLoopRange(){
+    if(currentIndex < N){
+      currentIndex += N;
+      track.style.transition = 'none';
+      setX(centerOffset(currentIndex));
+      requestAnimationFrame(()=> track.style.transition = '');
+    } else if(currentIndex >= N * 2){
+      currentIndex -= N;
+      track.style.transition = 'none';
+      setX(centerOffset(currentIndex));
+      requestAnimationFrame(()=> track.style.transition = '');
+    }
+    refreshActive();
+  }
+
+  function snapToNearest(){
+    const els = allSlides();
+    let bestIdx = 0, bestDist = Infinity;
+    els.forEach((el, i) => {
+      const dist = Math.abs(centerOffset(i) - posX);
+      if(dist < bestDist){ bestDist = dist; bestIdx = i; }
+    });
+    goToIndex(bestIdx, true);
+  }
+
+  function goToRealIndex(realIdx){
+    // pilih clone sing paling cedhak karo posisi saiki, supaya
+    // playune ora adoh banget
+    const candidates = [realIdx, realIdx + N, realIdx + N * 2];
+    let best = candidates[0], bestDist = Infinity;
+    candidates.forEach(c=>{
+      const d = Math.abs(centerOffset(c) - posX);
+      if(d < bestDist){ bestDist = d; best = c; }
+    });
+    goToIndex(best, true);
+  }
+
+  function momentumLoop(){
+    if(Math.abs(velocity) < MIN_VELOCITY_TO_MOVE){
+      cancelAnimationFrame(rafMomentum);
+      snapToNearest();
+      return;
+    }
+    velocity *= FRICTION;
+    setX(posX + velocity);
+    refreshActive();
+    rafMomentum = requestAnimationFrame(momentumLoop);
+  }
+
+  function pointerDown(e){
+    isDown = true;
+    movedDistance = 0;
+    wrap.classList.add('dragging');
+    cancelAnimationFrame(rafMomentum);
+    track.style.transition = '';
+    const p = e.touches ? e.touches[0] : e;
+    startX = p.clientX;
+    startPosX = posX;
+    lastX = p.clientX;
+    lastT = Date.now();
+    velocity = 0;
+  }
+
+  function pointerMove(e){
+    if(!isDown) return;
+    const p = e.touches ? e.touches[0] : e;
+    const dx = (p.clientX - startX) * DRAG_SPEED;
+    movedDistance = Math.abs(dx);
+    setX(startPosX + dx);
+    refreshActive(); // <-- iki sing gawe grayscale/warna owah "live" pas digeser
+
+    const now = Date.now();
+    const dt = now - lastT;
+    if(dt > 0){
+      velocity = (p.clientX - lastX) / dt * 16;
+      lastX = p.clientX;
+      lastT = now;
+    }
+  }
+
+  function pointerUp(){
+    if(!isDown) return;
+    isDown = false;
+    wrap.classList.remove('dragging');
+    if(Math.abs(velocity) > MIN_VELOCITY_TO_MOVE){
+      rafMomentum = requestAnimationFrame(momentumLoop);
+    } else {
+      snapToNearest();
+    }
+  }
+
+  // Mouse
+  wrap.addEventListener('mousedown', pointerDown);
+  window.addEventListener('mousemove', pointerMove);
+  window.addEventListener('mouseup', pointerUp);
+
+  // Touch (HP)
+  wrap.addEventListener('touchstart', pointerDown, { passive:true });
+  wrap.addEventListener('touchmove', pointerMove, { passive:true });
+  wrap.addEventListener('touchend', pointerUp);
+
+  // ---------- MISAHKE "KLIK TAG" KARO "DRAG" ----------
+  track.querySelectorAll('.cap .tag a').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      if(movedDistance >= CLICK_THRESHOLD){ e.preventDefault(); }
+    });
+    a.addEventListener('dragstart', e=> e.preventDefault());
+  });
+
+  // ---------- TOMBOL PANAH ----------
+  prevBtn.addEventListener('click', ()=> goToIndex(currentIndex - 1, true));
+  nextBtn.addEventListener('click', ()=> goToIndex(currentIndex + 1, true));
+
+  // ---------- POSISI AWAL ----------
+  function init(){
+    measure();
+    goToIndex(N, false); // miwiti pas slide asli sing pisanan, ing tengah
+  }
+  window.addEventListener('load', init);
+  window.addEventListener('resize', ()=>{ measure(); goToIndex(currentIndex, false); });
+  if(document.readyState === 'complete') init();
+})();
+</script>
+</body>
+</html>
