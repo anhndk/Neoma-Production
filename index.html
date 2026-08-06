@@ -541,3 +541,73 @@
   window.addEventListener('mouseup', pointerUp);
 
   // Touch (HP)
+  wrap.addEventListener('touchstart', pointerDown, { passive:true });
+  wrap.addEventListener('touchmove', pointerMove, { passive:true });
+  wrap.addEventListener('touchend', pointerUp);
+
+  // ---------- MISAHKE "KLIK TAG" KARO "DRAG" ----------
+  track.querySelectorAll('.cap .tag a').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      if(movedDistance >= CLICK_THRESHOLD){ e.preventDefault(); }
+    });
+    a.addEventListener('dragstart', e=> e.preventDefault());
+  });
+
+  // ---------- TOMBOL PANAH ----------
+  prevBtn.addEventListener('click', ()=>{ goToIndex(currentIndex - 1, true); resetAutoplay(); });
+  nextBtn.addEventListener('click', ()=>{ goToIndex(currentIndex + 1, true); resetAutoplay(); });
+
+  // ---------- 🔁 AUTOPLAY (saben AUTOPLAY_MS, pindah dhewe menyang sabanjure) ----------
+  let autoplayTimer = null;
+  function startAutoplay(){
+    stopAutoplay();
+    autoplayTimer = setInterval(()=>{
+      goToIndex(currentIndex + 1, true);
+    }, AUTOPLAY_MS);
+  }
+  function stopAutoplay(){
+    if(autoplayTimer){ clearInterval(autoplayTimer); autoplayTimer = null; }
+  }
+  function resetAutoplay(){
+    stopAutoplay();
+    startAutoplay();
+  }
+  // mandheg pas jempol/mouse ana ing slider utawa lagi di-hover, mlaku maneh pas lunga
+  wrap.addEventListener('mouseenter', stopAutoplay);
+  wrap.addEventListener('mouseleave', startAutoplay);
+
+  // ---------- 🏷️ LABEL BAR ISO DI-DRAG NGANGGO MOUSE (touch wis lancar dhewe) ----------
+  (function enableNavDrag(){
+    let navDown = false, navStartX = 0, navStartScroll = 0;
+    navEl.addEventListener('mousedown', (e)=>{
+      navDown = true;
+      navMovedDistance = 0;
+      navEl.classList.add('dragging');
+      navStartX = e.clientX;
+      navStartScroll = navEl.scrollLeft;
+    });
+    window.addEventListener('mousemove', (e)=>{
+      if(!navDown) return;
+      const dx = e.clientX - navStartX;
+      navMovedDistance = Math.abs(dx);
+      navEl.scrollLeft = navStartScroll - dx;
+    });
+    window.addEventListener('mouseup', ()=>{
+      navDown = false;
+      navEl.classList.remove('dragging');
+    });
+  })();
+
+  // ---------- POSISI AWAL ----------
+  function init(){
+    measure();
+    goToIndex(N, false); // miwiti pas slide asli sing pisanan, ing tengah
+    startAutoplay();
+  }
+  window.addEventListener('load', init);
+  window.addEventListener('resize', ()=>{ measure(); goToIndex(currentIndex, false); });
+  if(document.readyState === 'complete') init();
+})();
+</script>
+</body>
+</html>
