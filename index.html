@@ -111,10 +111,6 @@
       aspect-ratio:3 / 4.5;
       border-radius:22px;
     }
-
-    .nav-track{ gap:14px; }
-    .nav-item{ width:60vw; font-size:.72rem; }
-    .nav-progress{ margin: 24px 5vw 0; }
   }
 
   .slide img{
@@ -226,6 +222,14 @@
     transition: color .3s ease;
   }
   .nav-item.active{ color: var(--accent); }
+
+  /* ⚠️ media query iki KUDU ana SAWISE aturan .nav-item ing ndhuwur,
+     supaya menang pas ing HP (yen diselehke sadurunge, bakal kalah) */
+  @media (max-width: 720px){
+    .nav-track{ gap:14px; }
+    .nav-item{ width:60vw; font-size:.72rem; }
+    .nav-progress{ margin: 24px 5vw 0; }
+  }
 
   /* ---------- © FOOTER ---------- */
   footer{
