@@ -219,6 +219,7 @@
     color: var(--muted);
     font-size:.85rem;
     background:none; border:none; font-family:inherit;
+    text-decoration:none;
     transition: color .3s ease;
   }
   .nav-item.active{ color: var(--accent); }
@@ -352,10 +353,13 @@
   // ---------- GAWE NAVIGASI LABEL: STRUKTUR PADHA PERSIS KARO SLIDE ----------
   // (3×N: [before][asli][after]) supaya bisa "nempel" digeser bareng
   function buildNavItem(s, i){
-    const btn = document.createElement('button');
-    btn.className = 'nav-item';
-    btn.textContent = s.dataset.label || ('Slide ' + (i+1));
-    return btn;
+    const a = document.createElement('a');
+    a.className = 'nav-item';
+    a.textContent = s.dataset.label || ('Slide ' + (i+1));
+    // 🔗 njupuk link sing padha karo judul (.tag a) ing slide sing cocog
+    const titleLink = s.querySelector('.cap .tag a');
+    a.href = titleLink ? titleLink.getAttribute('href') : '#';
+    return a;
   }
   const originalNavItems = originalSlides.map(buildNavItem);
   function navCloneFragment(){
@@ -366,9 +370,10 @@
   navTrack.appendChild(navCloneFragment()); // before
   navTrack.appendChild(navCloneFragment()); // asli
   navTrack.appendChild(navCloneFragment()); // after
-  // pasang event klik neng saben instance (dhewe-dhewe langsung nuju index absolut-e)
-  Array.from(navTrack.children).forEach((btn, absIdx) => {
-    btn.addEventListener('click', () => { goToIndex(absIdx, true); resetAutoplay(); });
+  // pasang event klik neng saben instance: langsung ngarah menyang page
+  // (persis kaya link judul ing njero slide) — ora nyegah navigasi standar
+  Array.from(navTrack.children).forEach((a, absIdx) => {
+    a.addEventListener('click', () => { goToIndex(absIdx, true); resetAutoplay(); });
   });
   const navAllItems = () => Array.from(navTrack.children);
 
