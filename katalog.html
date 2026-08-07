@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katalog Undangan — Neoma Production</title>
+
+<!-- 🖋️ FONT SCRIPT -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --accent: #ff5d3b;          /* werna utama */
+    --bg: #0e0e10;              /* werna background */
+    --card-bg: #17171a;         /* werna card */
+    --text: #f4f2ee;            /* werna teks */
+    --muted: #9a9a9f;           /* werna teks samar */
+    --radius: 18px;             /* radius card */
+    --wa-green: #25d366;        /* werna WhatsApp */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- HEADER ---------- */
+  header {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 24px 6vw; 
+    gap: 16px;
+  }
+
+  header .logo {
+    width: 130px; 
+    height: 65px;
+    flex: 0 0 auto;
+    border-radius: 14px;
+    object-fit: contain;
+    background: var(--bg);
+  }
+
+  .btn-back {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: color .2s ease, border-color .2s ease;
+  }
+
+  .btn-back:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ---------- TITLE SECTION ---------- */
+  .hero-title {
+    text-align: center;
+    padding: 20px 6vw 40px;
+  }
+
+  .hero-title h1 {
+    font-family: 'Alex Brush', cursive;
+    font-size: 3.2rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .hero-title p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+
+  /* ---------- GRID KATALOG CARD ---------- */
+  .katalog-container {
+    flex: 1;
+    padding: 0 6vw 40px;
+  }
+
+  .katalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: rgba(255, 93, 59, 0.4);
+    transform: translateY(-3px);
+  }
+
+  .badge-harga {
+    display: inline-block;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .card h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  .btn-buka {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-buka:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ---------- MODAL CAROUSEL IMAGE ---------- */
+  .modal {
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .modal-content {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 900px;
+    height: 88vh;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 16px 24px;
+    background: #121215;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .close-btn {
+    font-size: 24px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  .close-btn:hover {
+    color: var(--accent);
+  }
+
+  .modal-body {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .carousel-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  /* Tombol Panah Navigasi */
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    z-index: 10;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .nav-prev { left: 16px; }
+  .nav-next { right: 16px; }
+
+  /* Area Bawah Modal (Halaman & Tombol Order WA) */
+  .modal-footer {
+    padding: 16px 24px;
+    background: #121215;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .page-info {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .btn-wa-order {
+    background: var(--wa-green);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-wa-order:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-wa-order svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    text-align: center;
+    padding: 30px 6vw;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 720px) {
+    header { padding: 18px 5vw; }
+    header .logo { width: 96px; height: 48px; }
+    .hero-title h1 { font-size: 2.5rem; }
+    .katalog-container { padding: 0 5vw 30px; }
+    .modal-content { height: 92vh; }
+    .nav-prev { left: 8px; }
+    .nav-next { right: 8px; }
+    .modal-footer { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <img class="logo" src="images/neoma_logo_clr.png" alt="Logo Neoma">
+    <a href="index.html" class="btn-back">← Kembali</a>
+  </header>
+
+  <section class="hero-title">
+    <h1>Katalog Undangan</h1>
+    <p>Undangan cetak</p>
+  </section>
+
+  <main class="katalog-container">
+    <div class="katalog-grid">
+      
+      <!-- ⚠️ CATATAN: Ganti angka ing parameter kapindho 'bukaKatalog' ngetutke jumlah gambarmu -->
+
+      <!-- Card 1: Undangan Promo -->
+      <div class="card">
+        <div>
+          <span class="badge-harga">Rp 1.300</span>
+          <h3>Undangan Promo</h3>
+          <p>Bahan BC 160 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere ana 10 gambar: -->
+        <button class="btn-buka" onclick="bukaKatalog('Promo', 16, 'Undangan Promo')">Buka Katalog</button>
+      </div>
+
+      <!-- Card 2: Undangan Ekonomis -->
+      <div class="card">
+        <div>
+          <span class="badge-harga">Rp 1.500</span>
+          <h3>Undangan Ekonomis</h3>
+          <p>Bahan BC 160 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere Ekonomis ana 52 gambar (sesuai screenshot XnConvert-mu): -->
+        <button class="btn-buka" onclick="bukaKatalog('Ekonomis', 52, 'Undangan Ekonomis')">Buka Katalog</button>
+      </div>
+
+      <!-- Card 3: Undangan Standar -->
+      <div class="card">
+        <div>
+          <span class="badge-harga">Rp 1.700 – Rp 2.000</span>
+          <h3>Undangan Standar</h3>
+          <p>Bahan BC 180 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere Standar ana 15 gambar: -->
+        <button class="btn-buka" onclick="bukaKatalog('Standar', 56, 'Undangan Standar')">Buka Katalog</button>
+      </div>
+
+      <!-- Card 4: Undangan Medium -->
+      <div class="card">
+        <div>
+          <span class="badge-harga">Rp 2.500</span>
+          <h3>Undangan Medium</h3>
+          <p>Bahan BC 180 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere Medium ana 8 gambar: -->
+        <button class="btn-buka" onclick="bukaKatalog('Medium', 35, 'Undangan Medium')">Buka Katalog</button>
+      </div>
+
+      <!-- Card 5: Undangan Premium -->
+      <div class="card">
+        <div>
+          <span class="badge-harga">Rp 3.500 – Rp 5.000</span>
+          <h3>Undangan Premium</h3>
+          <p>Bahan BC 180 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere Premium ana 12 gambar: -->
+        <button class="btn-buka" onclick="bukaKatalog('Premium', 11, 'Undangan Premium')">Buka Katalog</button>
+      </div>
+
+      <!-- Card 6: Undangan Custom -->
+      <div class="card">
+        <div>
+          <span class="badge-harga"> </span>
+          <h3>Undangan Custom</h3>
+          <p>Bahan Ivory 310 gsm, Include Plastik & Label Nama</p>
+        </div>
+        <!-- Misal isi foldere Custom ana 12 gambar: -->
+        <button class="btn-buka" onclick="bukaKatalog('Custom', 12, 'Undangan Custom')">Buka Katalog</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Element Modal Pop-up Carousel Image -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3 id="modalTitle">Katalog Undangan</h3>
+        <span class="close-btn" onclick="tutupKatalog()">&times;</span>
+      </div>
+      
+      <div class="modal-body">
+        <button class="nav-btn nav-prev" onclick="slideGambar(-1)">❮</button>
+        <img id="carouselImg" class="carousel-img" src="" alt="Katalog Image">
+        <button class="nav-btn nav-next" onclick="slideGambar(1)">❯</button>
+      </div>
+
+      <div class="modal-footer">
+        <span id="pageInfo" class="page-info">Halaman 1 / 1</span>
+        
+        <!-- Tombol WA Order Tetep Ing Bawah -->
+        <a id="btnWaOrder" href="https://wa.me/6285747960727" target="_blank" class="btn-wa-order">
+          <svg viewBox="0 0 24 24">
+            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/>
+          </svg>
+          Order
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>&copy; Neoma Production 2026</footer>
+
+  <script>
+    let currentImages = [];
+    let currentIndex = 0;
+    let currentJudulPaket = '';
+
+    // Fungsi Mbuka Modal lan Nyiapke Gambare adhedhasar 'jumlahGambar' sing di-pass seko tombol
+    function bukaKatalog(folderName, jumlahGambar, judul) {
+      currentImages = [];
+      currentIndex = 0;
+      currentJudulPaket = judul;
+
+      // Otomatis susun link gambar sesuai karo angka jumlahGambar: 1.webp nganti [jumlahGambar].webp
+      for (let i = 1; i <= jumlahGambar; i++) {
+        currentImages.push('images/' + folderName + '/' + i + '.webp');
+      }
+
+      document.getElementById('modalTitle').innerText = 'Katalog: ' + judul;
+      updateCarouselView();
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    // Fungsi Nganyari Tampilan Gambar lan Halaman
+    function updateCarouselView() {
+      const imgElement = document.getElementById('carouselImg');
+      imgElement.src = currentImages[currentIndex];
+      
+      document.getElementById('pageInfo').innerText = 'Halaman ' + (currentIndex + 1) + ' / ' + currentImages.length;
+
+      // Pesan WA otomatis
+      const pesanWA = 'Halo Neoma Production, saya mau order ' + currentJudulPaket + ' (Halaman ' + (currentIndex + 1) + ')';
+      const waUrl = 'https://wa.me/6285747960727?text=' + encodeURIComponent(pesanWA);
+      document.getElementById('btnWaOrder').href = waUrl;
+    }
+
+    // Fungsi Panah Geser Kiwa/Tengen
+    function slideGambar(direction) {
+      currentIndex += direction;
+      if (currentIndex < 0) {
+        currentIndex = currentImages.length - 1; // Looping dadi ing pungkasan
+      } else if (currentIndex >= currentImages.length) {
+        currentIndex = 0; // Looping bali neng awal
+      }
+      updateCarouselView();
+    }
+
+    // Navigasi Keyboard (Panah kiwa-tengen & Escape)
+    document.addEventListener('keydown', function(event) {
+      const modal = document.getElementById('imageModal');
+      if (modal.style.display === 'flex') {
+        if (event.key === 'ArrowLeft') slideGambar(-1);
+        if (event.key === 'ArrowRight') slideGambar(1);
+        if (event.key === 'Escape') tutupKatalog();
+      }
+    });
+
+    // Fungsi Nutup Modal
+    function tutupKatalog() {
+      document.getElementById('imageModal').style.display = 'none';
+      document.getElementById('carouselImg').src = '';
+    }
+
+    // Tutup modal yen ngeklik area njaba modal
+    window.onclick = function(event) {
+      const modal = document.getElementById('imageModal');
+      if (event.target == modal) {
+        tutupKatalog();
+      }
+    }
+  </script>
+
+</body>
+</html>
