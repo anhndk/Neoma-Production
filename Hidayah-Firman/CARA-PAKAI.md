@@ -20,7 +20,7 @@ https://domainkamu.com/index.html?to=Keluarga+Besar+Wijaya
 ```
 
 Spasi bisa pakai `%20` atau `+`. Kalau parameter `to` tidak diisi, otomatis
-tampil "Tamu Undangan".
+tampil "Tamu Undangan.".
 
 ## 2. Musik
 Autoplay browser modern butuh interaksi user dulu — makanya musik baru mulai
