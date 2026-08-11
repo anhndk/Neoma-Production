@@ -1,7 +1,0 @@
-Taruh file musik kamu di folder ini dengan nama: music.mp3
-
-Contoh: assets/audio/music.mp3
-
-Formatnya harus .mp3, dan pastikan namanya persis "music.mp3"
-(atau kalau mau nama lain, ubah juga path-nya di index.html
-pada bagian <audio id="bgMusic">... <source src="assets/audio/music.mp3">).
