@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neoma — Buat Link Undangan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     🔧 PENGATURAN (EDIT DI SINI)
+     — warna diambil sama persis dari index.html agar konsisten
+     ============================================================ */
+  :root{
+    --accent: #ff5d3b;
+    --bg: #0e0e10;
+    --card-bg: #17171a;
+    --field-bg: #1f1f23;
+    --text: #f4f2ee;
+    --muted: #9a9a9f;
+    --line: rgba(255,255,255,.10);
+    --radius: 18px;
+    --wa: #25d366;
+    --wa-dark: #1ea952;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100svh;
+  }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 24px 6vw; gap:16px;
+  }
+  header .logo{
+    width:130px; height:65px;
+    flex: 0 0 auto;
+    border-radius:14px;
+    object-fit:contain;
+    background: var(--bg);
+  }
+  header .back{
+    display:flex; align-items:center; gap:8px;
+    color: var(--muted);
+    text-decoration:none;
+    font-size:.85rem;
+    border:1px solid var(--line);
+    padding:10px 16px;
+    border-radius:999px;
+    transition: color .2s ease, border-color .2s ease;
+    flex:0 0 auto;
+  }
+  header .back:hover{ color: var(--accent); border-color: var(--accent); }
+
+  main{
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 10px 6vw 60px;
+  }
+
+  .page-eyebrow{
+    text-align:center;
+    color: var(--muted);
+    font-size:.75rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .page-title{
+    text-align:center;
+    font-size:1.7rem;
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .page-title span{
+    font-family:'Alex Brush', cursive;
+    font-weight:400;
+    font-size:1.35em;
+    color: var(--accent);
+    padding:0 .06em;
+  }
+  .page-sub{
+    text-align:center;
+    color: var(--muted);
+    font-size:.92rem;
+    line-height:1.5;
+    max-width:42ch;
+    margin: 0 auto 32px;
+  }
+
+  .card{
+    background: var(--card-bg);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 22px 28px;
+  }
+
+  .field{ margin-bottom:20px; }
+  .field label{
+    display:block;
+    font-size:.8rem;
+    color: var(--muted);
+    margin-bottom:8px;
+    letter-spacing:.01em;
+  }
+  .field input[type="text"]{
+    width:100%;
+    background: var(--field-bg);
+    border:1px solid var(--line);
+    color: var(--text);
+    font-size:.98rem;
+    font-family:inherit;
+    padding: 13px 14px;
+    border-radius:12px;
+    outline:none;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .field input[type="text"]::placeholder{ color:#5c5c62; }
+  .field input[type="text"]:focus{ border-color: var(--accent); background:#232326; }
+
+  /* ---------- link preview ---------- */
+  .link-preview{
+    margin-top:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: var(--field-bg);
+    border:1px dashed var(--line);
+    border-radius:12px;
+    padding:11px 12px;
+    font-size:.85rem;
+    color: var(--muted);
+  }
+  .link-preview .lp-url{
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color: var(--text);
+  }
+  .link-preview .lp-url.is-empty{ color:#5c5c62; }
+  .lp-copy{
+    flex:0 0 auto;
+    background:none;
+    border:1px solid var(--line);
+    color: var(--muted);
+    width:30px; height:30px;
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .lp-copy:hover{ color: var(--accent); border-color: var(--accent); }
+
+  /* ---------- textarea ---------- */
+  textarea{
+    width:100%;
+    min-height:280px;
+    resize:vertical;
+    background: var(--field-bg);
+    border:1px solid var(--line);
+    color: var(--text);
+    font-family:inherit;
+    font-size:.92rem;
+    line-height:1.6;
+    padding:14px;
+    border-radius:12px;
+    outline:none;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  textarea:focus{ border-color: var(--accent); background:#232326; }
+  .field-note{ font-size:.76rem; color:#5c5c62; margin-top:8px; line-height:1.5; }
+  .field-note code{
+    background: var(--field-bg);
+    padding:1px 6px;
+    border-radius:5px;
+    color: var(--muted);
+    font-size:.74rem;
+  }
+
+  /* ---------- share button ---------- */
+  .share-btn{
+    width:100%;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background: var(--wa);
+    color:#04170c;
+    font-family:inherit;
+    font-weight:600;
+    font-size:1rem;
+    border:none;
+    padding:16px 20px;
+    border-radius:999px;
+    cursor:pointer;
+    margin-top:6px;
+    transition: background .2s ease, transform .15s ease;
+  }
+  .share-btn:hover{ background: var(--wa-dark); }
+  .share-btn:active{ transform: scale(.98); }
+  .share-btn svg{ flex:0 0 auto; }
+
+  .error-msg{
+    display:none;
+    color: var(--accent);
+    font-size:.82rem;
+    text-align:center;
+    margin-top:12px;
+  }
+  .error-msg.show{ display:block; }
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;
+    left:50%; bottom:26px;
+    transform: translate(-50%, 20px);
+    background: var(--card-bg);
+    border:1px solid var(--wa);
+    color: var(--text);
+    padding:12px 20px;
+    border-radius:999px;
+    font-size:.86rem;
+    display:flex; align-items:center; gap:8px;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .25s ease, transform .25s ease;
+    z-index:20;
+    white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform: translate(-50%, 0); }
+  .toast svg{ color: var(--wa); flex:0 0 auto; }
+
+  footer{
+    text-align: center;
+    padding: 40px 6vw 28px;
+    color: var(--muted);
+    font-size: .8rem;
+  }
+
+  @media (max-width: 480px){
+    header .logo{ width:96px; height:48px; border-radius:11px; }
+    .page-title{ font-size:1.4rem; }
+    .card{ padding:20px 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <img class="logo" src="images/neoma_logo_clr.png" alt="Logo">
+    <a class="back" href="index.html">← Beranda</a>
+  </header>
+
+  <main>
+    <p class="page-eyebrow">Neoma — Web Wedding Invitation</p>
+    <h1 class="page-title">Buat Link <span>Undangan</span> Personal</h1>
+    <p class="page-sub">Masukkan nama tamu, dan link undangan beserta pesan akan otomatis diperbarui secara lengkap — tinggal dikirim melalui WhatsApp.</p>
+
+    <div class="card">
+
+      <div class="field">
+        <label for="linkInput">Link Undangan</label>
+        <input type="text" id="linkInput" placeholder="neoma.my.id/Fulan-Fulana" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="nameInput">Nama Tamu</label>
+        <input type="text" id="nameInput" placeholder="Batari Suluh Asmarisya" autocomplete="off">
+        <div class="link-preview">
+          <span class="lp-url is-empty" id="lpUrl">Link belum lengkap</span>
+          <button type="button" class="lp-copy" id="lpCopyBtn" title="Salin Link" aria-label="Salin Link">
+            <svg viewBox="0 0 24 24" width="15" height="15"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16V5a1 1 0 011-1h11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Pesan</label>
+        <textarea id="messageInput" spellcheck="false"></textarea>
+        <p class="field-note">Bagian <code>[nama tamu]</code> dan <code>[link jadi setelah isi nama]</code> akan otomatis diperbarui secara real-time mengikuti isian Anda di atas. Pesan ini dapat diedit sesuai kebutuhan.</p>
+      </div>
+
+      <button type="button" class="share-btn" id="shareBtn">
+        <svg viewBox="0 0 32 32" width="20" height="20"><path fill="#04170c" d="M16.04 3C9.4 3 4 8.4 4 15.04c0 2.35.62 4.55 1.7 6.46L4 29l7.68-1.65a12 12 0 004.36.82h.01c6.64 0 12.03-5.4 12.03-12.04S22.68 3 16.04 3zm0 21.9h-.01a9.85 9.85 0 01-5.03-1.38l-.36-.21-4.55.98.97-4.44-.24-.37a9.87 9.87 0 01-1.5-5.24c0-5.46 4.44-9.9 9.92-9.9 2.65 0 5.14 1.04 7.01 2.9a9.83 9.83 0 012.9 6.99c0 5.46-4.45 9.9-9.9 9.9z"/><path fill="#04170c" d="M21.4 18.02c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.14-.66.15-.2.29-.75.95-.92 1.14-.17.2-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.6-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.07-.15-.66-1.6-.91-2.19-.24-.57-.48-.5-.66-.5-.17 0-.37-.02-.56-.02s-.51.07-.78.37c-.27.29-1.02 1-1.02 2.44s1.05 2.83 1.19 3.02c.15.2 2.06 3.14 5 4.4.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.11.56-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.27-.2-.56-.34z"/></svg>
+        Salin &amp; Bagikan ke WhatsApp
+      </button>
+
+      <p class="error-msg" id="errorMsg">Mohon isi link undangan dan nama tamu terlebih dahulu.</p>
+    </div>
+  </main>
+
+  <footer>&copy; Neoma Production 2026</footer>
+
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12l5 5L20 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="toastText">Pesan berhasil disalin!</span>
+  </div>
+
+<script>
+(function(){
+  const NAME_TAG = '[nama tamu]';
+  const LINK_TAG = '[link jadi setelah isi nama]';
+
+  const DEFAULT_TEMPLATE =
+"Assalamualaikum Warahmatullahi Wabarakatuh\n" +
+"Yth. Bapak/Ibu/Saudara/i\n" +
+NAME_TAG + "\n" +
+"Di Tempat\n\n" +
+"Dengan segala kerendahan hati,\n" +
+"kami mengundang Bapak/Ibu/Saudara/i dan teman-teman untuk menghadiri acara pernikahan kami,\n\n" +
+"Undangan dapat diakses melalui link berikut.\n" +
+LINK_TAG + "\n\n" +
+"Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i dan teman-teman berkenan untuk hadir dan memberikan doa restu.\n\n" +
+"Atas perhatian, kehadiran dan doanya, kami ucapkan banyak terima kasih.\n\n" +
+"Wassalamualaikum Warahmatullahi Wabarakatuh";
+
+  const linkInput    = document.getElementById('linkInput');
+  const nameInput    = document.getElementById('nameInput');
+  const lpUrl        = document.getElementById('lpUrl');
+  const lpCopyBtn     = document.getElementById('lpCopyBtn');
+  const messageInput = document.getElementById('messageInput');
+  const shareBtn      = document.getElementById('shareBtn');
+  const errorMsg       = document.getElementById('errorMsg');
+  const toast          = document.getElementById('toast');
+  const toastText      = document.getElementById('toastText');
+
+  // "template" adalah sumber data asli (berisi tag), sedangkan yang
+  // tampil di textarea adalah versi yang sudah disubstitusi (preview real-time).
+  let template = DEFAULT_TEMPLATE;
+  let lastName = '';
+  let lastLink = '';
+
+  function escapeRegExp(str){
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function buildLink(){
+    let raw = linkInput.value.trim();
+    const name = nameInput.value.trim();
+    if(!raw || !name) return '';
+
+    if(!/^https?:\/\//i.test(raw)) raw = 'https://' + raw;
+
+    let url;
+    try{ url = new URL(raw); } catch(e){ return ''; }
+
+    url.searchParams.set('to', name);
+    return url.toString();
+  }
+
+  function renderFromTemplate(){
+    const name = nameInput.value.trim();
+    const link = buildLink();
+    let out = template;
+    out = out.split(NAME_TAG).join(name || NAME_TAG);
+    out = out.split(LINK_TAG).join(link || LINK_TAG);
+    return out;
+  }
+
+  // dipanggil saat nama/link berubah: textarea di-render ulang dari template
+  function refreshMessageFromFields(){
+    const name = nameInput.value.trim();
+    const link = buildLink();
+    messageInput.value = renderFromTemplate();
+    lastName = name;
+    lastLink = link;
+  }
+
+  // dipanggil saat pengguna mengetik langsung di textarea: teks yang
+  // sudah tersubstitusi "dipetakan balik" ke template supaya tag tetap
+  // tersimpan dan mengikuti perubahan nama/link berikutnya.
+  function updateTemplateFromMessage(){
+    let value = messageInput.value;
+    if(lastName){
+      value = value.split(lastName).join(NAME_TAG);
+    }
+    if(lastLink){
+      value = value.split(lastLink).join(LINK_TAG);
+    }
+    template = value;
+  }
+
+  function refreshLinkPreview(){
+    const link = buildLink();
+    if(link){
+      lpUrl.textContent = link;
+      lpUrl.classList.remove('is-empty');
+    } else {
+      lpUrl.textContent = 'Link belum lengkap';
+      lpUrl.classList.add('is-empty');
+    }
+  }
+
+  linkInput.addEventListener('input', function(){
+    refreshLinkPreview();
+    refreshMessageFromFields();
+  });
+  nameInput.addEventListener('input', function(){
+    refreshLinkPreview();
+    refreshMessageFromFields();
+  });
+  messageInput.addEventListener('input', updateTemplateFromMessage);
+
+  refreshLinkPreview();
+  refreshMessageFromFields();
+
+  /* ---------- copy helper (tetap berfungsi tanpa izin clipboard) ---------- */
+  function copyText(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text);
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function showToast(msg){
+    toastText.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toast.classList.remove('show'), 2400);
+  }
+
+  lpCopyBtn.addEventListener('click', function(){
+    const link = buildLink();
+    if(!link) return;
+    copyText(link).then(()=> showToast('Link berhasil disalin!'));
+  });
+
+  /* ---------- tombol share: salin pesan (sudah tersubstitusi), buka WhatsApp ---------- */
+  shareBtn.addEventListener('click', function(){
+    const link = buildLink();
+    const name = nameInput.value.trim();
+
+    if(!link || !name){
+      errorMsg.classList.add('show');
+      (link ? nameInput : linkInput).focus();
+      return;
+    }
+    errorMsg.classList.remove('show');
+
+    const finalMessage = messageInput.value;
+
+    copyText(finalMessage).then(function(){
+      showToast('Pesan disalin! Membuka WhatsApp…');
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(finalMessage), '_blank');
+    });
+  });
+})();
+</script>
+</body>
+</html>
