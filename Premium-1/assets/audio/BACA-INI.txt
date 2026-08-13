@@ -1,0 +1,15 @@
+Taruh file musik kamu di folder ini dengan nama: music.mp3
+
+Contoh path lengkap: assets/audio/music.mp3
+
+Format harus .mp3, dan nama file harus persis "music.mp3" —
+kalau mau nama lain, ubah juga bagian ini di index.html:
+
+  <audio id="bgm" loop preload="none">
+    <source src="assets/audio/music.mp3" type="audio/mpeg">
+  </audio>
+
+Musik baru mulai muter pas tombol "Buka Undangan" dipencet
+(browser modern butuh interaksi user dulu sebelum autoplay audio).
+Tombol pause/play kecil ada di scene 1, nempel di radio jadul —
+posisinya udah pas di atas gambar radio di scene1-bg.webp.
