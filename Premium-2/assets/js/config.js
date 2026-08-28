@@ -103,7 +103,7 @@ const CONFIG = {
   // Put an mp3 in assets/audio/ and set the path below. The vinyl button
   // (top-right) is always visible and spins when tapped/opened either way —
   // leaving this empty just means it spins silently (no audio to play).
-  musicSrc: "assets/audio/music.mpeg", // e.g. "assets/audio/our-song.mp3"
+  musicSrc: "assets/audio/music.mp3", // e.g. "assets/audio/our-song.mp3"
 
   // ---- Wedding gift / bank transfer -----------------------------------------
   giftIntro: "We're so grateful for your love and support, any gift you share means the world to us.",
