@@ -1,0 +1,767 @@
+/* ==========================================================================
+   STYLE.CSS
+   ==========================================================================
+   EASIEST EDITS FIRST: change colors/fonts in the :root block below.
+   Everything else is layout — safe to leave alone unless you want to
+   restyle a specific section.
+   ========================================================================== */
+
+/* Script font — Reey-Regular.otf loaded locally (offline), no CDN needed. */
+@font-face {
+  font-family: 'Reey';
+  src: url('../fonts/Bettina Signature Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --mobile-width: 480px;
+  --main-color: #735D53;        /* accent color: buttons, headings          */
+  --text-color: #47403D;        /* default body text color                  */
+  --bg-color: #222222;          /* page background behind the mobile frame  */
+  --panel-color: 255, 255, 255;         /* R,G,B of the ONE shared panel background behind countdown, RSVP, gallery, and gift — see "UNIFIED PANEL BACKGROUND" comment below */
+  --panel-opacity: 0.7;                /* 0 = fully see-through, 1 = fully solid. Applies to that whole panel from the countdown all the way down to Wedding Gift */
+
+  --font-script: 'Reey', cursive;      /* big couple-name headings   */
+  --font-body: 'Cabin', sans-serif;          /* paragraphs                 */
+  --font-heading: 'Poppins', sans-serif;     /* section titles / buttons   */
+}
+
+@media (max-width: 480px) {
+  :root { --mobile-width: 100vw; }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  font-family: var(--font-body);
+  color: var(--text-color);
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ---- Preloader / splash screen ------------------------------------------ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: rgb(0, 0, 0);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+}
+.splash-logo {
+  color: #fff;
+  font-family: var(--font-script);
+  font-size: 48px;
+  animation: pulse 2s infinite;
+}
+.splash-logo img { max-width: 40px; }
+@keyframes pulse {
+  0% { transform: scale(1); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ---- Mobile frame / scroll engine layout -------------------------------- */
+.mobile-container {
+  position: relative;
+  width: 100%;
+  max-width: var(--mobile-width);
+  height: 100vh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-y: contain;
+  scroll-snap-stop: always;
+}
+.scroll-container::-webkit-scrollbar { display: none; }
+
+.scroll-section {
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+}
+
+.scroll-content { height: auto; position: relative; }
+
+.stage {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--mobile-width);
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+/* #lastContainer (countdown/RSVP/gallery/gift/footer) is raised above the
+   stage here so it keeps receiving taps/clicks normally even though the
+   stage (couple photo + reeds/flowers) is deliberately left VISIBLE behind
+   it past the last scene — see the comment on updateStageVisibility in
+   engine.js and on ".overlay-panel" below for why. */
+#lastContainer { position: relative; z-index: 2; }
+
+.animated-element {
+  position: absolute;
+  will-change: transform, opacity;
+}
+.animated-element.clickable,
+.animated-element .clickable { pointer-events: auto; }
+
+/* ---- Typography helpers (used throughout content) ----------------------- */
+.p1 { font-family: var(--font-body); font-size: 16px; margin: 0; }
+.p2 { font-family: var(--font-body); font-size: 14px; margin: 0; }
+.p3 { font-family: var(--font-body); font-size: 12px; margin: 0; }
+.h1 {
+  font-family: var(--font-script);
+  font-size: clamp(32px, 11vw, 64px);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.ig-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid #000;
+  border-radius: 8px;
+  width: fit-content;
+  margin: 8px auto 0;
+  padding: 2px 12px 4px;
+}
+
+/* ---- Cover / quotes / couple name containers ----------------------------- */
+.cover-overlay {
+  background: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 60%);
+}
+
+/* ==========================================================================
+   BOTTOM GRADIENT — the soft white glow that currently appears behind the
+   bride & groom name reveal.
+   HOW TO EDIT:
+   - min-height   = how TALL the gradient area is (bigger % = covers more
+                    of the screen from the bottom up).
+   - the 4 stops inside linear-gradient() = how SOLID it is at each point:
+       0%   -> fully solid white   (rgba(255,255,255,0.75) here)
+       35%  -> a bit softer
+       60%  -> softer still
+       85%  -> almost gone
+       100% -> fully transparent (0)
+     Raise/lower the 0.75 / 0.5 / 0.15 numbers (0 = invisible, 1 = solid)
+     to make it stronger or fainter. Move the % positions to make the
+     glow taller/shorter.
+   WHEN it appears (which scroll scenes) is controlled separately, in
+   scenes.js, under each scene's "bottomGradient" keyframes.
+   ========================================================================== */
+.bottom-gradient {
+  min-width: 100%;
+  min-height: 65%;
+  bottom: 0;
+  background: linear-gradient(359deg,
+    #fff 0%,
+    rgba(255,255,255,0.75) 35%,
+    rgba(255,255,255,0.5) 60%,
+    rgba(255,255,255,0.15) 85%,
+    rgba(255,255,255,0) 100%);
+}
+
+.cover-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
+  height: 100dvh;
+  width: 100%;
+  padding-bottom: 150px;
+  color: var(--text-color);
+}
+.cover-text .p2 { font-size: 13px; }
+.cover-text .h1 { font-size: clamp(30px, 9vw, 52px); margin: 6px 0 8px; }
+
+/* Guest greeting block, anchored just below the cover names/date */
+/* Scroll hint (replaces the old envelope.id lottie): vertical line with a
+   glowing dot looping bottom→top, label below reads "Scroll". */
+.scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scroll-line {
+  position: relative;
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.35);
+  overflow: hidden;
+}
+.scroll-glow {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 8px;
+  background: #b78039;
+  animation: scrollGlowRise 1.8s ease-in-out infinite;
+}
+@keyframes scrollGlowRise {
+  0%   { transform: translateY(0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(-32px); opacity: 0; }
+}
+.scroll-label {
+  color: #000000;
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.guest-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.guest-block .guest-dear {
+  font-size: clamp(10px, 3vw, 12px);
+  font-weight: 400;
+  margin: 0;
+}
+.guest-block .guest-name {
+  font-size: clamp(13px, 4vw, 17px);
+  font-weight: 600;
+  margin: 0;
+}
+.guest-block .guest-arrow {
+  width: clamp(28px, 8vw, 40px);
+  height: clamp(28px, 8vw, 40px);
+  margin: 2px auto 0;
+}
+.guest-block .elementor-button {
+  padding: 7px 16px;
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+.quotes-container {
+  width: calc(1.4 * var(--mobile-width));
+  height: 400px;
+  left: calc(var(--mobile-width) * -0.2);
+  background-image: url(../images/backgrounds/cloud-quote.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: calc(var(--mobile-width) * 0.26);
+  padding-left: calc(var(--mobile-width) * 0.26);
+}
+
+.couple-container {
+  width: var(--mobile-width);
+  height: 40%;
+  color: var(--text-color);
+  text-shadow: 0 1px 12px rgba(255,255,255,0.85), 0 1px 3px rgba(255,255,255,0.9);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 18% 12px;
+}
+.couple-container .h1 { font-size: clamp(40px, 15vw, 80px); margin-bottom: 4px; }
+.couple-container .p1 { font-weight: 400; margin-top: 4px; }
+
+/* text-container2: used for Events & Dresscode. Uses the ORIGINAL wide box
+   (spans past the screen edges on both sides) so the cloud's aspect ratio
+   roughly matches the box — with "contain" the full cloud shape always
+   stays intact (never internally cropped); it may extend past the phone
+   screen's left/right edges, which is expected (like a photo bleeding off
+   screen) rather than an ugly crop cutting into the cloud's silhouette. */
+.text-container2 {
+  width: calc(2.8 * var(--mobile-width));
+  height: 100dvh;
+  left: calc(var(--mobile-width) * -0.90);
+  background-image: url(../images/backgrounds/cloud-panel.webp);
+  background-size: contain;    /* HOW TO EDIT CLOUD SIZE: raise the box's
+                                   width multiplier above (2.8) for a bigger
+                                   cloud, lower it for a smaller one. Avoid
+                                   "cover" here — it forces crops on portrait
+                                   screens because the box is much taller
+                                   than the (landscape) cloud image. */
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding-right: calc(var(--mobile-width) * 0.98);
+  padding-left: calc(var(--mobile-width) * 0.98);
+}
+#dresscode.text-container2 { gap: 12px; }
+
+/* text-container3: same cloud as the quotes bubble, wider spread — kept
+   for parity with the original template if you want a third layout */
+.text-container3 {
+  width: calc(1.9 * var(--mobile-width));
+  height: 100dvh;
+  left: calc(var(--mobile-width) * -0.45);
+  background-image: url(../images/backgrounds/cloud-quote.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: calc(var(--mobile-width) * 0.49);
+  padding-left: calc(var(--mobile-width) * 0.49);
+}
+
+.button1 {
+  display: inline-block;
+  background: var(--main-color);
+  padding: 6px 12px;
+  border-radius: 999px;  /* see the "BUTTON SHAPE" comment above .elementor-button */
+  color: #fff;
+  margin-top: 8px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+}
+
+.dc-container { display: flex; justify-content: center; margin-top: 12px; }
+.dc-item {
+  width: 50px; height: 50px;
+  margin: 0 -5px;
+  box-shadow: 0 0 20px -5px rgba(0,0,0,0.5);
+  border-radius: 100%;
+}
+
+.marker { display: none; }
+
+.elementor-heading-title { font-family: var(--font-heading); }
+.ig-icon {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 2px;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   UNIFIED PANEL BACKGROUND — Countdown, RSVP, Gallery, and Wedding Gift all
+   share ONE continuous, semi-transparent panel (--panel-color/--panel-opacity
+   in :root above) so the whole stretch from the countdown down to Wedding
+   Gift reads as a single card with no seams between sections — only the
+   footer keeps its own solid dark background (set inline in index.html).
+   HOW TO EDIT:
+   - Transparency: --panel-opacity in :root above — 0 = fully see-through,
+     1 = fully solid.
+   - Color tint: --panel-color (R,G,B) in :root above.
+   - Corner roundness: border-radius on #lastContainer below.
+   ========================================================================== */
+#lastContainer {
+  border-radius: 32px 32px 0 0;
+  overflow: hidden; /* clips every section to the panel's rounded top corners */
+  background: rgba(var(--panel-color), var(--panel-opacity)); /* moved here from .section so the panel is ALWAYS present (no fade), instead of each section fading its own background in separately — that gap was letting the photo behind show through between sections until they scrolled into view */
+}
+
+.section {
+  max-width: var(--mobile-width);
+  margin: 0 auto;
+  padding: 60px 24px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.section.is-visible { opacity: 1; transform: translateY(0); }
+
+/* ==========================================================================
+   OVERLAY PANEL — the countdown+RSVP block. Visually it's just the first
+   ".section" of the shared panel above (same background, see UNIFIED PANEL
+   BACKGROUND above) — this class only adds the layout (flex column,
+   spacing) and the rounded top corners since it's the first "card" the
+   guest sees, replacing the old "curtain rising to cover the screen"
+   effect and the old forced full-screen height for the countdown. RSVP
+   follows immediately after Save the Date instead of leaving an empty gap.
+
+   HOW TO EDIT:
+   - Background: shared with every other section — see --panel-color /
+     --panel-opacity in :root above.
+   - Corner roundness: border-radius below (matches #lastContainer's, since
+     this panel is the first visual "card" the guest sees).
+   - Spacing between the countdown and RSVP blocks: the "gap" below.
+   ========================================================================== */
+.overlay-panel {
+  position: relative;
+  overflow: hidden; /* clips the RSVP decorative PNG bleed to this panel's rounded top corners */
+  border-radius: 32px 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-top: 11vh; /* HOW TO EDIT POSITION: bigger % = countdown sits lower, smaller % = higher */
+}
+
+/* ==========================================================================
+   COUNTDOWN + RSVP REVEAL TIMING
+   ==========================================================================
+   Once the overlay panel itself has faded/risen into view (".is-visible",
+   added by the same IntersectionObserver as every other section — see
+   app.js), the countdown digits + "Save the Date" button fade/rise in ONE
+   AT A TIME via the itemRise animation + staggered delays below. RSVP's
+   title/decoration (reveal-left/reveal-right, further down) and its form
+   fields (further down still) run their own separate one-by-one reveals
+   the same way, triggered whenever THEY individually scroll into view.
+
+   HOW TO EDIT:
+   - START (0.15s) = how soon after the panel appears the first item
+     starts its own rise. STEP (0.1s) = the gap between each item's turn.
+     Bigger STEP = a slower, more deliberate one-by-one reveal.
+   ========================================================================== */
+.overlay-panel.is-visible .countdown-item,
+.overlay-panel.is-visible #saveTheDateBtn {
+  animation: itemRise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.countdown-item:nth-child(1) { animation-delay: 0.15s; } /* START + 0×STEP */
+.countdown-item:nth-child(2) { animation-delay: 0.25s; } /* START + 1×STEP */
+.countdown-item:nth-child(3) { animation-delay: 0.35s; } /* START + 2×STEP */
+.countdown-item:nth-child(4) { animation-delay: 0.45s; } /* START + 3×STEP */
+#saveTheDateBtn { animation-delay: 0.6s; }                /* START + 4.5×STEP — a little extra pause before the button */
+
+/* Reused by countdown items, RSVP form fields, wishes, and gift cards —
+   a small fade-up used for one-at-a-time reveal animations throughout. */
+@keyframes itemRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger the reveal of items within a revealed section (RSVP fields,
+   wedding-gift bank cards, wishes/comments). */
+.section.is-visible .rsvp-form > *,
+.section.is-visible .gift-accounts > *,
+.section.is-visible .comment {
+  animation: itemRise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rsvp-form > *:nth-child(1) { animation-delay: 0.05s; }
+.rsvp-form > *:nth-child(2) { animation-delay: 0.12s; }
+.rsvp-form > *:nth-child(3) { animation-delay: 0.19s; }
+.rsvp-form > *:nth-child(4) { animation-delay: 0.26s; }
+.rsvp-form > *:nth-child(5) { animation-delay: 0.33s; }
+/* .comment rows (wishes) don't have a fixed count like the fields above, so
+   their one-by-one stagger delay is computed per-row in app.js instead
+   (search "wish row stagger" in that file) and applied as an inline style. */
+
+.section h2 {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--main-color);
+  margin: 0 0 16px;
+}
+.section p:not(.script-title) { font-family: var(--font-body); line-height: 1.6; }
+
+/* Reveal-on-scroll: starts hidden/shifted down, animates in once the
+   element enters the viewport (see the IntersectionObserver in app.js).
+   Add this class to any other .section to reuse the same effect. */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Left/right variants of .reveal-on-scroll — same fade, but float in
+   sideways instead of up. Used by the RSVP title (from the left) and its
+   decorative PNG (from the right, see ".rsvp-header" below) so they arrive
+   from opposite sides at nearly the same time. Add "reveal-left" or
+   "reveal-right" alongside "reveal-on-scroll" on any other element to
+   reuse this. */
+.reveal-on-scroll.reveal-left { transform: translateX(-32px); }
+.reveal-on-scroll.reveal-left.in-view { transform: translateX(0); }
+.reveal-on-scroll.reveal-right { transform: translateX(32px); transition-delay: 0.08s; } /* tiny delay = "almost" but not exactly simultaneous with the title */
+.reveal-on-scroll.reveal-right.in-view { transform: translateX(0); }
+
+/* ==========================================================================
+   SCRIPT SECTION TITLES — shared by "RSVP & Wishes", "Our Moments" (gallery),
+   and "Wedding Gift". Edit the font-size clamp() below once and all three
+   stay the same size; color comes from --main-color in :root.
+   ========================================================================== */
+.script-title {
+  font-family: var(--font-script);
+  font-size: clamp(27px, 8.8vw, 45px);
+  line-height: 1.05;
+  color: var(--main-color);
+  margin: 0 0 4px;
+}
+
+/* ==========================================================================
+   RSVP TITLE ROW — "RSVP & Wishes" (.script-title, LEFT-aligned instead of
+   the usual centered heading) + a decorative PNG bleeding off the right
+   edge of the screen.
+   HOW TO EDIT:
+   - Title size: shared with Gallery/Gift — see ".script-title" above.
+   - PNG crop/size: .rsvp-deco's width/height (bigger box = more of the
+     image shows) and object-position (which side of the image is kept
+     when the box crops it).
+   - Swap the PNG itself: change the <img src> in index.html.
+   ========================================================================== */
+.rsvp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 -24px 8px 0;   /* the -24px cancels .section's right padding so the PNG can sit flush against the very edge of the screen */
+  overflow: hidden;         /* clips the PNG so only part of it shows, instead of forcing the row to scroll */
+}
+.rsvp-title {
+  flex: 1 1 auto;
+  text-align: left;
+  margin: 0;
+}
+.rsvp-deco {
+  flex: 0 0 auto;
+  width: clamp(115px, 34vw, 175px);
+  height: clamp(90px, 27vw, 138px);
+  object-fit: cover;
+  object-position: right center;  /* keeps the RIGHT half of the image (ilalang.png's fluffy plumes + stems), crops away the left half — flip to "left center" if your image should crop the other way */
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   BUTTON SHAPE — applies to every button-styled element on the site
+   (Open Invitation, Save the Date, Submit, Google Maps, Live Streaming,
+   Send Gift, Copy). 999px is a value bigger than any button will ever be
+   tall, so it always rounds the two ends into a full pill/oval shape no
+   matter the button's height — this is the "maximally oval" corner. Lower
+   it (e.g. 8px) for a softer-but-still-square look instead.
+   ========================================================================== */
+.elementor-button {
+  display: inline-block;
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+/* ---- Countdown ------------------------------------------------------------
+   HOW TO EDIT SIZE: countdown-digits font-size is the main lever — shrink/
+   grow that one number and the whole block scales with it. gap/margin
+   below control the spacing between the 4 items and around the whole row. */
+.countdown-wrap { display: flex; justify-content: center; gap: 14px; margin: 16px 0; }
+.countdown-item { display: flex; flex-direction: column; align-items: center; }
+.countdown-digits { font-family: var(--font-heading); font-size: 29px; font-weight: 600; color: var(--main-color); }
+.countdown-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ---- Gallery: title + auto-advancing carousel ---------------------------
+   HOW TO EDIT:
+   - Title font/size: shared with RSVP/Gift — see ".script-title" above.
+   - How often it auto-advances: CAROUSEL_INTERVAL_MS near the top of the
+     gallery code in app.js (currently 2000ms / 2 seconds).
+   - Slide aspect ratio: .gallery-track img's aspect-ratio below (3:4 to
+     match the source photos — change to e.g. 1/1 for square, 4/5, etc).
+   - Slide transition speed: .gallery-track's transition duration below. */
+.gallery-carousel {
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 10px;
+  position: relative;
+}
+.gallery-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.gallery-track img {
+  min-width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  cursor: pointer;
+}
+/* Small dot indicators under the carousel showing which slide is active. */
+.gallery-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+.gallery-dots span {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--main-color); opacity: 0.25;
+  transition: opacity 0.3s ease, width 0.3s ease;
+}
+.gallery-dots span.active { opacity: 1; width: 16px; }
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+  display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-height: 90vh; max-width: 100%; border-radius: 4px; }
+.lightbox-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; color: #fff;
+  font-size: 32px; line-height: 1; cursor: pointer;
+}
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.15); border: none; color: #fff;
+  width: 40px; height: 40px; border-radius: 50%;
+  font-size: 16px; cursor: pointer;
+}
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
+
+/* ==========================================================================
+   MUSIC BUTTON — the spinning vinyl icon, top-right.
+   HOW TO EDIT:
+   - SIZE     -> change width/height below (both together, it's a circle).
+   - POSITION -> change top/right (use "bottom" instead of "top" to anchor
+                 to the bottom, "left" instead of "right" to anchor left).
+   - COLOR    -> the icon file (assets/images/logo/vinyl.png) is black on
+                 transparent. The filter below turns it solid white.
+                 Remove the filter line entirely to show it in its
+                 original black, or swap the icon file for a colored one.
+   ========================================================================== */
+#music-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;               /* always visible; playback below is what's
+                                   gated on CONFIG.musicSrc being set */
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  cursor: pointer;
+}
+#music-button img {
+  width: 100%;
+  height: 100%;
+  filter: brightness(0) invert(1);   /* recolors the icon to white */
+  animation: spin-vinyl 4s linear infinite;
+  animation-play-state: paused;
+}
+#music-button.playing img { animation-play-state: running; }
+@keyframes spin-vinyl {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ---- Gift section ------------------------------------------------------- */
+.gift-accounts { display: none; flex-direction: column; gap: 16px; margin-top: 20px; }
+.gift-accounts.open { display: flex; }
+.bank-card {
+  position: relative;
+  background: #fff;
+  color: var(--main-color);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+.bank-card .bank-logo { width: 100px; margin-bottom: 12px; }
+.bank-card .bank-chip { width: 36px; position: absolute; top: 20px; right: 20px; }
+.bank-card h2 { font-size: 16px; margin: 4px 0; font-family: var(--font-heading); font-weight: 600; }
+.copy-btn {
+  position: absolute; top: 16px; right: 60px;
+  background: rgba(255,255,255,0.2); color: #fff; border: none;
+  padding: 6px 14px; border-radius: 999px; font-size: 12px; cursor: pointer;
+}
+.physical-gift { text-align: center; padding: 12px 0; }
+.physical-gift img { width: 60px; margin: 0 auto 8px; }
+
+/* ---- RSVP ----------------------------------------------------------------- */
+.rsvp-form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; text-align: left; }
+.rsvp-form input,
+.rsvp-form textarea,
+.rsvp-form select {
+  font-family: var(--font-body);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  width: 100%;
+}
+.rsvp-success {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--main-color);
+  color: #fff;
+  padding: 14px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.wishes-wrap { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; max-height: 260px; overflow-y: auto; }
+.comment { position: relative; text-align: left; border-bottom: 1px solid #eee; padding-bottom: 8px; padding-right: 28px; }
+.comment .name { display: block; font-weight: 700; font-size: 13px; }
+.comment .text { display: block; font-size: 13px; word-break: break-word; }
+/* Delete button (only rendered on real guestbook entries from Firebase, not
+   the sample wishes in config.js) — asks for INVITATION_CONFIG.adminSecret
+   from firebase-config.js before it actually deletes anything. */
+.wish-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 14px;
+  opacity: 0.4;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px;
+}
+.wish-delete:hover { opacity: 0.9; }
+
+/* ---- Footer ----------------------------------------------------------------- */
+.footer { background: var(--text-color); color: #fff; padding: 40px 24px; }
+.footer .h1 { 
+  font-family: var(--font-script); /* Tambahke baris iki */
+  font-size: clamp(19px, 6vw, 30px); 
+  color: #fff; 
+}
+.footer-container { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 20px; font-size: 9px; }
+.footer-container img { height: 20px; display: none; }
+.footer-whatsapp { margin-top: 16px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+#closingHeading { 
+    font-family: var(--font-script) !important; 
+}
