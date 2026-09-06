@@ -583,9 +583,10 @@
   // CSS variable ora langsung di-repaint pas variable-e ganti (lagi ke-update
   // pas ana trigger liyane kaya scroll). Paksa reflow cilik sakwise ganti tema.
   function forceRepaint(){
-    document.body.style.display = 'none';
-    void document.body.offsetHeight;
-    document.body.style.display = '';
+    document.body.style.opacity = '0.999';
+    requestAnimationFrame(function(){
+      document.body.style.opacity = '';
+    });
   }
 
   themeFab.addEventListener('click', function(){
