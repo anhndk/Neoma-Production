@@ -436,6 +436,13 @@
     }
     .card{ background:var(--mobile-glass-solid); }
   }
+
+  /* Nyerah kanggo mesh gradient khusus iOS Safari/WebKit: background diganti
+     solid (var(--bg) sing wis ana ing body) merga bug repaint fixed-layer
+     ora iso diatasi kanthi mesthi. @supports iki mung dikenali WebKit iOS. */
+  @supports (-webkit-touch-callout: none){
+    #bg-mesh{ display:none !important; }
+  }
 </style>
 </head>
 <body>
@@ -601,6 +608,22 @@
   }
   updateMeshBackground(isNight);
 
+  // Fix pungkasan: Safari/WebKit mung nyegerake layer position:fixed pas ana
+  // EVENT SCROLL nyoto (dudu sekadar owahan CSS/style). Nek kaca ora duwe
+  // ruang scroll, digawekke sithik sedhela (spacer 2px), digeser 1px banjur
+  // bali, terus spacer-e dibusak. Kabeh <1 frame, ora katon mripat.
+  function forceScrollNudge(){
+    var spacer = document.createElement('div');
+    spacer.style.cssText = 'position:absolute;top:100%;left:0;width:1px;height:2px;pointer-events:none;';
+    document.body.appendChild(spacer);
+    var y = window.scrollY;
+    window.scrollTo(0, y + 1);
+    window.scrollTo(0, y);
+    requestAnimationFrame(function(){
+      if(spacer.parentNode) spacer.parentNode.removeChild(spacer);
+    });
+  }
+
   themeFab.addEventListener('click', function(){
     if (htmlElement.getAttribute('data-theme') === 'dark') {
       htmlElement.removeAttribute('data-theme');
@@ -609,6 +632,7 @@
       htmlElement.setAttribute('data-theme', 'dark');
       updateMeshBackground(true);
     }
+    forceScrollNudge();
   });
 
   // Efek shadow nav pas discroll
