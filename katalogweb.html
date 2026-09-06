@@ -338,6 +338,13 @@
       background:var(--mobile-glass-solid);
     }
   }
+
+  /* Nyerah kanggo mesh gradient khusus iOS Safari/WebKit: background diganti
+     solid (var(--bg) sing wis ana ing body) merga bug repaint fixed-layer
+     ora iso diatasi kanthi mesthi. @supports iki mung dikenali WebKit iOS. */
+  @supports (-webkit-touch-callout: none){
+    #bg-mesh{ display:none !important; }
+  }
 </style>
 </head>
 <body>
