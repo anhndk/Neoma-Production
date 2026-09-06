@@ -1114,6 +1114,15 @@
       background:var(--mobile-overlay-solid);
     }
   }
+
+  /* Nyerah kanggo mesh gradient khusus iOS Safari/WebKit (kabeh browser ing iOS
+     nganggo mesin sing padha): background diganti solid (var(--bg) sing wis
+     ana ing body) merga bug repaint fixed-layer ing WebKit ora iso diatasi
+     kantho mesthi. @supports iki mung dikenali WebKit iOS, ora kesenggol
+     desktop utawa Android. */
+  @supports (-webkit-touch-callout: none){
+    body::before{ display:none !important; }
+  }
 </style>
 <noscript><style>#splashScreen{display:none !important;}</style></noscript>
 </head>
