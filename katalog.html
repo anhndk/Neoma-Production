@@ -76,6 +76,9 @@
     opacity: 1;
     transition: background-image 0.3s ease;
   }
+  body.theme-repaint::before{
+    display:none;
+  }
 
   img{max-width:100%; display:block;}
   a{color:inherit; text-decoration:none;}
@@ -579,13 +582,18 @@
   } else {
     htmlElement.removeAttribute('data-theme');
   }
-  // Fix bug Safari/WebKit: elemen position:fixed sing background-e gumantung
-  // CSS variable ora langsung di-repaint pas variable-e ganti (lagi ke-update
-  // pas ana trigger liyane kaya scroll). Paksa reflow cilik sakwise ganti tema.
+  // Fix bug Safari/WebKit: pseudo-elemen body::before (position:fixed) sing
+  // background-e gumantung CSS variable ora langsung di-repaint pas variable-e
+  // ganti. Diatasi kanthi "mateni" pseudo-elemen kuwi sedhela (display:none)
+  // banjur dibalekke, meksa WebKit nggawe/ngitung ulang total - dudu mung
+  // toggle transform/opacity sing wingi ora mempan. Ora nyenggol body/layout/
+  // scroll blas merga pseudo-elemen fixed ora melu ing document flow.
   function forceRepaint(){
-    document.body.style.opacity = '0.999';
+    document.body.classList.add('theme-repaint');
     requestAnimationFrame(function(){
-      document.body.style.opacity = '';
+      requestAnimationFrame(function(){
+        document.body.classList.remove('theme-repaint');
+      });
     });
   }
 
