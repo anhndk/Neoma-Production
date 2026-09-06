@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Ucapan tamu, dikelompokke miturut slug undangan (invitations/{slug}/wishes/{wishId})
+    match /invitations/{invitationId}/wishes/{wishId} {
+
+      // Sapa wae iso MOCO kabeh ucapan (dibutuhake supaya kabeh tamu ndelok)
+      allow read: if true;
+
+      // Sapa wae iso NULIS ucapan anyar, tapi dibatesi:
+      // - kudu ana field name & message
+      // - name lan message kudu tulisan (string), ora kosong, ora kekeselen
+      allow create: if request.resource.data.keys().hasAll(['name', 'message', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() < 80
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() < 500;
+
+      // MBUSAK dibolehke kanggo sapa wae ing level rules iki — proteksi
+      // nyatane ana ing kode situs (kudu ngetik kode rahasia sadurunge
+      // tombol hapus ngirim printah delete). Iki soft-protection, cukup
+      // kanggo nyegah tamu biasa, DUDU proteksi level "beneran aman"
+      // (wong sing ngerti banget teknis iso mbrontak liwat DevTools).
+      allow delete: if true;
+
+      // Ora bisa diedit sawise dikirim (ben ora ana sing ngubah ucapan
+      // wong liya dadi tulisan liya)
+      allow update: if false;
+    }
+
+    // Kabeh liyane ditutup rapet, jaga-jaga.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

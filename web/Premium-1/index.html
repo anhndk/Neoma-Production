@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Undangan Pernikahan — Dewi &amp; Bagas</title>
+<meta name="description" content="Undangan pernikahan Ratri Dewi Utami &amp; Bagas Prastantyo">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- =========================================================
+     LOADER
+========================================================== -->
+<div id="loader" aria-hidden="true">
+  <div class="loader__mark">D<span>&amp;</span>B</div>
+</div>
+
+<!-- =========================================================
+     COVER — pintu gerbang jawa
+========================================================== -->
+<section id="cover" aria-label="Sampul undangan">
+  <div class="cover__doors">
+    <div class="cover__door cover__door--kiri">
+      <img src="assets/images/pintu-kiri.webp" alt="" draggable="false">
+    </div>
+    <div class="cover__door cover__door--kanan">
+      <img src="assets/images/pintu-kanan.webp" alt="" draggable="false">
+    </div>
+  </div>
+
+  <div class="cover__content">
+    <div class="cover__top-group">
+      <div class="cover__block cover__title-block" style="--rd:0">
+        <p class="cover__eyebrow">Undangan</p>
+        <div class="cover__date">
+          <span>10.10</span>
+          <span class="cover__date-dot"></span>
+          <span>2026</span>
+        </div>
+      </div>
+
+      <div class="cover__block cover__initials" style="--rd:1">
+        <span>Dewi</span><span class="cover__amp">&amp;</span><span>Bagas</span>
+      </div>
+    </div>
+
+    <div class="cover__bottom-gradient" aria-hidden="true"></div>
+
+    <div class="cover__bottom-group">
+      <div class="cover__block cover__guest" style="--rd:2">
+        <p class="cover__guest-label">Kepada Yth,</p>
+        <p class="cover__guest-name" id="guestName">Bapak/Ibu/Saudara/i</p>
+        <p class="cover__guest-place">di tempat</p>
+      </div>
+
+      <button type="button" id="openInvitation" class="cover__block cover__open-btn" style="--rd:3">
+        <span>Buka Undangan</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SCROLL-DRIVEN ZOOM STAGE
+========================================================== -->
+<div id="scrollTrack">
+  <div id="stage">
+
+    <!-- ============== SCENE 1 — pembuka rumah jawa ============== -->
+    <div class="scene" id="scene1">
+      <img class="scene__bg" src="assets/images/scene1-bg.webp" alt="" draggable="false">
+
+      <div class="scene1__ayat" id="ayatBlock">
+        <p class="scene1__ayat-text">
+          <span class="bait reveal-seq" style="--rd:0">&ldquo;Dan di antara tanda-tanda (kebesaran)-Nya</span>
+          <span class="bait reveal-seq" style="--rd:1">ialah Dia menciptakan pasangan-pasangan untukmu</span>
+          <span class="bait reveal-seq" style="--rd:2">dari jenismu sendiri, agar kamu cenderung</span>
+          <span class="bait reveal-seq" style="--rd:3">dan merasa tenteram kepadanya,</span>
+          <span class="bait reveal-seq" style="--rd:4">dan Dia menjadikan di antaramu</span>
+          <span class="bait reveal-seq" style="--rd:5">rasa kasih dan sayang.&rdquo;</span>
+        </p>
+        <p class="scene1__ayat-source reveal-seq" style="--rd:6">QS. Ar-Rum: 21</p>
+        </p>
+        <p class="scene1__informasi reveal-seq" style="--rd:7">ketuk radio untuk mematikan musik</p>
+      </div>
+
+      <div class="scene1__notes" id="notesLayer" aria-hidden="true"></div>
+
+      <div class="scroll-hint" id="scrollHint1" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+    </div>
+
+    <!-- ============== SCENE 2 — nama mempelai ============== -->
+    <div class="scene" id="scene2">
+      <img class="scene__bg" src="assets/images/scene2-bg.webp" alt="" draggable="false">
+
+      <div class="scene2__names">
+        <p class="scene2__kicker reveal-seq" style="--rd:0">Assalamu&quot;alaikam Warrahmatullahi Wabarakatuh. Dengan menyebut nama Allah yang maha pengasih dan maha penyayang, kami bermaksud menyelenggarakan syukuran pernikahan kami:</p>
+
+        <div class="scene2__person reveal-seq" style="--rd:1">
+          <h2 class="scene2__name">Ratri Dewi Utami</h2>
+          <p class="scene2__parents">Putri kedua dari Bapak Slamet Riyadi &amp; Ibu Wahyuningsih</p>
+          <p class="scene2__address">Jl. Kenanga No. 12, Turi, Sleman, D.I. Yogyakarta</p>
+        </div>
+
+        <span class="scene2__amp reveal-seq" style="--rd:2">&amp;</span>
+
+        <div class="scene2__person reveal-seq" style="--rd:3">
+          <h2 class="scene2__name">Bagas Prastantyo</h2>
+          <p class="scene2__parents">Putra pertama dari Bapak Suharto &amp; Ibu Endang Lestari</p>
+          <p class="scene2__address">Jl. Merpati No. 7, Pakem, Sleman, D.I. Yogyakarta</p>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHint2" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+    </div>
+
+    <!-- ============== BATIK ZONE — scene 3, 4, 5 & penutup ============== -->
+    <div class="scene" id="batikZone">
+      <img class="scene__bg" src="assets/images/scene3-bg.webp" alt="" draggable="false">
+
+      <div class="mega-layer mega-layer--top" id="megaTop" aria-hidden="true"></div>
+      <div class="mega-layer mega-layer--bottom" id="megaBottom" aria-hidden="true"></div>
+
+      <!-- ---- PANEL 3 : acara + countdown + map ----
+           EDIT DI SINI: tanggal, jam, lokasi & link map -->
+      <div class="batik-panel" id="panel3">
+        <div class="batik-panel__inner" id="panel3Inner">
+          <div class="reveal-seq" style="--rd:0">
+            <h3 class="batik-h">Akad Nikah</h3>
+            <p class="event-date">Sabtu, 10 Oktober 2026</p>
+            <p class="event-time">07.00 WIB</p>
+          </div>
+
+          <div class="reveal-seq" style="--rd:1">
+            <h3 class="batik-h batik-h--sp">Resepsi</h3>
+            <p class="event-date">Sabtu, 10 Oktober 2026</p>
+            <p class="event-time">09.30 &ndash; 12.00 WIB</p>
+          </div>
+
+          <div class="countdown reveal-seq" id="countdown" style="--rd:2" data-target="2026-10-10T07:00:00+07:00">
+            <div class="countdown__item"><span id="cdDays">00</span><small>Hari</small></div>
+            <div class="countdown__item"><span id="cdHours">00</span><small>Jam</small></div>
+            <div class="countdown__item"><span id="cdMinutes">00</span><small>Menit</small></div>
+            <div class="countdown__item"><span id="cdSeconds">00</span><small>Detik</small></div>
+          </div>
+
+          <div class="reveal-seq" style="--rd:3">
+            <hr class="batik-divider">
+            <p class="venue-label">Bertempat di</p>
+            <p class="venue-name">Gedung Serbaguna Turi</p>
+            <a class="btn-outline" id="mapsLink"
+               href="https://www.google.com/maps/search/?api=1&query=Gedung+Serbaguna+Turi"
+               data-maps-url="https://www.google.com/maps/search/?api=1&query=Gedung+Serbaguna+Turi"
+               target="_blank" rel="noopener">Buka Map</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHint3" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+
+      <!-- ---- PANEL 4 : carousel foto ---- -->
+      <div class="batik-panel" id="panel4">
+        <div class="batik-panel__inner batik-panel__inner--carousel" id="panel4Inner">
+          <div class="carousel reveal-seq" style="--rd:0">
+            <button type="button" class="carousel__arrow carousel__arrow--prev" id="carPrev" aria-label="Foto sebelumnya">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="carousel__frame">
+              <img id="carouselImg" src="assets/images/carousel-1.webp" alt="Momen Dewi & Bagas" draggable="false">
+            </div>
+            <button type="button" class="carousel__arrow carousel__arrow--next" id="carNext" aria-label="Foto berikutnya">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="carousel__dots reveal-seq" id="carDots" style="--rd:1"></div>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHint4" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+
+      <!-- ---- PANEL 5 : ucapan (Firestore) ---- -->
+      <div class="batik-panel" id="panel5">
+        <div class="batik-panel__inner" id="panel5Inner">
+          <h3 class="batik-h reveal-seq" style="--rd:0">Kirim Doa<br>&amp; Ucapan</h3>
+
+          <form id="wishForm" class="wish-form reveal-seq" style="--rd:1">
+            <input type="text" id="wishName" placeholder="Nama Kamu" maxlength="60" required autocomplete="off">
+            <textarea id="wishMessage" placeholder="Tulis doa & ucapan kepada kedua mempelai" maxlength="400" required rows="3"></textarea>
+            <button type="submit" class="btn-outline">Kirim Ucapan</button>
+          </form>
+
+          <div class="wish-list reveal-seq" id="wishList" style="--rd:2">
+            <p class="wish-empty" id="wishEmpty">Jadilah yang pertama mengirim doa &amp; ucapan 🤍</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHint5" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+
+      <!-- ---- PANEL PENUTUP ---- -->
+      <div class="batik-panel" id="panelClose">
+        <div class="batik-panel__inner batik-panel__inner--close reveal-seq" id="panelCloseInner" style="--rd:0">
+          <p class="close-title">Terima Kasih</p>
+          <p class="close-note">Merupakan kehormatan &amp; kebahagiaan bagi<br>kami apabila Bapak/Ibu/Saudara/i<br>berkenan hadir &amp; memberikan doa restu.<br>---<br>Wassalamu&rsquo;alaikum warahmatullahi wabarakatuh</p>
+          <button type="button" id="closeBox" class="close-box" aria-label="Tutup undangan">
+            <span>Tutup Undangan</span>
+          </button>
+          <footer>&copy; <span style="color: var(--gold); opacity: 1;">Neoma Production</span> 2026</footer>
+        </div>
+      </div>
+
+    </div><!-- /batikZone -->
+
+    <button type="button" class="scene1__music-btn" id="musicBtn" aria-label="Putar musik">
+      <svg class="ic ic-play" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor"/></svg>
+      <svg class="ic ic-pause" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+    </button>
+
+  </div><!-- /stage -->
+</div><!-- /scrollTrack -->
+
+<audio id="bgm" loop preload="none">
+  <source src="assets/audio/music.mp3" type="audio/mpeg">
+</audio>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<script src="assets/js/script.js"></script>
+</body>
+</html>
