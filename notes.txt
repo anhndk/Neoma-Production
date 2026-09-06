@@ -1,0 +1,1 @@
+?a=Nama1&b=Nama2

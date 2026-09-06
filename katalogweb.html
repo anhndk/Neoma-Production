@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katalog Undangan Web — Neoma Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FDFCFA;
+    --paper:#EFEDE9;
+    --ink:#1B1815;
+    --ink-soft:#5B564F;
+    --muted:#B9B3A9;
+    --muted-soft:#D8D3C9;
+    --walnut:#6E4527;
+    --line: rgba(27,24,21,0.12);
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.75);
+    --nav-h: 65px;
+    --mesh-1: rgba(110, 69, 39, 0.22);
+    --mesh-2: rgba(185, 179, 169, 0.45);
+    --mesh-3: rgba(216, 211, 201, 0.6);
+    --walnut-shadow: rgba(110, 69, 39, 0.32);
+    --wa-green:#7e7841;
+    --radius:18px;
+  }
+
+  [data-theme="dark"] {
+    --bg: #121110;
+    --paper: #1E1B18;
+    --ink: #F3ECE0;
+    --ink-soft: #B9B3A9;
+    --muted: #5B564F;
+    --muted-soft: #38332D;
+    --walnut: #D4A373;
+    --line: rgba(243,236,224,0.12);
+    --glass-bg: rgba(30,27,24,0.65);
+    --glass-border: rgba(255,255,255,0.1);
+    --mesh-1: rgba(212, 163, 115, 0.12);
+    --mesh-2: rgba(91, 86, 79, 0.25);
+    --mesh-3: rgba(40, 36, 32, 0.4);
+    --walnut-shadow: rgba(212, 163, 115, 0.32);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  html, body{ overflow-x:hidden; width:100%; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+      radial-gradient(circle at 25% 20%, var(--mesh-1) 0%, transparent 45%),
+      radial-gradient(circle at 75% 80%, var(--mesh-2) 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, var(--mesh-3) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 1;
+    transition: background-image 0.3s ease;
+  }
+
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+
+  /* ---------- THEME TOGGLE FAB ---------- */
+  .theme-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .theme-fab:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .theme-fab svg { width: 20px; height: 20px; fill: currentColor; transition: transform 0.4s ease; }
+  [data-theme="dark"] .theme-fab svg { transform: rotate(180deg); }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px clamp(20px,5vw,56px);
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    height:var(--nav-h);
+    transition:box-shadow .3s ease, padding .3s ease;
+  }
+  .nav.is-scrolled{ box-shadow:0 8px 24px rgba(0,0,0,0.18); }
+  .nav__logo{height:32px; width:auto;}
+  .nav__links{display:flex; gap:clamp(18px,3vw,40px); align-items:center;}
+  .nav__links a{
+    color:#EDE4D6 !important; font-size:14.5px; font-weight:500;
+    opacity:0.88; transition:opacity .2s ease;
+    position:relative;
+  }
+  .nav__links a:hover{opacity:1;}
+  .nav__links a::after{
+    content:''; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+    background:currentColor; transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  .nav__links a:hover::after{transform:scaleX(1);}
+  .nav__links a.is-current{ opacity:1; }
+  .nav__links a.is-current::after{ transform:scaleX(1); }
+
+  .nav__toggle{
+    display:none; background:none; border:none; cursor:pointer;
+    width:34px; height:34px; padding:0; position:relative;
+  }
+  .nav__toggle span{
+    position:absolute; left:6px; right:6px; height:2px; background:#EDE4D6;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav__toggle span:nth-child(1){top:11px;}
+  .nav__toggle span:nth-child(2){top:19px;}
+  .nav__toggle span:nth-child(3){top:27px;}
+  .nav.is-open .nav__toggle span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  .nav.is-open .nav__toggle span:nth-child(2){opacity:0;}
+  .nav.is-open .nav__toggle span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+  @media (max-width:820px){
+    .nav__links{
+      position:fixed;
+      top:var(--nav-h); left:0; right:0; bottom:0;
+      z-index:150;
+      background:rgba(0,0,0,0.25);
+      backdrop-filter:blur(30px) saturate(160%);
+      -webkit-backdrop-filter:blur(30px) saturate(160%);
+      color:var(--ink);
+      flex-direction:column; align-items:center; justify-content:center;
+      gap:clamp(20px,6vw,32px);
+      max-height:none; overflow:visible;
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:opacity .4s ease, visibility .4s ease, background .3s ease;
+    }
+    [data-theme="dark"] .nav__links{ background:rgba(0,0,0,0.45); }
+    .nav.is-open .nav__links{ opacity:1; visibility:visible; pointer-events:auto; }
+    .nav__links a{
+      width:auto; padding:0;
+      color:var(--ink) !important;
+      font-size:clamp(24px,7vw,32px);
+      font-weight:600;
+      opacity:0.9;
+      transform:translateY(10px);
+      transition:opacity .3s ease, color .25s ease, transform .35s ease;
+    }
+    .nav.is-open .nav__links a{ transform:translateY(0); }
+    .nav__links a:active{ opacity:1; }
+    .nav__toggle{display:block;}
+  }
+
+  /* ---------- HERO / TITLE ---------- */
+  .hero-title {
+    text-align: center;
+    padding: clamp(36px,6vw,56px) 4vw clamp(20px,4vw,32px);
+    position:relative;
+    z-index:2;
+  }
+  .hero-title h1 {
+    font-family:'Manrope', sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    font-size: clamp(1.9rem, 3.8vw, 2.8rem);
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .hero-title p {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  /* ---------- KATALOG CONTAINER & SECTIONS ---------- */
+  .katalog-container {
+    flex: 1;
+    padding: 0 4vw 40px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    position:relative;
+    z-index:2;
+  }
+
+  .katalog-section { margin-bottom: 40px; }
+  .katalog-section.is-empty { display:none; }
+
+  .section-header {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .section-title { font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+  .section-tag { font-size: 0.8rem; color: var(--walnut); font-weight: 600; }
+
+  .katalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    background: var(--glass-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.1) inset,
+      0 16px 36px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  .card[hidden]{ display:none; }
+
+  .card:hover {
+    border-color: var(--walnut);
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.12) inset,
+      0 20px 44px rgba(0,0,0,0.16);
+  }
+
+  .card-thumb { width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background: rgba(0,0,0,0.15); }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .card-body { padding: 14px; display: flex; flex-direction: column; flex: 1; }
+  .card-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+  .badge-harga { display: inline-block; color: var(--walnut); font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; }
+  .card-desc { color: var(--ink-soft); font-size: 0.78rem; line-height: 1.45; margin-bottom: 12px; }
+
+  .card-actions { display: flex; flex-direction: column; gap: 8px; padding: 0 14px 14px; margin-top: auto; }
+
+  .btn-preview, .btn-order {
+    padding: 9px 10px;
+    border-radius: 999px;
+    font-family:'Manrope', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow .25s ease;
+  }
+
+  .btn-preview {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-preview:hover {
+    background: var(--walnut);
+    border-color: var(--walnut);
+    color: var(--bg);
+    box-shadow: 0 10px 22px var(--walnut-shadow);
+  }
+
+  .btn-order {
+    background: var(--wa-green);
+    color: #fff;
+    border: 1px solid var(--wa-green);
+  }
+  .btn-order:hover{ opacity:0.9; }
+  .btn-order svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{
+    position:relative;
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    padding:44px clamp(20px,6vw,64px) 28px;
+  }
+  .footer__bottom{ font-size:12.5px; opacity:0.65; color:#EDE4D6 !important; text-align:center;}
+
+  @media (max-width: 600px) {
+    .hero-title { padding: 24px 4vw 16px; }
+    .katalog-container { padding: 0 3vw 24px; }
+    .katalog-section { margin-bottom: 28px; }
+    .section-title { font-size: 1.05rem; }
+
+    .katalog-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+
+    .card-body { padding: 10px 8px; }
+    .card-title { font-size: 0.85rem; }
+    .badge-harga { font-size: 0.78rem; }
+    .card-desc { font-size: 0.7rem; line-height: 1.3; margin-bottom: 8px; }
+
+    .card-actions { padding: 0 8px 10px; gap: 6px; }
+    .btn-preview, .btn-order { padding: 7px 4px; font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-fab" id="themeFab" aria-label="Ganti Tema">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.39 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.81.89-3.42 2.26-4.39-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+</button>
+
+<nav class="nav" id="nav">
+  <a href="index.html" aria-label="Neoma Production beranda">
+    <img class="nav__logo" src="assets/logo-neoma.svg" alt="Neoma Production">
+  </a>
+  <button class="nav__toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__links" id="navLinks">
+    <a href="katalogweb.html" class="is-current">Katalog Web</a>
+    <a href="katalog.html">Katalog Cetak</a>
+    <a href="index.html#portofolio">Portfolio</a>
+    <a href="index.html#kontak">Kontak</a>
+  </div>
+</nav>
+
+<section class="hero-title">
+  <h1>Katalog Undangan Web</h1>
+  <p>Pilihan desain undangan digital interaktif &amp; elegan</p>
+</section>
+
+<main class="katalog-container">
+
+  <!-- =========================================================
+       SECTION 1: UNDANGAN PROMO
+       ⚠️ CATATAN: isi data-preview karo link asli undangane (format: https://neoma.my.id/web/NamaSlug)
+       Kertu bakal DHEWE-K dhelikake nek data-preview during diisi (isih kosong "").
+  ========================================================== -->
+  <section class="katalog-section" id="sectionPromo">
+    <div class="section-header">
+      <h2 class="section-title">Undangan Promo</h2>
+      <span class="section-tag">Hemat &amp; Praktis</span>
+    </div>
+
+    <div class="katalog-grid">
+      <div class="card" data-preview="https://neoma.my.id/web/Promo-1">
+        <div class="card-thumb"><img src="web/promo-1.webp" alt="Promo 1"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 1</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">Tema Biru Navy, peta lokasi, countdown, galeri foto.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%201" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/promo-2.webp" alt="Promo 2"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 2</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">konten belum tersedia</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%202" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/promo-3.webp" alt="Promo 3"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 3</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%203" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/promo-4.webp" alt="Promo 4"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 4</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%204" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/promo-5.webp" alt="Promo 5"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 5</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%205" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/promo-6.webp" alt="Promo 6"></div>
+        <div class="card-body">
+          <h3 class="card-title">Promo 6</h3>
+          <span class="badge-harga">Rp 49.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Promo%206" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SECTION 2: UNDANGAN STANDAR
+  ========================================================== -->
+  <section class="katalog-section" id="sectionStandar">
+    <div class="section-header">
+      <h2 class="section-title">Undangan Standar</h2>
+      <span class="section-tag">Pilihan Populer</span>
+    </div>
+
+    <div class="katalog-grid">
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-1.webp" alt="Standar 1"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 1</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%201" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-2.webp" alt="Standar 2"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 2</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%202" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-3.webp" alt="Standar 3"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 3</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%203" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-4.webp" alt="Standar 4"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 4</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%204" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-5.webp" alt="Standar 5"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 5</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%205" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="web/standar-6.webp" alt="Standar 6"></div>
+        <div class="card-body">
+          <h3 class="card-title">Standar 6</h3>
+          <span class="badge-harga">Rp 99.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Standar%206" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SECTION 3: UNDANGAN PREMIUM
+  ========================================================== -->
+  <section class="katalog-section" id="sectionPremium">
+    <div class="section-header">
+      <h2 class="section-title">Undangan Premium</h2>
+      <span class="section-tag">Eksklusif &amp; Interaktif</span>
+    </div>
+
+    <div class="katalog-grid">
+      <div class="card" data-preview="https://neoma.my.id/web/Premium-1">
+        <div class="card-thumb"><img src="web/premium-1.webp" alt="Premium 1"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 1</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">Konsep rumah Jawa interaktif dengan efek zoom-scroll.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%201" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="https://neoma.my.id/web/Premium-2">
+        <div class="card-thumb"><img src="web/premium-2.webp" alt="Premium 2"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 2</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%202" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="images/web/premium-3.webp" alt="Premium 3"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 3</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%203" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="images/web/premium-4.webp" alt="Premium 4"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 4</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%204" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="images/web/premium-5.webp" alt="Premium 5"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 5</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%205" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+
+      <div class="card" data-preview="">
+        <div class="card-thumb"><img src="images/web/premium-6.webp" alt="Premium 6"></div>
+        <div class="card-body">
+          <h3 class="card-title">Premium 6</h3>
+          <span class="badge-harga">Rp 149.000</span>
+          <p class="card-desc">konten belum tersedia.</p>
+        </div>
+        <div class="card-actions">
+          <a class="btn-preview" target="_blank" rel="noopener">Preview 🔗</a>
+          <a href="https://wa.me/6285747960727?text=Halo%20Neoma%20Production,%20saya%20mau%20order%20Premium%206" target="_blank" class="btn-order"><svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/></svg> Order WA</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__bottom">© 2026 Neoma Production.</div>
+</footer>
+
+<script>
+(function(){
+  var htmlElement = document.documentElement;
+  var themeFab = document.getElementById('themeFab');
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('navToggle');
+
+  // Tema otomatis nuruti jam device (18:00 - 06:00 = Dark mode), pas diklik iso diganti manual
+  var currentHour = new Date().getHours();
+  var isNight = (currentHour >= 18 || currentHour < 6);
+  if (isNight) {
+    htmlElement.setAttribute('data-theme', 'dark');
+  } else {
+    htmlElement.removeAttribute('data-theme');
+  }
+  themeFab.addEventListener('click', function(){
+    if (htmlElement.getAttribute('data-theme') === 'dark') {
+      htmlElement.removeAttribute('data-theme');
+    } else {
+      htmlElement.setAttribute('data-theme', 'dark');
+    }
+  });
+
+  // Efek shadow nav pas discroll
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('is-scrolled', window.scrollY > 12);
+  }, {passive:true});
+
+  // Menu mobile (hamburger)
+  function setNavOpen(open){
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(window.matchMedia('(max-width:820px)').matches){
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+  }
+  toggle.addEventListener('click', function(){
+    setNavOpen(!nav.classList.contains('is-open'));
+  });
+  document.getElementById('navLinks').querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ setNavOpen(false); });
+  });
+
+  /* ============ FILTER KARTU: mung tampilake nek link preview wis diisi ============
+     Kertu bakal didhelikake dhewe nek atribut data-preview isih kosong.
+     Nek kabeh kertu ing siji section during ono link e, section kasebut melu didhelikake. */
+  document.querySelectorAll('.card').forEach(function(card){
+    var link = (card.getAttribute('data-preview') || '').trim();
+    if(link){
+      var previewBtn = card.querySelector('.btn-preview');
+      if(previewBtn) previewBtn.setAttribute('href', link);
+    } else {
+      card.hidden = true;
+    }
+  });
+
+  document.querySelectorAll('.katalog-section').forEach(function(section){
+    var visibleCards = section.querySelectorAll('.card:not([hidden])');
+    if(visibleCards.length === 0){
+      section.classList.add('is-empty');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

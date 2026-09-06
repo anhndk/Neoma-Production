@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neoma Production — Undangan Pernikahan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FDFCFA;
+    --paper:#EFEDE9;
+    --ink:#1B1815;
+    --ink-soft:#5B564F;
+    --muted:#B9B3A9;
+    --muted-soft:#D8D3C9;
+    --walnut:#6E4527;
+    --line: rgba(27,24,21,0.12);
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.75);
+    --nav-h: 65px;
+    --mesh-1: rgba(110, 69, 39, 0.22);
+    --mesh-2: rgba(185, 179, 169, 0.45);
+    --mesh-3: rgba(216, 211, 201, 0.6);
+    --walnut-shadow: rgba(110, 69, 39, 0.32);
+    /* Khusus section Kontak (dijenengi bedo ben ora numpuk karo --glass-bg/--glass-border sing wis dipakai .glass-card) */
+    --contact-glass-bg: rgba(255,255,255,0.65);
+    --contact-glass-border: rgba(255,255,255,0.85);
+    --frame-gutter: 20px;
+    --frame-radius: 28px;
+    --glass-max-w: 360px;
+  }
+
+  [data-theme="dark"] {
+    --bg: #121110;
+    --paper: #1E1B18;
+    --ink: #F3ECE0;
+    --ink-soft: #B9B3A9;
+    --muted: #5B564F;
+    --muted-soft: #38332D;
+    --walnut: #D4A373;
+    --line: rgba(243,236,224,0.12);
+    --glass-bg: rgba(30,27,24,0.65);
+    --glass-border: rgba(255,255,255,0.1);
+    --mesh-1: rgba(212, 163, 115, 0.12);
+    --mesh-2: rgba(91, 86, 79, 0.25);
+    --mesh-3: rgba(40, 36, 32, 0.4);
+    --walnut-shadow: rgba(212, 163, 115, 0.32);
+    --contact-glass-bg: rgba(30,27,24,0.75);
+    --contact-glass-border: rgba(255,255,255,0.12);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    background-image: 
+      radial-gradient(circle at 25% 20%, var(--mesh-1) 0%, transparent 45%),
+      radial-gradient(circle at 75% 80%, var(--mesh-2) 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, var(--mesh-3) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 1;
+    transition: background-image 0.3s ease;
+  }
+
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+
+  body.splash-active{ overflow:hidden; }
+
+  #splashScreen{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:1;
+    visibility:visible;
+    transition:opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #splashScreen img{
+    width:48px;
+    height:auto;
+    animation:splashPulse 1.6s ease-in-out infinite;
+  }
+  #splashScreen.is-hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  @keyframes splashPulse{
+    0%, 100%{ opacity:0.5; transform:scale(0.92); }
+    50%{ opacity:1; transform:scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #splashScreen img{ animation:none; }
+  }
+
+  h1, h2{
+    font-family:'Manrope', sans-serif;
+    font-weight:600;
+    line-height:1.08;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+
+  .theme-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .theme-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  }
+  .theme-fab svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    transition: transform 0.4s ease;
+  }
+  [data-theme="dark"] .theme-fab svg {
+    transform: rotate(180deg);
+  }
+
+  .nav{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px clamp(20px,5vw,56px);
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    height:var(--nav-h);
+    transition:box-shadow .3s ease, padding .3s ease;
+  }
+  .nav.is-scrolled{ box-shadow:0 8px 24px rgba(0,0,0,0.18); }
+  .nav__logo{height:32px;width:auto;}
+  .nav__links{display:flex; gap:clamp(18px,3vw,40px); align-items:center;}
+  .nav__links a{
+    color:#EDE4D6 !important; font-size:14.5px; font-weight:500;
+    opacity:0.88; transition:opacity .2s ease;
+    position:relative;
+  }
+  .nav__links a:hover{opacity:1;}
+  .nav__links a::after{
+    content:''; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+    background:currentColor; transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  .nav__links a:hover::after{transform:scaleX(1);}
+
+  .nav__toggle{
+    display:none; background:none; border:none; cursor:pointer;
+    width:34px; height:34px; padding:0; position:relative;
+  }
+  .nav__toggle span{
+    position:absolute; left:6px; right:6px; height:2px; background:#EDE4D6;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav__toggle span:nth-child(1){top:11px;}
+  .nav__toggle span:nth-child(2){top:19px;}
+  .nav__toggle span:nth-child(3){top:27px;}
+  .nav.is-open .nav__toggle span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  .nav.is-open .nav__toggle span:nth-child(2){opacity:0;}
+  .nav.is-open .nav__toggle span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+  .catalog__space{
+    position:relative;
+    height:1200vh;
+  }
+  .catalog__pin{
+    position:sticky;
+    top:var(--nav-h);
+    height:calc(100vh - var(--nav-h));
+  }
+  .catalog__window{
+    position:relative;
+    height:100%;
+    overflow:hidden;
+    background:transparent;
+  }
+  .catalog__track{
+    position:absolute;
+    top:0; left:0;
+    width:100%;
+    height:200%;
+    will-change:transform;
+  }
+  .catalog__panel{
+    height:50%;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    padding:clamp(48px,7vh,84px) clamp(20px,6vw,64px) 0;
+  }
+  .catalog__panel--cetak{
+    padding-top:0;
+    padding-bottom:clamp(48px,7vh,84px);
+  }
+
+  .hero__inner{
+    max-width:1040px; margin:0 auto;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+  .catalog__panel--cetak .hero__inner{
+    justify-content:flex-start;
+  }
+
+  .hero__headline{
+    font-size:clamp(2rem, 3.8vw, 3.2rem);
+    max-width:22ch;
+    text-align:center;
+    margin:0 auto;
+    position:relative;
+    z-index:4;
+  }
+  .word{
+    display:inline-block;
+    color:var(--ink);
+    opacity:0;
+    filter:blur(14px);
+    transition:opacity .12s linear, filter .12s linear;
+    will-change:opacity, filter;
+  }
+
+  .cta-row{
+    display:flex; justify-content:center;
+    margin-top:clamp(20px,3vw,28px);
+    position:relative;
+    z-index:4;
+  }
+
+  .cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--walnut);
+    color:var(--bg);
+    font-family:'Manrope',sans-serif;
+    font-weight:600; font-size:15px;
+    padding:14px 28px;
+    border-radius:999px;
+    cursor:pointer;
+    opacity:0;
+    transition:opacity .3s ease, transform .3s ease, background .25s ease, color .25s ease, box-shadow .25s ease, filter .25s ease;
+    box-shadow:0 1px 0 rgba(255,255,255,0.14) inset, 0 10px 24px var(--walnut-shadow);
+    will-change:opacity, transform;
+  }
+  .cta:hover{
+    filter:brightness(1.08);
+    box-shadow:0 1px 0 rgba(255,255,255,0.14) inset, 0 14px 32px var(--walnut-shadow);
+  }
+
+  .stage{
+    position:relative;
+    max-width:min(780px, calc((100vh - var(--nav-h)) * 0.8));
+    width:100%;
+    margin:clamp(36px,5.5vw,52px) auto 0;
+    z-index:3;
+  }
+  .catalog__panel--web .stage{ margin-top:auto; }
+  .catalog__panel--cetak .stage{ margin:0 auto clamp(36px,5.5vw,52px); }
+
+  .stage__crop{
+    width:100%;
+    aspect-ratio:908 / 536;
+    border-radius:28px;
+  }
+
+  .catalog__photo{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:min(800px, calc(100% - 2 * clamp(20px,6vw,64px)), calc((100vh - var(--nav-h)) * 1.1));
+    aspect-ratio:908 / 1072;
+    transform:translate(-50%, -50%);
+    z-index:2;
+    pointer-events:none;
+    border-radius:28px;
+    overflow:hidden;
+  }
+  .catalog__photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    border-radius:28px;
+  }
+
+  .glass-card{
+    position:absolute;
+    width:clamp(260px, 40%, 420px);
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:20px;
+    padding:clamp(18px,2vw,24px) clamp(20px,2.2vw,26px);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.1) inset,
+      0 20px 44px rgba(0,0,0,0.14);
+    opacity:0.16;
+    transform:translateY(var(--ty, 8px)) scale(var(--sc, 1));
+    transition:opacity .15s linear, transform .15s linear, background .3s ease, border-color .3s ease;
+    will-change:opacity, transform;
+    z-index:5;
+  }
+  .glass-card h3{
+    font-size:clamp(17px,1.4vw,20px); font-weight:700; margin:0 0 5px;
+    color:var(--muted);
+    transition:color .15s linear;
+  }
+  .glass-card p{
+    font-size:clamp(13.5px,1.05vw,15px); line-height:1.45; margin:0;
+    color:var(--muted-soft);
+    transition:color .15s linear;
+  }
+  .glass-card.is-active h3{color:var(--walnut);}
+  .glass-card.is-active p{color:var(--ink-soft);}
+
+  .card--tl{top:5%; left:-25%;}
+  .card--tr{top:5%; right:-21%;}
+  .card--bl{bottom:5%; left:-25%;}
+  .card--br{bottom:5%; right:-21%;}
+
+  @media (max-width:820px){
+    .nav__links{
+      position:fixed;
+      top:var(--nav-h); left:0; right:0; bottom:0;
+      z-index:150;
+      background:rgba(0,0,0,0.25);
+      backdrop-filter:blur(30px) saturate(160%);
+      -webkit-backdrop-filter:blur(30px) saturate(160%);
+      color:var(--ink);
+      flex-direction:column; align-items:center; justify-content:center;
+      gap:clamp(20px,6vw,32px);
+      max-height:none; overflow:visible;
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:opacity .4s ease, visibility .4s ease, background .3s ease;
+    }
+    [data-theme="dark"] .nav__links{ background:rgba(0,0,0,0.45); }
+    .nav.is-open .nav__links{
+      opacity:1; visibility:visible; pointer-events:auto;
+    }
+    .nav__links a{
+      width:auto; padding:0;
+      border-top:none;
+      color:var(--ink) !important;
+      font-size:clamp(24px,7vw,32px);
+      font-weight:600;
+      opacity:0.9;
+      transform:translateY(10px);
+      transition:opacity .3s ease, color .25s ease, transform .35s ease;
+    }
+    .nav.is-open .nav__links a{ transform:translateY(0); }
+    .nav__links a:active{ opacity:1; }
+    .nav__toggle{display:block;}
+
+    .catalog__photo{
+      width:calc(100% - 2 * clamp(10px,3vw,28px));
+    }
+
+    .glass-card{
+      width:min(380px, 95%);
+      padding:14px 18px;
+      position:absolute;
+      left:50%;
+      top:0;
+      transform:translate(-50%, var(--ty, 8px)) scale(var(--sc, 1));
+      transform-origin:center top;
+    }
+    .stage{ position:static; }
+    .stage-cards{
+      position:absolute;
+      left:0; right:0;
+      top:40%;
+      transform:translateY(-50%);
+      height:0;
+    }
+    .card--tl, .card--tr, .card--bl, .card--br{
+      top:0; left:50%; right:auto; bottom:auto;
+    }
+
+    #cetak .hero__inner{ position:relative; }
+    #cetak .hero-copy{
+      position:absolute;
+      left:0; right:0;
+      bottom:10%;
+    }
+    #cetak .stage-cards{
+      top:40%;
+    }
+  }
+
+  #portofolio{
+    position:relative; background:transparent;
+    padding:80px 0 0;
+  }
+  .portfolio__intro{
+    text-align:center;
+    padding:0 clamp(20px,6vw,64px);
+  }
+  .portfolio__intro h2{font-size:clamp(1.7rem,3.2vw,2.4rem);}
+  .portfolio__intro p{max-width:52ch; margin:14px auto 0; color:var(--ink-soft); font-size:15px;}
+
+  .portfolio__space{
+    position:relative;
+    height:900vh;
+    margin-top:56px;
+  }
+  .portfolio__pin{
+    position:sticky;
+    top:var(--nav-h);
+    height:calc(100vh - var(--nav-h));
+    display:flex;
+    flex-direction:column;
+    padding:clamp(28px,4vw,48px) clamp(20px,6vw,64px);
+  }
+  .portfolio__stage{
+    flex:1;
+    display:flex;
+    gap:clamp(24px,4vw,56px);
+    min-height:0;
+  }
+  .portfolio__list-wrap{
+    display:flex;
+    gap:14px;
+    flex:1.1;
+    min-width:0;
+    height:100%;
+  }
+  .portfolio__rail{
+    width:26px;
+    flex-shrink:0;
+    height:100%;
+    overflow:visible;
+  }
+  #portfolioWormPath{ stroke:var(--walnut); }
+  #portfolioWormHead{ fill:var(--walnut); }
+  .portfolio__list-col{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .portfolio__list{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .portfolio__sep{ display:none; }
+  .portfolio__media{ display:none; }
+  .portfolio__item{
+    position:relative;
+    padding:22px 0;
+    border-top:1px solid var(--line);
+    cursor:pointer;
+  }
+  .portfolio__item:last-child{ border-bottom:1px solid var(--line); }
+  .portfolio__row{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+  }
+  .portfolio__item .num{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+    transition:color .35s ease;
+    flex-shrink:0;
+  }
+  .portfolio__item .title{
+    font-size:clamp(22px, 2.8vw, 34px);
+    font-weight:600;
+    color:var(--muted);
+    letter-spacing:-0.01em;
+    transition:color .35s ease, transform .35s ease;
+    transform:translateX(0);
+  }
+  .portfolio__item .type{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-left:auto;
+    flex-shrink:0;
+    opacity:0;
+    transition:opacity .35s ease, color .35s ease;
+  }
+  .portfolio__item.is-active .num{ color:var(--walnut); }
+  .portfolio__item.is-active .type{ color:var(--ink-soft); opacity:1; }
+  .portfolio__item.is-active .title{
+    color:var(--ink);
+    transform:translateX(6px);
+  }
+  .portfolio__counter{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:14px;
+    flex-shrink:0;
+  }
+  .portfolio__preview-col{
+    flex:1;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:0;
+  }
+  .portfolio__preview-meta{
+    position:absolute;
+    top:0; left:0; right:0;
+    display:flex;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .portfolio__laptop{
+    width:min(80%, 480px);
+    aspect-ratio:16/10.5;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 14px 26px 14px;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,0.28);
+    position:relative;
+    transition:background .3s ease, border-color .3s ease;
+  }
+  [data-theme="dark"] .portfolio__laptop{ box-shadow:0 30px 70px -30px rgba(0,0,0,0.6); }
+  .portfolio__laptop::after{
+    content:'';
+    position:absolute;
+    bottom:8px; left:50%;
+    transform:translateX(-50%);
+    width:40px; height:5px;
+    border-radius:3px;
+    background:var(--muted-soft);
+  }
+  .portfolio__screen{
+    width:100%; height:100%;
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+    background:#1B1815;
+  }
+  .portfolio__screen .bg{
+    position:absolute; inset:0;
+    opacity:0;
+    transition:opacity .5s ease;
+    display:flex;
+    align-items:flex-end;
+    padding:20px;
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .portfolio__screen .bg.on{ opacity:1; }
+  .portfolio__screen .bg h3{
+    margin:0;
+    font-size:clamp(16px, 2vw, 24px);
+    line-height:1.15;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    color:#EDE4D6;
+  }
+  .portfolio__hint{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    padding-top:12px;
+    flex-shrink:0;
+    opacity:0.7;
+  }
+
+  @media (max-width:820px){
+    .portfolio__preview-col{ display:none; }
+    .portfolio__rail{ width:18px; }
+    .portfolio__item .title{ font-size:clamp(19px,6.5vw,26px); }
+    .portfolio__item{ border-top:none; padding:0; }
+    .portfolio__item:last-child{ border-bottom:none; }
+    .portfolio__row{ padding:16px 0; }
+    .portfolio__sep{
+      display:flex;
+      height:1px;
+      margin:14px 0;
+    }
+    .portfolio__sep-h{
+      flex:1;
+      height:1px;
+      background:var(--line);
+      will-change:transform;
+    }
+    .portfolio__sep-l{ transform-origin:left center; }
+    .portfolio__sep-r{ transform-origin:right center; }
+    .portfolio__media{
+      display:block;
+      overflow:hidden;
+      height:0;
+      border-radius:12px;
+    }
+    .portfolio__media-inner{
+      height:150px;
+      border-radius:12px;
+      display:flex;
+      align-items:flex-end;
+      padding:16px;
+      opacity:0;
+      transform:scale(0.6);
+      will-change:transform,opacity;
+      background-size:contain;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    .portfolio__media-inner h4{
+      margin:0;
+      font-size:18px;
+      font-weight:700;
+      color:#EDE4D6;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .portfolio__item .title, .portfolio__item .num{ transition:none; }
+  }
+
+  body.no-js-motion .portfolio__space{ height:auto; margin-top:32px; }
+  body.no-js-motion .portfolio__pin{ position:static; height:auto; padding:0 clamp(20px,6vw,64px) 48px; }
+  body.no-js-motion .portfolio__rail{ display:none; }
+  body.no-js-motion .portfolio__preview-col{ display:none; }
+  body.no-js-motion .portfolio__item .num,
+  body.no-js-motion .portfolio__item .title{ color:var(--ink) !important; transform:none !important; }
+  body.no-js-motion .portfolio__item .type{ opacity:1 !important; }
+  body.no-js-motion .portfolio__hint{ display:none; }
+
+  .portfolio-detail{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:flex;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    background:rgba(0,0,0,0.25);
+    backdrop-filter:blur(30px) saturate(160%);
+    -webkit-backdrop-filter:blur(30px) saturate(160%);
+    transition:opacity .4s ease, visibility .4s ease, background .3s ease;
+    padding:32px;
+    overflow-y:auto;
+  }
+  [data-theme="dark"] .portfolio-detail{ background:rgba(0,0,0,0.45); }
+  .portfolio-detail.is-open{
+    opacity:1; visibility:visible; pointer-events:auto;
+  }
+  .portfolio-detail__close{
+    position:fixed;
+    top:24px; right:clamp(20px,4vw,40px);
+    width:44px; height:44px;
+    border-radius:50%;
+    border:1px solid var(--glass-border);
+    background:var(--glass-bg);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    color:var(--ink);
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:210;
+    transition:transform .3s ease, background .25s ease;
+  }
+  .portfolio-detail__close:hover{ transform:rotate(90deg); }
+  .portfolio-detail__panel{
+    margin:auto;
+    width:min(1080px, 100%);
+    display:flex;
+    gap:clamp(28px,4vw,56px);
+    padding:clamp(32px,4.5vw,64px);
+    border-radius:24px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    box-shadow:0 40px 100px -40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    transform:translateY(24px) scale(0.97);
+    transition:transform .5s cubic-bezier(.16,1,.3,1), background .3s ease, border-color .3s ease;
+  }
+  .portfolio-detail.is-open .portfolio-detail__panel{ transform:translateY(0) scale(1); }
+  .portfolio-detail__info{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
+  .portfolio-detail__num{ font-size:12.5px; font-weight:700; color:var(--walnut); margin-bottom:16px; }
+  .portfolio-detail__title{ font-size:clamp(26px,3.2vw,42px); font-weight:700; letter-spacing:-0.01em; margin:0 0 18px; }
+  .portfolio-detail__desc{ color:var(--ink-soft); line-height:1.7; font-size:15.5px; max-width:46ch; margin:0; }
+  .portfolio-detail__meta{ margin-top:26px; font-size:12.5px; color:var(--muted); }
+  .portfolio-detail__media{
+    flex:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-auto-rows:1fr;
+    gap:14px;
+  }
+  .portfolio-detail__img{
+    border-radius:14px;
+    min-height:120px;
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .portfolio-detail__img:nth-child(1){ grid-column:1 / -1; min-height:160px; }
+  @media (max-width:820px){
+    .portfolio-detail{ padding:0; align-items:flex-start; }
+    .portfolio-detail__panel{ flex-direction:column; width:100%; min-height:100%; border-radius:0; padding:88px 24px 48px; gap:28px; }
+    .portfolio-detail__media{ grid-template-columns:1fr 1fr; }
+    .portfolio-detail__img{ min-height:100px; }
+    .portfolio-detail__img:nth-child(1){ min-height:140px; }
+    .portfolio-detail__close{ top:16px; right:16px; width:40px; height:40px; }
+  }
+
+  /* ============ SECTION 4: KONTAK ============ */
+  /* Contact Sticky Viewport Section - Dikunci pas 100svh tanpa kelebihan.
+     Dawa iki sengaja 600vh: 2/3 pertama kanggo animasi,
+     1/3 pungkasan dadi "jeda" ben ora langsung kepleset menyang footer. */
+  .contact-space{
+    position:relative;
+    height:600vh;
+  }
+  .contact-pin{
+    position:sticky;
+    top:var(--nav-h);
+    height: calc(100vh - var(--nav-h));
+    height: calc(100svh - var(--nav-h));
+    overflow: hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    /* Frame gutter: px tetep (dudu vw) ben ora tau ngluwihi viewport,
+       amarga box-sizing:border-box global wis ngurangi ukuran kothak. */
+    padding: var(--frame-gutter);
+  }
+
+  .contact-stage{
+    position:relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--frame-radius);
+    overflow:hidden;
+    background:#1b1815;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.28);
+  }
+
+  .contact-bg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    z-index:1;
+  }
+
+  /* Kabeh tulisan & elemen ing dhuwur background */
+  .contact-content{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    padding:clamp(20px, 4vw, 48px);
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items:center;
+    gap:24px;
+  }
+
+  /* Sisi Kiri: COMING SOON + Info Kontak Bawah */
+  .contact-left{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    height:100%;
+  }
+
+  .coming-soon{
+    font-size:clamp(4rem, 9.5vw, 10rem);
+    font-weight:800;
+    line-height:0.85;
+    letter-spacing:-0.03em;
+    color:#FFFFFF !important;
+    margin:auto 0;
+    text-align:right;
+    align-self:flex-end;
+    opacity:0;
+    filter:blur(16px);
+    transform:translateY(20px);
+    will-change:opacity, filter, transform;
+  }
+
+  .contact-info-bottom{
+    color:#FFFFFF !important;
+    font-size:13.5px;
+    line-height:1.5;
+    opacity:0;
+    transform:translateY(15px);
+    will-change:opacity, transform;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .contact-info-bottom p{
+    margin:0;
+    color:#FFFFFF !important;
+  }
+
+  /* Sisi Kanan: Kartu Liquid Glass & Isine */
+  .contact-right{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-end;
+    height:100%;
+  }
+  /* Desktop: dhuwure liquid glass diselarasake karo dhuwur kothak gambar,
+     dadi jarak dhuwur/ngisor otomatis podo karo jarak tengen (padding contact-content) */
+  @media (min-width:901px){
+    .contact-right{ justify-content:stretch; }
+  }
+
+  .glass-box{
+    width:100%;
+    max-width:var(--glass-max-w);
+    background:var(--contact-glass-bg);
+    border:1px solid var(--contact-glass-border);
+    border-radius:16px;
+    padding:clamp(14px, 2vw, 24px);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.2);
+    opacity:0;
+    transform:translateY(30px) scale(0.96);
+    will-change:opacity, transform;
+    display:flex;
+    flex-direction:column;
+  }
+  @media (min-width:901px){
+    .glass-box{ height:100%; }
+    /* Google review card ditempelke ngisor dhewe supaya kothak sing dawa ora blong tengahe */
+    .google-review-wrap{ margin-top:auto; }
+  }
+
+  .glass-desc{
+    font-size:clamp(12.5px, 1.05vw, 14.5px);
+    line-height:1.4;
+    color:var(--ink);
+    margin:0 0 12px;
+    font-weight:500;
+    opacity:0;
+    transform:translateY(10px);
+    will-change:opacity, transform;
+  }
+
+  .contact-space .divider{
+    width:100%;
+    height:1px;
+    background:var(--line);
+    margin-bottom:12px;
+    opacity:0;
+    transform:scaleX(0);
+    transform-origin:left;
+    will-change:opacity, transform;
+  }
+
+  .cta-section-title{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    opacity:0;
+    transform:translateY(10px);
+    will-change:opacity, transform;
+  }
+
+  .buttons-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:14px;
+    opacity:0;
+    transform:translateY(10px);
+    will-change:opacity, transform;
+  }
+
+  .contact-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:8px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all 0.25s ease;
+  }
+  .contact-btn:hover{
+    background:var(--walnut);
+    color:var(--bg);
+    border-color:var(--walnut);
+    box-shadow:0 8px 20px rgba(110,69,39,0.25);
+  }
+
+  .google-review-wrap{
+    opacity:0;
+    transform:translateY(10px);
+    will-change:opacity, transform;
+  }
+
+  .google-review-title{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+
+  .google-card-img{
+    width:100%;
+    border-radius:8px;
+    border:1px solid var(--line);
+    display:block;
+    box-shadow:0 8px 20px rgba(0,0,0,0.06);
+  }
+
+  @media (max-width:900px){
+    :root{
+      --frame-gutter: 10px;
+      --frame-radius: 20px;
+    }
+    .contact-content{
+      grid-template-columns:1fr;
+      padding:16px;
+      justify-content:center;
+      align-content:center;
+      gap:16px;
+      overflow-y: auto;
+    }
+    /* contact-left dipecah dadi grid item dhewe-dhewe (coming-soon & contact-info-bottom)
+       supaya iso diurutake bebas nganggo `order`, ora kaku melu urutan asline neng HTML */
+    .contact-left{
+      display:contents;
+      text-align:center;
+    }
+    .coming-soon{
+      order:1;
+      font-size:clamp(3.6rem, 15vw, 6rem);
+      text-align:center;
+      align-self:center;
+      margin:0;
+      line-height:0.98;
+    }
+    .contact-right{
+      order:2;
+      align-items:center;
+      width: 100%;
+    }
+    .glass-box{
+      max-width:88%;
+      padding:18px;
+    }
+    .glass-desc{
+      font-size:14.5px;
+    }
+    .cta-section-title{
+      font-size:12.5px;
+    }
+    .buttons-grid{
+      gap:10px;
+      margin-bottom:16px;
+    }
+    .contact-btn{
+      font-size:14px;
+      padding:11px 16px;
+    }
+    .google-review-title{
+      font-size:12.5px;
+    }
+    /* Baris kontak (nomer HP + IG) dipindah dadi ngisor dhewe, ngisore liquid glass.
+       Alamat (baris ke-3) didelikke khusus versi mobile. */
+    .contact-info-bottom{
+      order:3;
+      display:flex;
+      flex-direction:row;
+      justify-content:space-between;
+      align-items:center;
+      width:100%;
+      margin-top:2px;
+      font-size:15px;
+      font-weight:600;
+    }
+    .contact-info-bottom p:nth-child(3){
+      display:none;
+    }
+  }
+
+  @media (max-width:380px){
+    :root{
+      --frame-gutter: 6px;
+      --frame-radius: 14px;
+    }
+  }
+  /* ============ END SECTION 4: KONTAK ============ */
+
+  .footer{
+    position:relative;
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    padding:44px clamp(20px,6vw,64px) 28px;
+  }
+  .footer__top{
+    display:flex; flex-wrap:wrap; gap:24px;
+    justify-content:space-between; align-items:center;
+    padding-bottom:24px;
+    border-bottom:1px solid rgba(237,228,214,0.14);
+  }
+  .footer__logo{height:22px;}
+  .footer__nav{display:flex; gap:26px; flex-wrap:wrap;}
+  .footer__nav a{font-size:14px; opacity:0.8; color:#EDE4D6 !important;}
+  .footer__nav a:hover{opacity:1;}
+  .footer__bottom{ padding-top:18px; font-size:12.5px; opacity:0.55; color:#EDE4D6 !important;}
+
+  body.no-js-motion .word{color:var(--ink) !important; opacity:1 !important; filter:none !important;}
+  body.no-js-motion .cta{background:var(--paper) !important; color:var(--ink) !important; opacity:1 !important; transform:none !important;}
+  body.no-js-motion .glass-card{opacity:1 !important; --ty:0px; --sc:1;}
+  body.no-js-motion .glass-card h3{color:var(--walnut) !important;}
+  body.no-js-motion .glass-card p{color:var(--ink-soft) !important;}
+  body.no-js-motion .catalog__space{ height:auto; }
+  body.no-js-motion .catalog__pin{ position:static; height:auto; }
+  body.no-js-motion .catalog__window{ overflow:visible; height:auto; }
+  body.no-js-motion .catalog__track{ position:static; height:auto; transform:none !important; }
+  body.no-js-motion .catalog__panel,
+  body.no-js-motion .catalog__panel--cetak{ height:auto; padding:48px clamp(20px,6vw,64px); }
+  body.no-js-motion .hero__inner{ height:auto; }
+  body.no-js-motion .catalog__photo{ display:none; }
+  body.no-js-motion .stage__crop{
+    aspect-ratio:908 / 1072;
+    background:url("assets/hero-undangan.webp") center / cover no-repeat;
+  }
+
+  @media (max-width:820px){
+    body.no-js-motion .stage-cards{
+      position:static;
+      height:auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      padding:14px 0;
+    }
+    body.no-js-motion .glass-card{
+      position:static;
+      width:min(320px, 100%);
+    }
+  }
+</style>
+<noscript><style>#splashScreen{display:none !important;}</style></noscript>
+</head>
+<body class="splash-active">
+
+<div id="splashScreen" aria-hidden="true">
+  <img src="assets/logo-only.svg" alt="" width="48" height="77">
+</div>
+
+<button class="theme-fab" id="themeFab" aria-label="Ganti Tema">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.39 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.81.89-3.42 2.26-4.39-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+</button>
+
+<nav class="nav" id="nav">
+  <a href="#top" aria-label="Neoma Production beranda">
+    <img class="nav__logo" src="assets/logo-neoma.svg" alt="Neoma Production">
+  </a>
+  <button class="nav__toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__links" id="navLinks">
+    <a href="https://neoma.my.id/katalogweb" target="_blank" rel="noopener">Katalog Web</a>
+    <a href="https://neoma.my.id/katalog" target="_blank" rel="noopener">Katalog Cetak</a>
+    <a href="#portofolio">Portfolio</a>
+    <a href="#kontak">Kontak</a>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<div class="catalog" id="catalog">
+  <div class="catalog__space" id="catalogSpace">
+    <div class="catalog__pin" id="catalogPin">
+      <div class="catalog__window" id="catalogWindow">
+        <div class="catalog__track" id="catalogTrack">
+
+          <section class="catalog__panel catalog__panel--web" id="web">
+            <div class="hero__inner">
+              <h1 class="hero__headline" data-scroll-words>Undangan Pernikahan Berbasis Web</h1>
+              <div class="cta-row">
+                <a class="cta" data-scroll-fade href="https://neoma.my.id/katalogweb" target="_blank" rel="noopener">Buka Katalog</a>
+              </div>
+              <div class="stage stage--top">
+                <div class="stage__crop"></div>
+                <div class="stage-cards">
+                  <div class="glass-card card--tl" data-order="1" data-scroll-card>
+                    <h3>Simple & Hemat</h3>
+                    <p>Cukup 1 undangan untuk semua tamu.</p>
+                  </div>
+                  <div class="glass-card card--tr" data-order="2" data-scroll-card>
+                    <h3>Personal</h3>
+                    <p>Dapat dikustomisasi sesuai kebutuhan.</p>
+                  </div>
+                  <div class="glass-card card--bl" data-order="3" data-scroll-card>
+                    <h3>Ramah Lingkungan</h3>
+                    <p>Tidak meninggalkan limbah apapun.</p>
+                  </div>
+                  <div class="glass-card card--br" data-order="4" data-scroll-card>
+                    <h3>Modern</h3>
+                    <p>Lebih modern dan mengikuti perkembangan jaman</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="catalog__panel catalog__panel--cetak" id="cetak">
+            <div class="hero__inner">
+              <div class="stage stage--bottom">
+                <div class="stage__crop"></div>
+                <div class="stage-cards">
+                  <div class="glass-card card--tl" data-order="1" data-scroll-card>
+                    <h3>Formal</h3>
+                    <p>Memberikan kesan formal dan lebih sopan.</p>
+                  </div>
+                  <div class="glass-card card--tr" data-order="2" data-scroll-card>
+                    <h3>Bernilai</h3>
+                    <p>Bisa disimpan sebagai kenangan.</p>
+                  </div>
+                  <div class="glass-card card--bl" data-order="3" data-scroll-card>
+                    <h3>Fisikal</h3>
+                    <p>Cenderung lebih sulit diabaikan.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-copy">
+                <h1 class="hero__headline" data-scroll-words>Undangan Pernikahan Cetak</h1>
+                <div class="cta-row">
+                  <a class="cta" data-scroll-fade href="https://neoma.my.id/katalog" target="_blank" rel="noopener">Buka Katalog</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="catalog__photo">
+            <img id="heroImage" src="assets/hero-undangan.webp" alt="Foto undangan pernikahan Neoma Production di atas meja kayu.">
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="portofolio">
+  <div class="portfolio__intro">
+    <h1 class="hero__headline" data-scroll-words>Desain Grafis & Percetakan</h1>
+    <p>Layanan desain grafis & percetakan. Melayani kebutuhan branding & cetak dalam berbagai media.</p>
+  </div>
+
+  <div class="portfolio__space" id="portfolioSpace">
+    <div class="portfolio__pin" id="portfolioPin">
+      <div class="portfolio__stage">
+        <div class="portfolio__list-wrap">
+          <svg class="portfolio__rail" id="portfolioRail" viewBox="0 0 26 1000" preserveAspectRatio="none">
+            <path id="portfolioWormPath" d="" fill="none" stroke-width="5" stroke-linecap="round"/>
+            <circle id="portfolioWormHead" cx="13" cy="0" r="3"/>
+          </svg>
+          <div class="portfolio__list-col">
+            <ul class="portfolio__list" id="portfolioList">
+              <li class="portfolio__item is-active"
+                  data-year="2025" data-type="Buku Menu"
+                  data-desc="Pembutan desain & cetak buku menu untuk ikon kuliner legendaris Yogyakarta Tengkleng Gajah. Buku menu dengan hard cover elegan dipadukan jilid spiral kawat."
+                  data-grad="url('assets/img/port_1a.webp')"
+                  data-img0="url('assets/img/port_1b.webp')" data-img1="url('assets/img/port_1c.webp')" data-img2="url('assets/img/port_1d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_1e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">01</span><span class="title">Buku Menu</span><span class="type"></span></div>
+              </li>
+              <li class="portfolio__item"
+                  data-year="2024" data-type="Stopmap"
+                  data-desc="Pembuatan desain dan cetak stopmap untuk Dinas Komunikasi dan Informatika Kabupaten Sleman."
+                  data-grad="url('assets/img/port_2a.webp')"
+                  data-img0="url('assets/img/port_2b.webp')" data-img1="url('assets/img/port_2c.webp')" data-img2="url('assets/img/port_2d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_2e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">02</span><span class="title">Stopmap</span><span class="type"></span></div>
+              </li>
+              <li class="portfolio__item"
+                  data-year="2026" data-type="Kemasan"
+                  data-desc="Foto Produk, Desain, Cetak kemasan foil dengan ziplock untuk produk makanan siap santap Wader Kriuk."
+                  data-grad="url('assets/img/port_3a.webp')"
+                  data-img0="url('assets/img/port_3b.webp')" data-img1="url('assets/img/port_3c.webp')" data-img2="url('assets/img/port_3d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_3e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">03</span><span class="title">Kemasan</span><span class="type"></span></div>
+              </li>
+              <li class="portfolio__item"
+                  data-year="2026" data-type="Seminar Kit"
+                  data-desc="Cetak seminar kit untuk LazisMu Sleman yang terdiri dari Tas spunbound, Blocknote A5, Pulpen Standar, ID card B3 berikut holder dan talinya."
+                  data-grad="url('assets/img/port_4a.webp')"
+                  data-img0="url('assets/img/port_4b.webp')" data-img1="url('assets/img/port_4c.webp')" data-img2="url('assets/img/port_4d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_4e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">04</span><span class="title">Seminar Kit</span><span class="type"></span></div>
+              </li>
+              <li class="portfolio__item"
+                  data-year="2026" data-type="Kartu PVC"
+                  data-desc="Desain dan cetak kartu nama berbahan PVC untuk Tahruri Law Office."
+                  data-grad="url('assets/img/port_5a.webp')"
+                  data-img0="url('assets/img/port_5b.webp')" data-img1="url('assets/img/port_5c.webp')" data-img2="url('assets/img/port_5d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_5e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">05</span><span class="title">Kartu PVC</span><span class="type"></span></div>
+              </li>
+              <li class="portfolio__item"
+                  data-year="2026" data-type="Lain-lain"
+                  data-url="https://neoma.my.id"
+                  data-desc=""
+                  data-grad="linear-gradient(160deg,#00A632,#087046)"
+                  data-img0="url('assets/img/port_6b.webp')" data-img1="url('assets/img/port_6c.webp')" data-img2="url('assets/img/port_6d.webp')">
+                <div class="portfolio__sep"><span class="portfolio__sep-h portfolio__sep-l"></span><span class="portfolio__sep-h portfolio__sep-r"></span></div>
+                <div class="portfolio__media"><div class="portfolio__media-inner" style="background-image:url('assets/img/port_6e.webp'); background-size:contain; background-position:center; background-repeat:no-repeat;"><h4></h4></div></div>
+                <div class="portfolio__row"><span class="num">06</span><span class="title">Lain-lain</span><span class="type"></span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="portfolio__preview-col">
+          <div class="portfolio__preview-meta">
+            <span id="portfolioMetaType">Web</span>
+            <span id="portfolioMetaYear">2025</span>
+          </div>
+          <div class="portfolio__laptop">
+            <div class="portfolio__screen" id="portfolioScreen"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="portfolio__counter"><span id="portfolioCounterNow">01</span> / <span id="portfolioCounterTotal">06</span></div>
+      <div class="portfolio__hint"></div>
+    </div>
+  </div>
+</section>
+
+<div class="portfolio-detail" id="portfolioDetail" aria-hidden="true">
+  <button class="portfolio-detail__close" id="portfolioDetailClose" aria-label="Tutup">✕</button>
+  <div class="portfolio-detail__panel">
+    <div class="portfolio-detail__info">
+      <div class="portfolio-detail__num" id="portfolioDetailNum">01</div>
+      <h3 class="portfolio-detail__title" id="portfolioDetailTitle"></h3>
+      <p class="portfolio-detail__desc" id="portfolioDetailDesc"></p>
+      <div class="portfolio-detail__meta" id="portfolioDetailMeta"></div>
+    </div>
+    <div class="portfolio-detail__media">
+      <div class="portfolio-detail__img" id="portfolioDetailImg0"></div>
+      <div class="portfolio-detail__img" id="portfolioDetailImg1"></div>
+      <div class="portfolio-detail__img" id="portfolioDetailImg2"></div>
+    </div>
+  </div>
+</div>
+
+<section id="kontak">
+  <div class="contact-space" id="contactSpace">
+    <div class="contact-pin" id="contactPin">
+      <div class="contact-stage">
+        <img class="contact-bg" id="contactBgImg" src="assets/bg-light.webp" alt="Background Neoma Production Homestore">
+
+        <div class="contact-content">
+          <div class="contact-left">
+            <h1 class="coming-soon" id="comingSoonText">COMING<br>SOON</h1>
+            <div class="contact-info-bottom" id="contactInfoBottom">
+              <p>+62 857 4796 0727</p>
+              <p>@neomaprod</p>
+              <p>Krapyak, Triharjo, Sleman</p>
+            </div>
+          </div>
+
+          <div class="contact-right">
+            <div class="glass-box" id="glassBox">
+              <p class="glass-desc" id="glassDesc">Our Homestore is currently under construction. But we’ll still deliver!</p>
+              <div class="divider" id="boxDivider"></div>
+              <div class="cta-section-title" id="boxSubtitle">contact us:</div>
+              <div class="buttons-grid" id="boxButtons">
+                <a href="https://wa.me/6285747960727" target="_blank" rel="noopener" class="contact-btn">whatsapp</a>
+                <a href="https://instagram.com/neomaprod" target="_blank" rel="noopener" class="contact-btn">instagram</a>
+                <a href="mailto:hello@neomaprod.my.id" class="contact-btn" style="grid-column: 1 / -1;">email</a>
+              </div>
+              <div class="google-review-wrap" id="googleReviewWrap">
+                <div class="google-review-title">we're 5 stars on google</div>
+                <img class="google-card-img" id="googleCardImg" src="assets/google-review-light.webp" alt="Neoma Production Google Review 5 Stars">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer__bottom">© 2026 Neoma Production.</div>
+</footer>
+
+<script>
+function initMain(){
+  const themeFab = document.getElementById('themeFab');
+  const htmlElement = document.documentElement;
+  const heroImage = document.getElementById('heroImage');
+
+  function updateHeroImage(isDark) {
+    if(heroImage) {
+      heroImage.src = isDark ? 'assets/hero-undangan-dark.webp' : 'assets/hero-undangan.webp';
+    }
+  }
+
+  // Pure otomatis nuruti jam device (Jam 6 sore / 18:00 nganti jam 6 esuk / 06:00 = Dark mode)
+  const currentHour = new Date().getHours();
+  const isNight = (currentHour >= 18 || currentHour < 6);
+  
+  if (isNight) {
+    htmlElement.setAttribute('data-theme', 'dark');
+    updateHeroImage(true);
+  } else {
+    htmlElement.removeAttribute('data-theme');
+    updateHeroImage(false);
+  }
+
+  themeFab.addEventListener('click', function(){
+    if (htmlElement.getAttribute('data-theme') === 'dark') {
+      htmlElement.removeAttribute('data-theme');
+      updateHeroImage(false);
+    } else {
+      htmlElement.setAttribute('data-theme', 'dark');
+      updateHeroImage(true);
+    }
+  });
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('[data-scroll-words]').forEach(function(el){
+    var text = el.textContent.trim();
+    el.textContent = '';
+    text.split(' ').forEach(function(word){
+      var span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = word;
+      el.appendChild(span);
+      el.appendChild(document.createTextNode(' '));
+    });
+  });
+
+  if(reduceMotion){
+    document.body.classList.add('no-js-motion');
+    return;
+  }
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+
+  var catalogSpace = document.getElementById('catalogSpace');
+  var catalogPin = document.getElementById('catalogPin');
+  var catalogTrack = document.getElementById('catalogTrack');
+
+  function catalogPhase(){
+    if(!catalogSpace || !catalogPin) return 0;
+    var max = Math.max(1, catalogSpace.offsetHeight - catalogPin.offsetHeight);
+    return clamp01(-catalogSpace.getBoundingClientRect().top / max);
+  }
+
+  function handoffProgress(phase){
+    return clamp01((phase - 0.38) / 0.24);
+  }
+
+  function updateTrack(){
+    if(!catalogTrack || !catalogPin) return;
+    var panelH = catalogPin.offsetHeight;
+    var y = -panelH * handoffProgress(catalogPhase());
+    catalogTrack.style.transform = 'translate3d(0,' + y + 'px,0)';
+  }
+
+  function progressFor(el){
+    var phase = catalogPhase();
+    if(el.closest('#web')) return clamp01(phase / 0.36);
+    return clamp01((phase - 0.64) / 0.36);
+  }
+
+  var headlineEls = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-words]'));
+  headlineEls.forEach(function(el){ el._words = Array.prototype.slice.call(el.querySelectorAll('.word')); });
+
+  var ctaEls = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-fade]'));
+  var cardGroups = Array.prototype.slice.call(document.querySelectorAll('.stage-cards')).map(function(container){
+    return Array.prototype.slice.call(container.querySelectorAll('[data-scroll-card]'));
+  });
+
+  var HEADLINE_END = 0.42;
+  var CTA_START = 0.42, CTA_END = 0.58;
+  var CARDS_START = 0.58, CARDS_END = 0.9;
+
+  function updateHeadlines(){
+    headlineEls.forEach(function(el){
+      var p = progressFor(el);
+      var hp = clamp01(p / HEADLINE_END);
+      var n = el._words.length;
+      el._words.forEach(function(w, i){
+        var wp = clamp01(hp * n - i);
+        w.style.opacity = wp;
+        w.style.filter = 'blur(' + ((1 - wp) * 14) + 'px)';
+      });
+    });
+  }
+
+  function updateCtas(){
+    ctaEls.forEach(function(el){
+      var p = progressFor(el);
+      var cp = clamp01((p - CTA_START) / (CTA_END - CTA_START));
+      el.style.opacity = cp;
+      el.style.transform = cp >= 1 ? '' : 'translateY(' + ((1 - cp) * 10) + 'px)';
+    });
+  }
+
+  var mobileStackMq = window.matchMedia('(max-width:820px)');
+  var CARD_APPEAR = 0.6;
+  var CARD_HOLD = 0.8;
+  var CARD_SLICE = CARD_APPEAR + CARD_HOLD;
+
+  function updateCards(){
+    var isStack = mobileStackMq.matches;
+    cardGroups.forEach(function(cards){
+      if(!cards.length) return;
+      var p = progressFor(cards[0]);
+      var cp = clamp01((p - CARDS_START) / (CARDS_END - CARDS_START));
+      var n = cards.length;
+      var t = cp * n * CARD_SLICE;
+      cards.forEach(function(el, i){
+        var raw = clamp01((t - i * CARD_SLICE) / CARD_APPEAR);
+        var wp = raw;
+        el.classList.toggle('is-active', wp > 0.55);
+
+        if(isStack){
+          var depth = Math.min(Math.max((t - i * CARD_SLICE) / CARD_SLICE - 1, 0), n - 1 - i);
+          var entranceY = (1 - wp) * 40;
+          var stackY = depth * 14;
+          el.style.setProperty('--ty', (entranceY + stackY) + 'px');
+          el.style.setProperty('--sc', (1 - depth * 0.045).toFixed(3));
+          el.style.opacity = wp * (1 - depth * 0.12);
+          el.style.zIndex = i + 1;
+        } else {
+          el.style.setProperty('--ty', ((1 - wp) * 8) + 'px');
+          el.style.setProperty('--sc', '1');
+          el.style.opacity = 0.16 + wp * 0.84;
+          el.style.zIndex = '';
+        }
+      });
+    });
+  }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    updateTrack();
+    updateHeadlines();
+    updateCtas();
+    updateCards();
+  }
+  function onScroll(){
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  update();
+
+  var pauseGates = [
+    { at: 0.35, window: 0.03, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }, 
+    { at: 0.90, window: 0.04, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }  
+  ];
+  var GESTURE_GAP = 180;
+
+  function activeGateAt(phase){
+    for(var i=0;i<pauseGates.length;i++){
+      var g = pauseGates[i];
+      if(g.consumed) continue;
+      if(phase >= g.at - g.window && phase < g.at + 0.02) return g;
+    }
+    return null;
+  }
+  function releaseFarGates(phase){
+    pauseGates.forEach(function(g){
+      if(phase < g.at - g.window - 0.05){ g.primed = false; g.consumed = false; g.gesturesSwallowed = 0; }
+    });
+  }
+
+  function onCatalogWheel(e){
+    if(!catalogSpace || !catalogPin) return;
+    if(e.deltaY <= 0) return;
+    var phase = catalogPhase();
+    var now = Date.now();
+    var g = activeGateAt(phase);
+    if(g){
+      var isNewGesture = !g.primed || (now - g.lastEventTime) >= GESTURE_GAP;
+      g.lastEventTime = now;
+      if(isNewGesture){
+        if(g.gesturesSwallowed >= g.holdGestures){
+          g.consumed = true;
+          g.primed = false;
+          return;
+        }
+        g.gesturesSwallowed++;
+      }
+      g.primed = true;
+      e.preventDefault();
+      return;
+    }
+    releaseFarGates(phase);
+  }
+  window.addEventListener('wheel', onCatalogWheel, {passive:false});
+
+  var touchStartY = 0;
+  function onTouchStart(e){
+    if(!catalogSpace || !catalogPin) return;
+    touchStartY = e.touches[0].clientY;
+  }
+  function onTouchMove(e){
+    if(!catalogSpace || !catalogPin) return;
+    var dy = touchStartY - e.touches[0].clientY;
+    if(dy <= 0) return;
+    var phase = catalogPhase();
+    var g = activeGateAt(phase);
+    if(g){
+      g.primed = true;
+      e.preventDefault();
+      return;
+    }
+    releaseFarGates(phase);
+  }
+  function onTouchEnd(){
+    if(!catalogSpace || !catalogPin) return;
+    pauseGates.forEach(function(g){
+      if(g.primed){
+        g.primed = false;
+        g.gesturesSwallowed++;
+        if(g.gesturesSwallowed >= g.holdGestures){ g.consumed = true; }
+      }
+    });
+  }
+  window.addEventListener('touchstart', onTouchStart, {passive:true});
+  window.addEventListener('touchmove', onTouchMove, {passive:false});
+  window.addEventListener('touchend', onTouchEnd, {passive:true});
+
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('is-scrolled', window.scrollY > 12);
+  }, {passive:true});
+
+  function scrollToCatalogPhase(phase){
+    if(!catalogSpace || !catalogPin) return false;
+    var max = Math.max(1, catalogSpace.offsetHeight - catalogPin.offsetHeight);
+    var top = window.scrollY + catalogSpace.getBoundingClientRect().top + phase * max;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+    return true;
+  }
+
+  function handleCatalogHash(hash){
+    if(hash === '#web') return scrollToCatalogPhase(0.08);
+    if(hash === '#cetak') return scrollToCatalogPhase(0.72);
+    return false;
+  }
+
+  var toggle = document.getElementById('navToggle');
+  function setNavOpen(open){
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(window.matchMedia('(max-width:820px)').matches){
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+  }
+  toggle.addEventListener('click', function(){
+    setNavOpen(!nav.classList.contains('is-open'));
+  });
+  document.querySelectorAll('a[href="#web"], a[href="#cetak"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      if(handleCatalogHash(a.getAttribute('href'))){
+        ev.preventDefault();
+      }
+      setNavOpen(false);
+    });
+  });
+  document.getElementById('navLinks').querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      setNavOpen(false);
+    });
+  });
+
+  if(location.hash === '#web' || location.hash === '#cetak'){
+    handleCatalogHash(location.hash);
+  }
+
+  var portfolioListEl = document.getElementById('portfolioList');
+  var portfolioSpace = document.getElementById('portfolioSpace');
+  var portfolioPin = document.getElementById('portfolioPin');
+
+  if(portfolioListEl && portfolioSpace && portfolioPin){
+
+    var portfolioItems = Array.prototype.slice.call(portfolioListEl.querySelectorAll('.portfolio__item'));
+    var portfolioProjects = portfolioItems.map(function(el){
+      return {
+        title: el.querySelector('.title').textContent,
+        tagline: el.querySelector('.portfolio__media-inner h4').textContent,
+        year: el.dataset.year,
+        type: el.dataset.type,
+        url: el.dataset.url,
+        desc: el.dataset.desc,
+        grad: el.dataset.grad,
+        imgs: [el.dataset.img0, el.dataset.img1, el.dataset.img2]
+      };
+    });
+
+    var portfolioListCol = document.querySelector('.portfolio__list-col');
+    var portfolioWormPath = document.getElementById('portfolioWormPath');
+    var portfolioWormHead = document.getElementById('portfolioWormHead');
+    var portfolioRail = document.getElementById('portfolioRail');
+    var portfolioScreen = document.getElementById('portfolioScreen');
+    var portfolioCounterNow = document.getElementById('portfolioCounterNow');
+    var portfolioCounterTotal = document.getElementById('portfolioCounterTotal');
+    var portfolioMetaType = document.getElementById('portfolioMetaType');
+    var portfolioMetaYear = document.getElementById('portfolioMetaYear');
+    var PORTFOLIO_STEP = 260;
+
+    if(portfolioCounterTotal) portfolioCounterTotal.textContent = String(portfolioProjects.length).padStart(2,'0');
+
+    portfolioProjects.forEach(function(p, idx){
+      var bg = document.createElement('div');
+      bg.className = 'bg' + (idx === 0 ? ' on' : '');
+      bg.style.backgroundImage = p.grad;
+      var h3 = document.createElement('h3');
+      h3.textContent = p.tagline;
+      bg.appendChild(h3);
+      portfolioScreen.appendChild(bg);
+    });
+
+    var portfolioBgs = Array.prototype.slice.call(portfolioScreen.querySelectorAll('.bg'));
+    var portfolioMediaEls = Array.prototype.slice.call(document.querySelectorAll('.portfolio__media'));
+    var portfolioMediaInners = Array.prototype.slice.call(document.querySelectorAll('.portfolio__media-inner'));
+    var portfolioSepLefts = Array.prototype.slice.call(document.querySelectorAll('.portfolio__sep-l'));
+    var portfolioSepRights = Array.prototype.slice.call(document.querySelectorAll('.portfolio__sep-r'));
+    var portfolioFocusVals = portfolioProjects.map(function(){ return 0; });
+    var PORTFOLIO_MEDIA_MAX_H = 150;
+
+    var portfolioActiveIndex = -1;
+    var portfolioScrollProgress = 0;
+    var portfolioGrowY = 0;
+    var portfolioNeedsUpdate = false;
+
+    function setPortfolioSpaceHeight(){
+      var extra = (portfolioProjects.length - 1) * PORTFOLIO_STEP;
+      portfolioSpace.style.height = (window.innerHeight + extra) + 'px';
+    }
+
+    function setPortfolioActive(i){
+      if(i === portfolioActiveIndex) return;
+      portfolioActiveIndex = i;
+      portfolioItems.forEach(function(el, idx){ el.classList.toggle('is-active', idx === i); });
+      portfolioBgs.forEach(function(el, idx){ el.classList.toggle('on', idx === i); });
+      if(portfolioCounterNow) portfolioCounterNow.textContent = String(i+1).padStart(2,'0');
+      if(portfolioMetaYear) portfolioMetaYear.textContent = portfolioProjects[i].year;
+      if(portfolioMetaType) portfolioMetaType.textContent = portfolioProjects[i].type;
+    }
+
+    function updatePortfolioFromScroll(){
+      var scrollable = portfolioSpace.offsetHeight - portfolioPin.offsetHeight;
+      var scrolled = -portfolioSpace.getBoundingClientRect().top;
+      portfolioScrollProgress = scrollable > 0 ? clamp01(scrolled / scrollable) : 0;
+      var idx = Math.round(portfolioScrollProgress * (portfolioProjects.length - 1));
+      setPortfolioActive(idx);
+    }
+
+    function requestPortfolioUpdate(){
+      if(portfolioNeedsUpdate) return;
+      portfolioNeedsUpdate = true;
+      requestAnimationFrame(function(){ portfolioNeedsUpdate = false; updatePortfolioFromScroll(); });
+    }
+
+    window.addEventListener('scroll', requestPortfolioUpdate, {passive:true});
+    window.addEventListener('resize', function(){ setPortfolioSpaceHeight(); requestPortfolioUpdate(); });
+
+    function portfolioCatmull(pts){
+      if(pts.length < 2) return '';
+      if(pts.length === 2) return 'M ' + pts[0][0] + ' ' + pts[0][1] + ' L ' + pts[1][0] + ' ' + pts[1][1];
+      var d = 'M ' + pts[0][0] + ' ' + pts[0][1];
+      for(var i=0;i<pts.length-1;i++){
+        var p0 = pts[i-1] || pts[i];
+        var p1 = pts[i];
+        var p2 = pts[i+1];
+        var p3 = pts[i+2] || p2;
+        var c1x = p1[0] + (p2[0]-p0[0])/6;
+        var c1y = p1[1] + (p2[1]-p0[1])/6;
+        var c2x = p2[0] - (p3[0]-p1[0])/6;
+        var c2y = p2[1] - (p3[1]-p1[1])/6;
+        d += ' C ' + c1x + ' ' + c1y + ', ' + c2x + ' ' + c2y + ', ' + p2[0] + ' ' + p2[1];
+      }
+      return d;
+    }
+
+    function drawPortfolioWorm(){
+      var h = portfolioListCol.clientHeight;
+      portfolioRail.setAttribute('viewBox', '0 0 26 ' + h);
+      var targetGrowY = portfolioScrollProgress * h;
+      portfolioGrowY += (targetGrowY - portfolioGrowY) * 0.07;
+      var baseX = 13;
+      var steps = Math.max(2, Math.round((portfolioGrowY / h) * 40));
+      var pts = [];
+      for(var s=0; s<=steps; s++){
+        var y = (s/steps) * portfolioGrowY;
+        pts.push([baseX, y]);
+      }
+      if(pts.length < 2) pts.push([baseX, portfolioGrowY]);
+      portfolioWormPath.setAttribute('d', portfolioCatmull(pts));
+      var tip = pts[pts.length-1];
+      portfolioWormHead.setAttribute('cx', tip[0]);
+      portfolioWormHead.setAttribute('cy', tip[1]);
+      portfolioWormHead.setAttribute('opacity', portfolioGrowY < 2 ? 0 : 1);
+    }
+
+    function updatePortfolioMobileReveal(){
+      var pos = portfolioScrollProgress * (portfolioProjects.length - 1);
+      for(var i=0;i<portfolioProjects.length;i++){
+        var target = Math.max(0, 1 - Math.abs(pos - i));
+        portfolioFocusVals[i] += (target - portfolioFocusVals[i]) * 0.12;
+        var f = portfolioFocusVals[i];
+        portfolioMediaEls[i].style.height = (f * PORTFOLIO_MEDIA_MAX_H) + 'px';
+        portfolioMediaInners[i].style.opacity = f;
+        portfolioMediaInners[i].style.transform = 'scale(' + (0.6 + 0.4*f) + ')';
+        portfolioSepLefts[i].style.transform = 'scaleX(' + (1 - f*0.9) + ')';
+        portfolioSepRights[i].style.transform = 'scaleX(' + (1 - f*0.9) + ')';
+      }
+    }
+
+    function portfolioLoop(){
+      drawPortfolioWorm();
+      updatePortfolioMobileReveal();
+      requestAnimationFrame(portfolioLoop);
+    }
+
+    setPortfolioSpaceHeight();
+    updatePortfolioFromScroll();
+    requestAnimationFrame(portfolioLoop);
+
+    var portfolioDetail = document.getElementById('portfolioDetail');
+    var portfolioDetailClose = document.getElementById('portfolioDetailClose');
+    var portfolioDetailNum = document.getElementById('portfolioDetailNum');
+    var portfolioDetailTitle = document.getElementById('portfolioDetailTitle');
+    var portfolioDetailDesc = document.getElementById('portfolioDetailDesc');
+    var portfolioDetailMeta = document.getElementById('portfolioDetailMeta');
+    var portfolioDetailImgs = [
+      document.getElementById('portfolioDetailImg0'),
+      document.getElementById('portfolioDetailImg1'),
+      document.getElementById('portfolioDetailImg2')
+    ];
+
+    function openPortfolioDetail(i){
+      var p = portfolioProjects[i];
+
+      if(p.url){
+        window.open(p.url, '_blank');
+        return;
+      }
+
+      portfolioDetailNum.textContent = String(i+1).padStart(2,'0');
+      portfolioDetailTitle.textContent = p.title;
+      portfolioDetailDesc.textContent = p.desc || p.tagline;
+      portfolioDetailMeta.textContent = p.type + ' — ' + p.year;
+      portfolioDetailImgs.forEach(function(el, idx){ el.style.backgroundImage = (p.imgs && p.imgs[idx]) || p.grad; });
+      portfolioDetail.classList.add('is-open');
+      portfolioDetail.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePortfolioDetail(){
+      portfolioDetail.classList.remove('is-open');
+      portfolioDetail.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    portfolioItems.forEach(function(el, idx){
+      el.addEventListener('click', function(){ openPortfolioDetail(idx); });
+    });
+    if(portfolioDetailClose) portfolioDetailClose.addEventListener('click', closePortfolioDetail);
+    if(portfolioDetail){
+      portfolioDetail.addEventListener('click', function(e){ if(e.target === portfolioDetail) closePortfolioDetail(); });
+    }
+    window.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && portfolioDetail.classList.contains('is-open')) closePortfolioDetail();
+    });
+  }
+}
+</script>
+
+<script>
+/* ============ SECTION 4: KONTAK — script kepisah dhewe (function dhewe)
+   ben ora tabrakan variabel/fungsi karo script utama ing dhuwur ============ */
+function initContact(){
+  var htmlElement = document.documentElement;
+  var contactBgImg = document.getElementById('contactBgImg');
+  var googleCardImg = document.getElementById('googleCardImg');
+  var contactSpace = document.getElementById('contactSpace');
+  var contactPin = document.getElementById('contactPin');
+
+  if(!contactSpace || !contactPin) return;
+
+  // Sinkronisasi gambar background & google-review kontak karo tema
+  // sing wis diatur dening script utama (data-theme neng <html>)
+  function updateContactThemeAssets(isDark){
+    if(contactBgImg) contactBgImg.src = isDark ? 'assets/bg-dark.webp' : 'assets/bg-light.webp';
+    if(googleCardImg) googleCardImg.src = isDark ? 'assets/google-review-dark.webp' : 'assets/google-review-light.webp';
+  }
+  updateContactThemeAssets(htmlElement.getAttribute('data-theme') === 'dark');
+
+  var themeFab = document.getElementById('themeFab');
+  if(themeFab){
+    themeFab.addEventListener('click', function(){
+      updateContactThemeAssets(htmlElement.getAttribute('data-theme') === 'dark');
+    });
+  }
+
+  // Animasi scroll-reveal kanggo section Kontak
+  var comingSoonText = document.getElementById('comingSoonText');
+  var contactInfoBottom = document.getElementById('contactInfoBottom');
+  var glassBox = document.getElementById('glassBox');
+  var glassDesc = document.getElementById('glassDesc');
+  var boxDivider = document.getElementById('boxDivider');
+  var boxSubtitle = document.getElementById('boxSubtitle');
+  var boxButtons = document.getElementById('boxButtons');
+  var googleReviewWrap = document.getElementById('googleReviewWrap');
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+
+  // Animasi rampung ing 2/3 wiwitan dawa scroll; 1/3 pungkasan dadi jeda
+  var ANIM_FRACTION = 2 / 3;
+
+  function getContactScrollProgress(){
+    var max = Math.max(1, contactSpace.offsetHeight - contactPin.offsetHeight);
+    return clamp01(-contactSpace.getBoundingClientRect().top / max);
+  }
+
+  function updateContactScrollAnimations(){
+    var rawP = getContactScrollProgress();
+    var p = clamp01(rawP / ANIM_FRACTION);
+
+    var pSoon = clamp01(p / 0.3);
+    comingSoonText.style.opacity = pSoon;
+    comingSoonText.style.filter = 'blur(' + ((1 - pSoon) * 16) + 'px)';
+    comingSoonText.style.transform = 'translateY(' + ((1 - pSoon) * 20) + 'px)';
+
+    var pGlass = clamp01((p - 0.2) / 0.3);
+    glassBox.style.opacity = pGlass;
+    glassBox.style.transform = 'translateY(' + ((1 - pGlass) * 30) + 'px) scale(' + (0.96 + pGlass * 0.04) + ')';
+
+    var pDesc = clamp01((p - 0.4) / 0.2);
+    glassDesc.style.opacity = pDesc;
+    glassDesc.style.transform = 'translateY(' + ((1 - pDesc) * 10) + 'px)';
+
+    var pDiv = clamp01((p - 0.5) / 0.15);
+    boxDivider.style.opacity = pDiv;
+    boxDivider.style.transform = 'scaleX(' + pDiv + ')';
+
+    var pSub = clamp01((p - 0.55) / 0.15);
+    boxSubtitle.style.opacity = pSub;
+    boxSubtitle.style.transform = 'translateY(' + ((1 - pSub) * 10) + 'px)';
+
+    var pBtns = clamp01((p - 0.6) / 0.2);
+    boxButtons.style.opacity = pBtns;
+    boxButtons.style.transform = 'translateY(' + ((1 - pBtns) * 10) + 'px)';
+
+    var pGoogle = clamp01((p - 0.7) / 0.25);
+    googleReviewWrap.style.opacity = pGoogle;
+    googleReviewWrap.style.transform = 'translateY(' + ((1 - pGoogle) * 10) + 'px)';
+
+    var pBottom = clamp01((p - 0.75) / 0.2);
+    contactInfoBottom.style.opacity = pBottom;
+    contactInfoBottom.style.transform = 'translateY(' + ((1 - pBottom) * 15) + 'px)';
+  }
+
+  var contactTicking = false;
+  window.addEventListener('scroll', function(){
+    if(!contactTicking){
+      requestAnimationFrame(function(){
+        updateContactScrollAnimations();
+        contactTicking = false;
+      });
+      contactTicking = true;
+    }
+  }, {passive:true});
+
+  updateContactScrollAnimations();
+}
+</script>
+
+<script>
+/* ============ SECTION 5: PRELOADER — mesthekake kabeh gambar wis
+   kebuka sempurna sadurunge animasi scroll (initMain/initContact) dijalanke.
+   Splash ireng + logo putih cilik ditampilake nganti kabeh asset rampung. ============ */
+(function(){
+  var splash = document.getElementById('splashScreen');
+  var body = document.body;
+
+  var currentHour = new Date().getHours();
+  var isNight = (currentHour >= 18 || currentHour < 6);
+
+  function extractUrl(str){
+    if(!str) return null;
+    var m = str.match(/url\(\s*['"]?([^'")]+)['"]?\s*\)/);
+    return m ? m[1] : null;
+  }
+
+  function collectAssetUrls(){
+    var urls = [
+      isNight ? 'assets/hero-undangan-dark.webp' : 'assets/hero-undangan.webp',
+      isNight ? 'assets/bg-dark.webp' : 'assets/bg-light.webp',
+      isNight ? 'assets/google-review-dark.webp' : 'assets/google-review-light.webp',
+      'assets/logo-neoma.svg',
+      'assets/logo-only.svg'
+    ];
+
+    document.querySelectorAll('.portfolio__item').forEach(function(el){
+      urls.push(extractUrl(el.getAttribute('data-grad')));
+      urls.push(extractUrl(el.getAttribute('data-img0')));
+      urls.push(extractUrl(el.getAttribute('data-img1')));
+      urls.push(extractUrl(el.getAttribute('data-img2')));
+    });
+
+    document.querySelectorAll('.portfolio__media-inner').forEach(function(el){
+      urls.push(extractUrl(el.style.backgroundImage));
+    });
+
+    var seen = {};
+    return urls.filter(function(u){
+      if(!u || seen[u]) return false;
+      seen[u] = true;
+      return true;
+    });
+  }
+
+  function preloadImage(url){
+    return new Promise(function(resolve){
+      var img = new Image();
+      var done = false;
+      function finish(){ if(!done){ done = true; resolve(); } }
+      img.onload = finish;
+      img.onerror = finish; // asset sing gagal/ora ketemu ojo nganti nyebabke macet
+      img.src = url;
+      if(img.complete) finish();
+    });
+  }
+
+  function startSite(){
+    if(typeof initMain === 'function') initMain();
+    if(typeof initContact === 'function') initContact();
+  }
+
+  var started = false;
+  function reveal(){
+    if(started) return;
+    started = true;
+    startSite();
+    if(splash){
+      splash.classList.add('is-hidden');
+      body.classList.remove('splash-active');
+      window.setTimeout(function(){ splash.style.display = 'none'; }, 650);
+    } else {
+      body.classList.remove('splash-active');
+    }
+  }
+
+  var urls = collectAssetUrls();
+  var loadAll = Promise.all(urls.map(preloadImage));
+  var safety = new Promise(function(resolve){ window.setTimeout(resolve, 8000); });
+
+  Promise.race([loadAll, safety]).then(function(){
+    requestAnimationFrame(function(){ requestAnimationFrame(reveal); });
+  });
+
+  // Jaring pengaman pungkasan yen ana kahanan sing ora kesangkut ing ndhuwur
+  window.addEventListener('load', function(){
+    window.setTimeout(reveal, 8500);
+  });
+})();
+</script>
+
+</body>
+</html>

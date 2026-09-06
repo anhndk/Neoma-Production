@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katalog Undangan Cetak — Neoma Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FDFCFA;
+    --paper:#EFEDE9;
+    --ink:#1B1815;
+    --ink-soft:#5B564F;
+    --muted:#B9B3A9;
+    --muted-soft:#D8D3C9;
+    --walnut:#6E4527;
+    --line: rgba(27,24,21,0.12);
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.75);
+    --nav-h: 65px;
+    --mesh-1: rgba(110, 69, 39, 0.22);
+    --mesh-2: rgba(185, 179, 169, 0.45);
+    --mesh-3: rgba(216, 211, 201, 0.6);
+    --walnut-shadow: rgba(110, 69, 39, 0.32);
+    --wa-green:#25d366;
+    --radius:20px;
+  }
+
+  [data-theme="dark"] {
+    --bg: #121110;
+    --paper: #1E1B18;
+    --ink: #F3ECE0;
+    --ink-soft: #B9B3A9;
+    --muted: #5B564F;
+    --muted-soft: #38332D;
+    --walnut: #D4A373;
+    --line: rgba(243,236,224,0.12);
+    --glass-bg: rgba(30,27,24,0.65);
+    --glass-border: rgba(255,255,255,0.1);
+    --mesh-1: rgba(212, 163, 115, 0.12);
+    --mesh-2: rgba(91, 86, 79, 0.25);
+    --mesh-3: rgba(40, 36, 32, 0.4);
+    --walnut-shadow: rgba(212, 163, 115, 0.32);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+      radial-gradient(circle at 25% 20%, var(--mesh-1) 0%, transparent 45%),
+      radial-gradient(circle at 75% 80%, var(--mesh-2) 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, var(--mesh-3) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 1;
+    transition: background-image 0.3s ease;
+  }
+
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+
+  /* ---------- THEME TOGGLE FAB ---------- */
+  .theme-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .theme-fab:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .theme-fab svg { width: 20px; height: 20px; fill: currentColor; transition: transform 0.4s ease; }
+  [data-theme="dark"] .theme-fab svg { transform: rotate(180deg); }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px clamp(20px,5vw,56px);
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    height:var(--nav-h);
+    transition:box-shadow .3s ease, padding .3s ease;
+  }
+  .nav.is-scrolled{ box-shadow:0 8px 24px rgba(0,0,0,0.18); }
+  .nav__logo{height:32px; width:auto;}
+  .nav__links{display:flex; gap:clamp(18px,3vw,40px); align-items:center;}
+  .nav__links a{
+    color:#EDE4D6 !important; font-size:14.5px; font-weight:500;
+    opacity:0.88; transition:opacity .2s ease;
+    position:relative;
+  }
+  .nav__links a:hover{opacity:1;}
+  .nav__links a::after{
+    content:''; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+    background:currentColor; transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  .nav__links a:hover::after{transform:scaleX(1);}
+  .nav__links a.is-current{ opacity:1; }
+  .nav__links a.is-current::after{ transform:scaleX(1); }
+
+  .nav__toggle{
+    display:none; background:none; border:none; cursor:pointer;
+    width:34px; height:34px; padding:0; position:relative;
+  }
+  .nav__toggle span{
+    position:absolute; left:6px; right:6px; height:2px; background:#EDE4D6;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav__toggle span:nth-child(1){top:11px;}
+  .nav__toggle span:nth-child(2){top:19px;}
+  .nav__toggle span:nth-child(3){top:27px;}
+  .nav.is-open .nav__toggle span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  .nav.is-open .nav__toggle span:nth-child(2){opacity:0;}
+  .nav.is-open .nav__toggle span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+  @media (max-width:820px){
+    .nav__links{
+      position:fixed;
+      top:var(--nav-h); left:0; right:0; bottom:0;
+      z-index:150;
+      background:rgba(0,0,0,0.25);
+      backdrop-filter:blur(30px) saturate(160%);
+      -webkit-backdrop-filter:blur(30px) saturate(160%);
+      color:var(--ink);
+      flex-direction:column; align-items:center; justify-content:center;
+      gap:clamp(20px,6vw,32px);
+      max-height:none; overflow:visible;
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:opacity .4s ease, visibility .4s ease, background .3s ease;
+    }
+    [data-theme="dark"] .nav__links{ background:rgba(0,0,0,0.45); }
+    .nav.is-open .nav__links{ opacity:1; visibility:visible; pointer-events:auto; }
+    .nav__links a{
+      width:auto; padding:0;
+      color:var(--ink) !important;
+      font-size:clamp(24px,7vw,32px);
+      font-weight:600;
+      opacity:0.9;
+      transform:translateY(10px);
+      transition:opacity .3s ease, color .25s ease, transform .35s ease;
+    }
+    .nav.is-open .nav__links a{ transform:translateY(0); }
+    .nav__links a:active{ opacity:1; }
+    .nav__toggle{display:block;}
+  }
+
+  /* ---------- HERO / TITLE ---------- */
+  .hero-title {
+    text-align: center;
+    padding: clamp(40px,7vw,64px) 6vw clamp(28px,5vw,40px);
+    position:relative;
+    z-index:2;
+  }
+  .hero-title h1 {
+    font-family:'Manrope', sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .hero-title p {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    margin-top: 10px;
+  }
+
+  /* ---------- GRID KATALOG ---------- */
+  .katalog-container {
+    flex: 1;
+    padding: 0 6vw clamp(48px,7vw,72px);
+    position:relative;
+    z-index:2;
+  }
+
+  .katalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.1) inset,
+      0 20px 44px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.3s ease, transform 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: var(--walnut);
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.12) inset,
+      0 24px 52px rgba(0,0,0,0.16);
+  }
+
+  .badge-harga {
+    display: inline-block;
+    color: var(--walnut);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    color: var(--ink-soft);
+    font-size: 0.87rem;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .btn-buka {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-family:'Manrope', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow .25s ease;
+  }
+
+  .btn-buka:hover {
+    background: var(--walnut);
+    border-color: var(--walnut);
+    color: var(--bg);
+    box-shadow: 0 10px 24px var(--walnut-shadow);
+  }
+
+  /* ---------- MODAL CAROUSEL ---------- */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  /* Modal katalog jaga tampilan peteng terus (ireng) supaya gambar sing dideleng
+     tetep kontras apik, ora katut owah dadi puteh nalika mode terang aktif. */
+  .modal-content {
+    background-color: rgba(18,16,14,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    width: 100%;
+    max-width: 900px;
+    height: 88vh;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+  }
+
+  .modal-header {
+    padding: 16px 24px;
+    background: rgba(0,0,0,0.35);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #F3ECE0;
+  }
+
+  .close-btn {
+    font-size: 24px;
+    color: #B9B3A9;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+  .close-btn:hover { color: var(--walnut); }
+
+  .modal-body {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .carousel-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    z-index: 10;
+  }
+  .nav-btn:hover { background: var(--walnut); border-color: var(--walnut); }
+  .nav-prev { left: 16px; }
+  .nav-next { right: 16px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    background: rgba(0,0,0,0.35);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .page-info { color: #B9B3A9; font-size: 0.85rem; }
+
+  .btn-wa-order {
+    background: var(--wa-green);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-wa-order:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-wa-order svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{
+    position:relative;
+    background:#1B1815 !important;
+    color:#EDE4D6 !important;
+    padding:44px clamp(20px,6vw,64px) 28px;
+  }
+  .footer__bottom{ font-size:12.5px; opacity:0.65; color:#EDE4D6 !important; text-align:center;}
+
+  @media (max-width: 720px) {
+    .modal-content { height: 92vh; }
+    .nav-prev { left: 8px; }
+    .nav-next { right: 8px; }
+    .modal-footer { padding: 12px 16px; flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-fab" id="themeFab" aria-label="Ganti Tema">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.39 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.81.89-3.42 2.26-4.39-.44-.06-.9-.1-1.36-.1z"/>
+  </svg>
+</button>
+
+<nav class="nav" id="nav">
+  <a href="index.html" aria-label="Neoma Production beranda">
+    <img class="nav__logo" src="assets/logo-neoma.svg" alt="Neoma Production">
+  </a>
+  <button class="nav__toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__links" id="navLinks">
+    <a href="https://neoma.my.id/katalogweb" target="_blank" rel="noopener">Katalog Web</a>
+    <a href="katalog.html" class="is-current">Katalog Cetak</a>
+    <a href="index.html#portofolio">Portfolio</a>
+    <a href="index.html#kontak">Kontak</a>
+  </div>
+</nav>
+
+<section class="hero-title">
+  <h1>Katalog Undangan Cetak</h1>
+  <p>Pilih paket undangan cetak sesuai kebutuhanmu</p>
+</section>
+
+<main class="katalog-container">
+  <div class="katalog-grid">
+
+    <!-- ⚠️ CATATAN: Ganti angka ing parameter kapindho 'bukaKatalog' ngetutke jumlah gambarmu -->
+
+    <!-- Card 1: Undangan Promo -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">Rp 1.300</span>
+        <h3>Undangan Promo</h3>
+        <p>Bahan BC 160 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Promo', 16, 'Undangan Promo')">Buka Katalog</button>
+    </div>
+
+    <!-- Card 2: Undangan Ekonomis -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">Rp 1.500</span>
+        <h3>Undangan Ekonomis</h3>
+        <p>Bahan BC 160 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Ekonomis', 52, 'Undangan Ekonomis')">Buka Katalog</button>
+    </div>
+
+    <!-- Card 3: Undangan Standar -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">Rp 1.700 – Rp 2.000</span>
+        <h3>Undangan Standar</h3>
+        <p>Bahan BC 180 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Standar', 56, 'Undangan Standar')">Buka Katalog</button>
+    </div>
+
+    <!-- Card 4: Undangan Medium -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">Rp 2.500</span>
+        <h3>Undangan Medium</h3>
+        <p>Bahan BC 180 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Medium', 35, 'Undangan Medium')">Buka Katalog</button>
+    </div>
+
+    <!-- Card 5: Undangan Premium -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">Rp 3.500 – Rp 5.000</span>
+        <h3>Undangan Premium</h3>
+        <p>Bahan BC 180 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Premium', 11, 'Undangan Premium')">Buka Katalog</button>
+    </div>
+
+    <!-- Card 6: Undangan Custom -->
+    <div class="card">
+      <div>
+        <span class="badge-harga">&nbsp;</span>
+        <h3>Undangan Custom</h3>
+        <p>Bahan Ivory 310 gsm, Include Plastik &amp; Label Nama</p>
+      </div>
+      <button class="btn-buka" onclick="bukaKatalog('Custom', 12, 'Undangan Custom')">Buka Katalog</button>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal Pop-up Carousel Image -->
+<div id="imageModal" class="modal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3 id="modalTitle">Katalog Undangan</h3>
+      <span class="close-btn" onclick="tutupKatalog()">&times;</span>
+    </div>
+
+    <div class="modal-body">
+      <button class="nav-btn nav-prev" onclick="slideGambar(-1)">❮</button>
+      <img id="carouselImg" class="carousel-img" src="" alt="Katalog Image">
+      <button class="nav-btn nav-next" onclick="slideGambar(1)">❯</button>
+    </div>
+
+    <div class="modal-footer">
+      <span id="pageInfo" class="page-info">Halaman 1 / 1</span>
+      <a id="btnWaOrder" href="https://wa.me/6285747960727" target="_blank" class="btn-wa-order">
+        <svg viewBox="0 0 24 24">
+          <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.758.459 3.474 1.33 4.982l-1.412 5.163 5.28-1.385c1.458.796 3.102 1.215 4.787 1.216h.005c5.505 0 9.988-4.478 9.989-9.985 0-2.667-1.037-5.176-2.922-7.062a9.92 9.92 0 0 0-7.057-2.913zm5.836 14.161c-.244.688-1.42 1.314-1.968 1.397-.504.077-1.161.11-1.874-.118a11.58 11.58 0 0 1-3.616-1.83 12.833 12.833 0 0 1-2.518-3.111c-.432-.724-.46-1.258-.095-1.623.18-.18.398-.423.597-.647.199-.224.266-.381.398-.647.133-.265.066-.497-.033-.695s-.896-2.158-1.228-2.953c-.324-.775-.654-.67-.896-.682-.232-.012-.498-.012-.763-.012s-.696.099-1.061.497c-.365.398-1.393 1.362-1.393 3.322s1.426 3.856 1.625 4.121c.199.265 2.806 4.285 6.797 6.009.95.41 1.692.655 2.27.839.954.303 1.822.26 2.508.158.766-.114 2.355-.962 2.687-1.89.332-.928.332-1.723.232-1.89-.099-.165-.365-.265-.73-.448z"/>
+        </svg>
+        Order
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__bottom">© 2026 Neoma Production.</div>
+</footer>
+
+<script>
+(function(){
+  var htmlElement = document.documentElement;
+  var themeFab = document.getElementById('themeFab');
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('navToggle');
+
+  // Tema otomatis nuruti jam device (18:00 - 06:00 = Dark mode), sing pas diklik iso diganti manual
+  var currentHour = new Date().getHours();
+  var isNight = (currentHour >= 18 || currentHour < 6);
+  if (isNight) {
+    htmlElement.setAttribute('data-theme', 'dark');
+  } else {
+    htmlElement.removeAttribute('data-theme');
+  }
+  themeFab.addEventListener('click', function(){
+    if (htmlElement.getAttribute('data-theme') === 'dark') {
+      htmlElement.removeAttribute('data-theme');
+    } else {
+      htmlElement.setAttribute('data-theme', 'dark');
+    }
+  });
+
+  // Efek shadow nav pas discroll
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('is-scrolled', window.scrollY > 12);
+  }, {passive:true});
+
+  // Menu mobile (hamburger)
+  function setNavOpen(open){
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(window.matchMedia('(max-width:820px)').matches){
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+  }
+  toggle.addEventListener('click', function(){
+    setNavOpen(!nav.classList.contains('is-open'));
+  });
+  document.getElementById('navLinks').querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ setNavOpen(false); });
+  });
+})();
+
+/* ============ KATALOG CAROUSEL ============ */
+let currentImages = [];
+let currentIndex = 0;
+let currentJudulPaket = '';
+
+// Fungsi Mbuka Modal lan Nyiapke Gambare adhedhasar 'jumlahGambar' sing di-pass seko tombol
+function bukaKatalog(folderName, jumlahGambar, judul) {
+  currentImages = [];
+  currentIndex = 0;
+  currentJudulPaket = judul;
+
+  // Otomatis susun link gambar seko folder 'cetak' sesuai karo angka jumlahGambar: 1.webp nganti [jumlahGambar].webp
+  for (let i = 1; i <= jumlahGambar; i++) {
+    currentImages.push('cetak/' + folderName + '/' + i + '.webp');
+  }
+
+  document.getElementById('modalTitle').innerText = 'Katalog: ' + judul;
+  updateCarouselView();
+  document.getElementById('imageModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// Fungsi Nganyari Tampilan Gambar lan Halaman
+function updateCarouselView() {
+  const imgElement = document.getElementById('carouselImg');
+  imgElement.src = currentImages[currentIndex];
+
+  document.getElementById('pageInfo').innerText = 'Halaman ' + (currentIndex + 1) + ' / ' + currentImages.length;
+
+  // Pesan WA otomatis
+  const pesanWA = 'Halo Neoma Production, saya mau order ' + currentJudulPaket + ' (Halaman ' + (currentIndex + 1) + ')';
+  const waUrl = 'https://wa.me/6285747960727?text=' + encodeURIComponent(pesanWA);
+  document.getElementById('btnWaOrder').href = waUrl;
+}
+
+// Fungsi Panah Geser Kiwa/Tengen
+function slideGambar(direction) {
+  currentIndex += direction;
+  if (currentIndex < 0) {
+    currentIndex = currentImages.length - 1; // Looping dadi ing pungkasan
+  } else if (currentIndex >= currentImages.length) {
+    currentIndex = 0; // Looping bali neng awal
+  }
+  updateCarouselView();
+}
+
+// Navigasi Keyboard (Panah kiwa-tengen & Escape)
+document.addEventListener('keydown', function(event) {
+  const modal = document.getElementById('imageModal');
+  if (modal.style.display === 'flex') {
+    if (event.key === 'ArrowLeft') slideGambar(-1);
+    if (event.key === 'ArrowRight') slideGambar(1);
+    if (event.key === 'Escape') tutupKatalog();
+  }
+});
+
+// Fungsi Nutup Modal
+function tutupKatalog() {
+  document.getElementById('imageModal').style.display = 'none';
+  document.getElementById('carouselImg').src = '';
+  document.body.style.overflow = '';
+}
+
+// Tutup modal yen ngeklik area njaba modal
+window.onclick = function(event) {
+  const modal = document.getElementById('imageModal');
+  if (event.target == modal) {
+    tutupKatalog();
+  }
+}
+</script>
+
+</body>
+</html>
