@@ -80,7 +80,11 @@
       radial-gradient(circle at 50% 50%, var(--mesh-3) 0%, transparent 70%);
     filter: blur(40px);
     opacity: 1;
+    transform: translateZ(0);
     transition: background-image 0.3s ease;
+  }
+  body.theme-repaint::before{
+    transform: translateZ(0.01px);
   }
 
   img{max-width:100%;display:block;}
@@ -1395,10 +1399,16 @@ function initMain(){
   // Fix bug Safari/WebKit: elemen position:fixed sing background-e gumantung
   // CSS variable ora langsung di-repaint pas variable-e ganti (lagi ke-update
   // pas ana trigger liyane kaya scroll). Paksa reflow cilik sakwise ganti tema.
+  // Fix bug Safari/WebKit: pseudo-elemen body::before (position:fixed) sing
+  // background-e gumantung CSS variable ora langsung di-repaint pas variable-e
+  // ganti. Sasaran repaint mung ing pseudo-elemen kuwi dhewe (transform toggle
+  // cilik lewat class), ora nyenggol body/layout/scroll blas.
   function forceRepaint(){
-    document.body.style.opacity = '0.999';
+    document.body.classList.add('theme-repaint');
     requestAnimationFrame(function(){
-      document.body.style.opacity = '';
+      requestAnimationFrame(function(){
+        document.body.classList.remove('theme-repaint');
+      });
     });
   }
 
