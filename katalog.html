@@ -26,6 +26,7 @@
     --walnut-shadow: rgba(110, 69, 39, 0.32);
     --wa-green:#25d366;
     --radius:20px;
+    --mobile-glass-solid: rgba(253,252,250,0.94);
   }
 
   [data-theme="dark"] {
@@ -43,6 +44,7 @@
     --mesh-2: rgba(91, 86, 79, 0.25);
     --mesh-3: rgba(40, 36, 32, 0.4);
     --walnut-shadow: rgba(212, 163, 115, 0.32);
+    --mobile-glass-solid: rgba(24,21,18,0.94);
   }
 
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -419,6 +421,19 @@
     .nav-next { right: 8px; }
     .modal-footer { padding: 12px 16px; flex-wrap:wrap; }
   }
+
+  /* Perf fix: backdrop-filter (liquid glass) angel banget kanggo Safari mobile
+     (khususe iPhone lawas). Neng layar cilik, blur dipateni lan diganti
+     background solid supaya ora ngos-ngosan, tampilan tetep meh podho. */
+  @media (max-width:820px){
+    .card,
+    .modal,
+    .modal-content{
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+    .card{ background:var(--mobile-glass-solid); }
+  }
 </style>
 </head>
 <body>
@@ -564,12 +579,22 @@
   } else {
     htmlElement.removeAttribute('data-theme');
   }
+  // Fix bug Safari/WebKit: elemen position:fixed sing background-e gumantung
+  // CSS variable ora langsung di-repaint pas variable-e ganti (lagi ke-update
+  // pas ana trigger liyane kaya scroll). Paksa reflow cilik sakwise ganti tema.
+  function forceRepaint(){
+    document.body.style.display = 'none';
+    void document.body.offsetHeight;
+    document.body.style.display = '';
+  }
+
   themeFab.addEventListener('click', function(){
     if (htmlElement.getAttribute('data-theme') === 'dark') {
       htmlElement.removeAttribute('data-theme');
     } else {
       htmlElement.setAttribute('data-theme', 'dark');
     }
+    forceRepaint();
   });
 
   // Efek shadow nav pas discroll
