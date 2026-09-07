@@ -165,55 +165,78 @@
   /* ---------- scroll cue (hint kanggo wong lagi mbukak web) ---------- */
   .scroll-cue{
     position: fixed;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%);
+    right: 22px;
+    bottom: 26px;
     z-index: 90;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     color: var(--ink-soft);
     pointer-events: none;
     opacity: 1;
     transition: color 0.25s ease;
   }
   .scroll-cue__label{
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    opacity: 0.85;
+    opacity: 0.8;
   }
-  .scroll-cue__mouse{
-    width: 20px;
-    height: 32px;
-    border-radius: 999px;
-    border: 1.5px solid currentColor;
-    opacity: 0.7;
+  /* desktop nampilke "SCROLL", mobile nampilke "SWIPE" (switchable jejer breakpoint 820px) */
+  .scroll-cue__label--mobile{ display: none; }
+  .scroll-cue__line{
     position: relative;
+    width: 1px;
+    height: 60px;
+    background: currentColor;
+    opacity: 0.28;
   }
-  .scroll-cue__dot{
+  .scroll-cue__glow{
     position: absolute;
     left: 50%;
-    top: 6px;
-    width: 4px;
-    height: 7px;
-    border-radius: 999px;
-    background: currentColor;
-    transform: translateX(-50%);
-    animation: scrollCueDot 1.8s ease-in-out infinite;
+    top: -18px;
+    width: 3px;
+    height: 22px;
+    transform: translate(-50%, 0);
+    background: linear-gradient(to bottom, transparent, var(--walnut) 45%, var(--walnut) 55%, transparent);
+    filter: blur(1px);
+    opacity: 0;
+    /* desktop: glow mlaku mudun (top -> bawah) */
+    animation: scrollCueGlowDown 2.4s ease-in-out infinite;
   }
-  @keyframes scrollCueDot{
-    0%{ opacity:1; transform:translate(-50%,0); }
-    55%{ opacity:0; transform:translate(-50%,13px); }
-    100%{ opacity:0; transform:translate(-50%,13px); }
+  @keyframes scrollCueGlowDown{
+    0%{ transform: translate(-50%, 0); opacity: 0; }
+    12%{ opacity: 1; }
+    88%{ opacity: 1; }
+    100%{ transform: translate(-50%, 96px); opacity: 0; }
+  }
+  @keyframes scrollCueGlowUp{
+    0%{ transform: translate(-50%, 96px); opacity: 0; }
+    12%{ opacity: 1; }
+    88%{ opacity: 1; }
+    100%{ transform: translate(-50%, 0); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce){
-    .scroll-cue__dot{ animation: none; opacity: 0.9; }
+    .scroll-cue__glow{ animation: none; opacity: 0.5; }
   }
   @media (max-width:820px){
-    .scroll-cue{ bottom: 16px; }
+    .scroll-cue{ right: 16px; bottom: 18px; gap: 8px; }
+    .scroll-cue__label--desktop{ display: none; }
+    .scroll-cue__label--mobile{ display: inline-block; }
+    .scroll-cue__line{ height: 48px; }
+    .scroll-cue__glow{ height: 18px; top: -16px; }
+    /* mobile: tulisan dadi "SWIPE", glow mlaku munggah (bawah -> ndhuwur) */
+    .scroll-cue__glow{ animation-name: scrollCueGlowUp; }
+    @keyframes scrollCueGlowUp{
+      0%{ transform: translate(-50%, 78px); opacity: 0; }
+      12%{ opacity: 1; }
+      88%{ opacity: 1; }
+      100%{ transform: translate(-50%, 0); opacity: 0; }
+    }
   }
 
   .nav{
@@ -1208,8 +1231,9 @@
 </nav>
 
 <div class="scroll-cue" id="scrollCue" aria-hidden="true">
-  <span class="scroll-cue__label">Scroll</span>
-  <span class="scroll-cue__mouse"><span class="scroll-cue__dot"></span></span>
+  <span class="scroll-cue__label scroll-cue__label--desktop">Scroll</span>
+  <span class="scroll-cue__label scroll-cue__label--mobile">Swipe</span>
+  <span class="scroll-cue__line"><span class="scroll-cue__glow"></span></span>
 </div>
 
 <div id="top"></div>
@@ -1243,7 +1267,7 @@
                   </div>
                   <div class="glass-card card--br" data-order="4" data-scroll-card>
                     <h3>Modern</h3>
-                    <p>Lebih modern dan mengikuti perkembangan jaman</p>
+                    <p>Lebih modern dan selaras era digital.</p>
                   </div>
                 </div>
               </div>
@@ -1351,7 +1375,7 @@
               </li>
               <li class="portfolio__item"
                   data-year="2026" data-type="Lain-lain"
-                  data-url="https://neoma.my.id"
+                  data-url="https://neoma.my.id/portfolio"
                   data-desc=""
                   data-grad="linear-gradient(160deg,#00A632,#087046)"
                   data-img0="url('assets/img/port_6b.webp')" data-img1="url('assets/img/port_6c.webp')" data-img2="url('assets/img/port_6d.webp')">
@@ -1415,13 +1439,13 @@
 
           <div class="contact-right">
             <div class="glass-box" id="glassBox">
-              <p class="glass-desc" id="glassDesc">Our Homestore is currently under construction. But we’ll still deliver!</p>
+              <p class="glass-desc" id="glassDesc">Our Homestore is currently under construction. But we’re still open for online orders!</p>
               <div class="divider" id="boxDivider"></div>
               <div class="cta-section-title" id="boxSubtitle">contact us:</div>
               <div class="buttons-grid" id="boxButtons">
                 <a href="https://wa.me/6285747960727" target="_blank" rel="noopener" class="contact-btn">whatsapp</a>
                 <a href="https://instagram.com/neomaprod" target="_blank" rel="noopener" class="contact-btn">instagram</a>
-                <a href="mailto:hello@neomaprod.my.id" class="contact-btn" style="grid-column: 1 / -1;">email</a>
+                <a href="mailto:neomaprod@gmail.com" class="contact-btn" style="grid-column: 1 / -1;">email</a>
               </div>
               <div class="google-review-wrap" id="googleReviewWrap">
                 <div class="google-review-title">we're 5 stars on google</div>
