@@ -617,7 +617,7 @@
 
   if(guestA || guestB){
     var label = guestA && guestB ? (guestA + ' & ' + guestB) : (guestA || guestB);
-    thankYouSub.textContent = 'Dear ' + label + ', for trusting us';
+    thankYouSub.textContent = label + ', for trusting us';
 
     if(guestA && guestB && linkInputEl && !linkInputEl.value){
       linkInputEl.value = 'neoma.my.id/' + guestA + '-' + guestB;
