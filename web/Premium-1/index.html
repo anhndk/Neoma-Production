@@ -4,13 +4,863 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Undangan Pernikahan — Dewi &amp; Bagas</title>
-<meta name="description" content="Undangan pernikahan Ratri Dewi Utami &amp; Bagas Prastantyo">
+<meta name="description" content="Undangan pernikahan Najmi Dewi Utami &amp; Bagas Prastantyo">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* =====================================================================
+   Kabeh CSS wis digabung neng kene (mau file kepisah style.css).
+   Ben gampang ngedit: goleki komentar "EDIT DI SINI" kanggo konten
+   sing paling kerep diganti (tanggal, rekening, kisah, dll).
+===================================================================== */
+
+/* =====================================================================
+   TOKENS
+===================================================================== */
+:root{
+  --wood-dark:#2c1810;
+  --wood:#4a2e1c;
+  --gold:#d8b56b;
+  --gold-light:#f0dba8;
+  --gold-dim:#a6853f;
+
+  --maroon-deepest:#2c0f0d;
+  --maroon-deep:#3e1816;
+  --maroon:#54201d;
+  --maroon-light:#7a3530;
+
+  --wall-cream:#ece0cc;
+  --ink-brown:#4a3626;
+  --ayat-maroon:#6b2b26;
+
+  --cream:#f3ead9;
+  --cream-dim:#e3d3b8;
+
+  --font-display:'Cinzel', serif;
+  --font-deco:'Cinzel Decorative', serif;
+  --font-body:'Poppins', sans-serif;
+
+  --vh100: 100svh;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ background:var(--wood-dark); }
+body{
+  font-family:var(--font-body);
+  color:var(--cream);
+  background:var(--wood-dark);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  width:100%;
+  overscroll-behavior-y:none;
+}
+body.lock-scroll{ overflow:hidden; height:100vh; height:var(--vh100); }
+img{ max-width:none; user-select:none; -webkit-user-drag:none; }
+button{ font-family:inherit; cursor:pointer; background:none; border:none; color:inherit; }
+p{ margin:0; }
+h1,h2,h3{ margin:0; font-weight:600; }
+
+/* =====================================================================
+   LOADER
+===================================================================== */
+#loader{
+  position:fixed; inset:0; z-index:10000;
+  background:var(--wood-dark);
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+#loader.is-hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.loader__mark{
+  font-family:var(--font-deco);
+  font-size:2.4rem;
+  color:var(--gold);
+  letter-spacing:.1em;
+  animation:loaderPulse 1.4s ease-in-out infinite;
+}
+.loader__mark span{ color:var(--gold-dim); margin:0 .25em; font-size:.7em; }
+@keyframes loaderPulse{
+  0%,100%{ opacity:.45; transform:scale(.96); }
+  50%{ opacity:1; transform:scale(1); }
+}
+
+/* =====================================================================
+   COVER
+===================================================================== */
+#cover{
+  position:fixed; inset:0; z-index:500;
+  height:100vh; height:var(--vh100); width:100%;
+  overflow:hidden;
+  background:var(--wood-dark);
+  transition:visibility 0s linear 1.05s;
+}
+#cover.is-open{ visibility:hidden; }
+
+.cover__doors{ position:absolute; inset:0; display:flex; }
+.cover__door{
+  width:50%; height:100%; overflow:hidden;
+  position:relative;
+}
+.cover__door img{
+  position:absolute; top:0; height:100%; width:auto; max-width:none;
+  display:block;
+}
+.cover__door--kiri{ }
+.cover__door--kiri img{ right:0; }
+.cover__door--kanan img{ left:0; }
+
+#cover.is-open .cover__door--kiri{
+  animation:doorOpenLeft .95s cubic-bezier(.65,0,.35,1) forwards;
+}
+#cover.is-open .cover__door--kanan{
+  animation:doorOpenRight .95s cubic-bezier(.65,0,.35,1) forwards;
+}
+@keyframes doorOpenLeft{
+  0%{ transform:translateX(0) scale(1); }
+  100%{ transform:translateX(-105%) scale(1.08); }
+}
+@keyframes doorOpenRight{
+  0%{ transform:translateX(0) scale(1); }
+  100%{ transform:translateX(105%) scale(1.08); }
+}
+
+.cover__content{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  padding:0 12%;
+  text-align:center;
+  z-index:2;
+}
+.cover__top-group{
+  display:flex; flex-direction:column; align-items:center;
+  padding-top:34vh;
+}
+.cover__bottom-group{
+  display:flex; flex-direction:column; align-items:center;
+  margin-top:auto;
+  padding-bottom:20vh;
+  position:relative; z-index:2;
+}
+.cover__bottom-gradient{
+  position:absolute; left:0; right:0; bottom:0;
+  height:42%;
+  background:linear-gradient(to top, rgba(10,6,3,.72) 0%, rgba(10,6,3,.42) 45%, transparent 100%);
+  pointer-events:none;
+  z-index:1;
+}
+.cover__block{
+  opacity:0;
+  transform:translateY(14px);
+  animation:coverFadeIn .9s ease forwards;
+  animation-delay:calc(.35s + var(--rd) * .18s);
+}
+#cover.is-closing .cover__block{
+  animation:coverFadeOutFast .28s ease forwards;
+  animation-delay:0s;
+}
+@keyframes coverFadeIn{
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes coverFadeOutFast{
+  to{ opacity:0; transform:translateY(-6px); }
+}
+
+.cover__title-block{ }
+.cover__eyebrow{
+  font-family:var(--font-display);
+  font-weight:700;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  font-size:clamp(1.33rem, 5.32vw, 1.75rem);
+  color:var(--gold);
+  text-shadow:0 2px 10px rgba(0,0,0,.45);
+  margin:0 0 .35em;
+}
+.cover__date{
+  font-family:var(--font-display);
+  font-size:clamp(.88rem,3.4vw,1.1rem);
+  color:var(--cream);
+  letter-spacing:.15em;
+  display:flex; align-items:center; justify-content:center; gap:.6em;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.cover__date-dot{ width:5px; height:5px; border-radius:50%; background:var(--gold-dim); }
+
+.cover__initials{
+  margin-top:5.5%;
+  display:flex; align-items:center; justify-content:center; gap:.55em;
+  font-family:var(--font-deco);
+  font-size:clamp(1.5rem, 7.5vw, 2rem);
+  color:var(--cream);
+  text-shadow:0 3px 14px rgba(0,0,0,.55);
+}
+.cover__amp{ font-size:.5em; color:var(--gold); }
+
+.cover__guest{ margin-bottom:6%; }
+.cover__guest-label{
+  font-size:clamp(.8rem,3vw,.95rem);
+  color:var(--cream-dim);
+  margin-bottom:.5em;
+}
+.cover__guest-name{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.15rem,5vw,1.5rem);
+  color:var(--gold);
+  margin-bottom:.5em;
+  text-shadow:0 2px 8px rgba(0,0,0,.4);
+  word-break:break-word;
+}
+.cover__guest-place{
+  font-size:clamp(.8rem,3vw,.95rem);
+  color:var(--cream-dim);
+}
+
+.cover__open-btn{
+  border:1.4px solid var(--gold);
+  color:var(--gold-light);
+  padding:.85em 2em;
+  border-radius:999px;
+  font-family:var(--font-display);
+  font-size:clamp(.85rem,3.2vw,1rem);
+  letter-spacing:.08em;
+  background:rgba(20,12,6,.28);
+  backdrop-filter:blur(2px);
+  transition:background .25s ease, transform .2s ease;
+}
+.cover__open-btn:active{ transform:scale(.96); }
+
+/* =====================================================================
+   SCROLL STAGE
+===================================================================== */
+#scrollTrack{
+  position:relative;
+  width:100%;
+}
+#stage{
+  position:sticky;
+  top:0;
+  height:100vh; height:var(--vh100);
+  width:100%;
+  overflow:hidden;
+  background:var(--wood-dark);
+}
+.scene{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  overflow:hidden;
+  will-change:transform,opacity;
+}
+.scene__bg{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  object-position:center;
+  pointer-events:none;
+}
+
+#scene1{ transform-origin:50% 50%; z-index:1; }
+#scene2{ transform-origin:50% 20%; z-index:2; opacity:0; }
+#batikZone{ transform-origin:50% 50%; z-index:3; opacity:0; }
+
+/* =====================================================================
+   SCENE 1
+===================================================================== */
+.scene1__ayat {
+  position: absolute;
+  left: 50%;
+  top: 12.5%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 360px;
+  text-align: center;
+}
+.scene1__ayat-text {
+  font-family: var(--font-body);
+  font-size: clamp(.62rem, 3vw, .74rem);
+  line-height: 1.4;
+  color: var(--wall-cream);
+  font-weight: 500;
+  font-style: normal;
+}
+.bait {
+  display: block;
+  white-space: nowrap;
+}
+.scene1__ayat-source {
+  margin-top: .85em;
+  font-family: var(--font-body);
+  font-size: clamp(.62rem, 3vw, .74rem);
+  letter-spacing: .06em;
+  color: var(--wall-cream);
+  font-weight: 600;
+}
+
+.scene1__music-btn {
+  position: absolute;
+  left: 80.4%;
+  top: 72.5%;
+  width: 15%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff00;
+  background: rgba(0, 0, 0, 0.01);
+  border: 1.3px solid rgba(255, 255, 255, 0);
+  box-shadow: none;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+.scene1__music-btn:active{ transform:translate(-50%,-50%) scale(.9); }
+.scene1__music-btn .ic{ width:42%; height:42%; filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+.scene1__music-btn .ic-pause{ display:none; }
+.scene1__music-btn.is-playing .ic-play{ display:none; }
+.scene1__music-btn.is-playing .ic-pause{ display:block; }
+
+.scene1__informasi {
+  margin-top: 40vh;
+  font-family: var(--font-body);
+  font-size: clamp(.55rem, 2.2vw, .68rem);
+  line-height: 1.4;
+  color: var(--wall-cream);
+  font-weight: 400;
+  font-style: normal;
+}
+
+.scene1__notes{
+  position:absolute; inset:0; pointer-events:none; z-index:4;
+}
+.note{
+  position:absolute;
+  width:22px;
+  opacity:0;
+  animation:noteFloat 2.6s ease-out forwards;
+  filter: brightness(0) invert(1);
+}
+@keyframes noteFloat{
+  0%{ opacity:0; transform:translateY(0) rotate(var(--rot,0deg)) scale(.7); }
+  15%{ opacity:.9; }
+  75%{ opacity:.55; }
+  100%{ opacity:0; transform:translateY(-140px) rotate(var(--rot,0deg)) scale(1); }
+}
+
+/* =====================================================================
+   SCENE 2
+===================================================================== */
+.scene2__names{
+  position:absolute; left:0; right:0; top:8%;
+  display:flex; flex-direction:column; align-items:center;
+  gap:.9em;
+  padding:0 4%;
+  text-align:center;
+}
+.scene2__kicker{
+  font-family:var(--font-body);
+  font-weight:400;
+  font-size:clamp(.7rem,3vw,.8rem);
+  line-height:1.8;
+  color:#fff;
+  max-width:300px;
+}
+.scene2__person{ display:flex; flex-direction:column; gap:.35em; }
+.scene2__name{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.35rem,6.6vw,1.8rem);
+  color:var(--gold-light);
+  letter-spacing:.02em;
+}
+.scene2__parents{
+  font-family:var(--font-body);
+  font-weight:400;
+  font-size:clamp(.64rem,2.6vw,.72rem);
+  color:#fff;
+  line-height:1.6;
+  white-space: nowrap;
+}
+.scene2__address{
+  font-family:var(--font-body);
+  font-weight:300;
+  font-size:clamp(.64rem,2.6vw,.72rem);
+  color:rgba(255,255,255,.82);
+}
+.scene2__amp{
+  font-family:var(--font-deco);
+  font-size:clamp(1rem,4.4vw,1.3rem);
+  color:var(--gold-dim);
+}
+
+.reveal-seq{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .85s ease, transform .85s ease;
+  transition-delay:calc(var(--rd) * .22s);
+}
+.reveal-seq.is-visible{ opacity:1; transform:translateY(0); }
+
+/* =====================================================================
+   SCROLL HINT
+===================================================================== */
+.scroll-hint{
+  position:absolute; left:50%; bottom:4.5%;
+  transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:.4em;
+  opacity:0;
+  transition:opacity .6s ease;
+  pointer-events:none;
+  z-index:6;
+}
+.scroll-hint.is-visible{ opacity:.85; }
+.scroll-hint span{
+  font-family:var(--font-body);
+  font-size:.62rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.5);
+}
+.scroll-hint__mouse{
+  width:19px; height:30px;
+  filter:drop-shadow(0 1px 4px rgba(0,0,0,.5));
+}
+.scroll-hint__dot{
+  animation:scrollDotMove 1.6s ease-in-out infinite;
+}
+@keyframes scrollDotMove{
+  0%{ opacity:1; transform:translateY(0); }
+  60%{ opacity:0; transform:translateY(11px); }
+  100%{ opacity:0; transform:translateY(11px); }
+}
+
+/* =====================================================================
+   BATIK ZONE (panel3 acara / love story / carousel / gift / ucapan / penutup)
+===================================================================== */
+.mega-layer{
+  position:absolute;
+  left:0;
+  width:100%;
+  height:40%;
+  pointer-events:none;
+  z-index:1;
+  transition:opacity .9s ease; }
+.mega-layer--top{ top:0; }
+.mega-layer--bottom{ bottom:0; }
+.cloud{
+  position:absolute;
+  width:190px;
+  opacity:.92;
+  animation:cloudSway ease-in-out infinite;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));
+}
+@keyframes cloudSway{
+  0%,100%{ transform:translateY(0) rotate(var(--rot,0deg)); }
+  50%{ transform:translateY(var(--sway,10px)) rotate(calc(var(--rot,0deg) + 1.5deg)); }
+}
+
+.batik-panel{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  padding:9% 9%;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s ease;
+  z-index:2;
+}
+.batik-panel.is-active{ pointer-events:auto; }
+.batik-panel__inner{
+  width:100%;
+  max-width:420px;
+  text-align:center;
+  display:flex; flex-direction:column; align-items:center;
+}
+
+.batik-h{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.5rem,7vw,1.9rem);
+  color:var(--gold-light);
+  letter-spacing:.03em;
+}
+.batik-h--sp{ margin-top:.75em; }
+.event-date{
+  margin-top:.5em;
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(.95rem,4vw,1.1rem);
+  color:var(--cream);
+}
+.event-time{
+  margin-top:.2em;
+  font-size:clamp(.8rem,3.4vw,.92rem);
+  color:var(--cream-dim);
+  letter-spacing:.03em;
+}
+
+.countdown{
+  display:flex; gap:clamp(.5rem,3vw,1rem);
+  margin-top:1.6em;
+}
+.countdown__item{
+  display:flex; flex-direction:column; align-items:center;
+  min-width:52px;
+}
+.countdown__item span{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:clamp(1.5rem,7vw,2.1rem);
+  color:var(--gold-light);
+  line-height:1;
+}
+.countdown__item small{
+  margin-top:.4em;
+  font-size:.62rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--cream-dim);
+}
+
+.batik-divider{
+  width:100%;
+  max-width:280px;
+  border:none;
+  border-top:1px solid rgba(240,219,168,.35);
+  margin:1.7em 0;
+}
+
+.venue-label{
+  font-size:clamp(.78rem,3.2vw,.9rem);
+  color:var(--cream-dim);
+}
+.venue-name{
+  margin-top:.3em;
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.05rem,4.4vw,1.25rem);
+  color:var(--cream);
+}
+
+.btn-outline{
+  display:inline-block;
+  text-decoration:none;
+  cursor:pointer;
+  margin-top:1.4em;
+  border:1.3px solid var(--gold);
+  color:var(--gold-light);
+  padding:.7em 1.9em;
+  border-radius:999px;
+  font-family:var(--font-display);
+  font-size:clamp(.8rem,3.2vw,.92rem);
+  letter-spacing:.05em;
+  background:rgba(0,0,0,.12);
+  transition:transform .2s ease, background .2s ease;
+}
+.btn-outline:active{ transform:scale(.96); }
+
+/* ---- love story / timeline (panel baru) ---- */
+.batik-panel__inner--love{ max-width:400px; }
+.timeline{
+  width:100%;
+  margin-top:1.4em;
+  max-height:56vh;
+  overflow-y:auto;
+  padding:.2em .4em .2em 0;
+  display:flex;
+  flex-direction:column;
+}
+.timeline__item{
+  position:relative;
+  display:flex;
+  gap:1em;
+  text-align:left;
+  padding-bottom:1.5em;
+}
+.timeline__item:last-child{ padding-bottom:0; }
+.timeline__item::before{
+  /* garis panjang sing nyambungke saben titik tahun */
+  content:"";
+  position:absolute;
+  left:20px;
+  top:1.9em;
+  bottom:0;
+  width:1px;
+  background:rgba(240,219,168,.3);
+}
+.timeline__item:last-child::before{ display:none; }
+.timeline__year{
+  flex-shrink:0;
+  width:40px;
+  padding-top:.15em;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:.85rem;
+  color:var(--gold-light);
+  text-align:center;
+}
+.timeline__body{ padding-bottom:.1em; }
+.timeline__title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:.92rem;
+  color:var(--cream);
+  margin-bottom:.3em;
+}
+.timeline__text{
+  font-size:.76rem;
+  line-height:1.6;
+  color:var(--cream-dim);
+}
+
+/* ---- carousel (panel foto) — digawe luwih gedhe, tanpa titik bunder ---- */
+.batik-panel__inner--carousel{ max-width:460px; }
+.carousel{
+  position:relative;
+  width:92%;
+  max-width:360px;
+  aspect-ratio:728/1004;
+  border-radius:8px;
+  overflow:hidden;
+  margin-top:.9em;
+}
+.carousel__frame{
+  width:100%; height:100%;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 12px 38px rgba(0,0,0,.5);
+  touch-action:pan-y;
+}
+.carousel__frame img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+.carousel__arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold-light);
+  background:none;
+  border:none;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.65));
+  z-index:3;
+  transition:transform .15s ease, opacity .15s ease;
+}
+.carousel__arrow svg{ width:24px; height:24px; }
+.carousel__arrow--prev{ left:.5%; }
+.carousel__arrow--next{ right:.5%; }
+.carousel__arrow:active{ transform:translateY(-50%) scale(.82); opacity:.7; }
+.carousel__counter{
+  margin-top:.9em;
+  font-family:var(--font-body);
+  font-size:.7rem;
+  letter-spacing:.1em;
+  color:var(--cream-dim);
+}
+
+/* ---- tanda kasih / gift (panel baru) ---- */
+.gift-note{
+  margin-top:.8em;
+  font-size:.8rem;
+  line-height:1.7;
+  color:var(--cream-dim);
+  max-width:320px;
+}
+.gift-list{
+  width:100%;
+  margin-top:1.5em;
+  display:flex; flex-direction:column; gap:.8em;
+}
+.gift-card{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:.8em;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(240,219,168,.28);
+  border-radius:14px;
+  padding:.85em 1em;
+  text-align:left;
+}
+.gift-card__bank{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:.82rem;
+  color:var(--gold-light);
+  letter-spacing:.05em;
+}
+.gift-card__number{
+  margin-top:.25em;
+  font-size:.92rem;
+  letter-spacing:.04em;
+  color:var(--cream);
+}
+.gift-card__name{
+  margin-top:.15em;
+  font-size:.7rem;
+  color:var(--cream-dim);
+}
+.gift-copy-btn{
+  flex-shrink:0;
+  border:1.2px solid rgba(240,219,168,.55);
+  color:var(--gold-light);
+  padding:.5em 1em;
+  border-radius:999px;
+  font-family:var(--font-body);
+  font-size:.72rem;
+  letter-spacing:.04em;
+  transition:background .2s ease, transform .15s ease;
+}
+.gift-copy-btn:active{ transform:scale(.94); background:rgba(240,219,168,.12); }
+.gift-toast{
+  margin-top:1.2em;
+  font-size:.76rem;
+  color:var(--gold-light);
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .25s ease, transform .25s ease;
+}
+.gift-toast.is-visible{ opacity:1; transform:translateY(0); }
+
+/* ---- wishes ---- */
+.wish-form{
+  width:100%;
+  display:flex; flex-direction:column; gap:.7em;
+  margin-top:1.4em;
+}
+.wish-form input,
+.wish-form textarea{
+  width:100%;
+  background:rgba(0,0,0,.16);
+  border:1.2px solid rgba(240,219,168,.4);
+  border-radius:14px;
+  padding:.85em 1em;
+  color:var(--cream);
+  font-family:var(--font-body);
+  font-size:.86rem;
+  resize:none;
+}
+.wish-form input::placeholder,
+.wish-form textarea::placeholder{ color:rgba(227,211,184,.55); font-style:italic; }
+.wish-form input:focus,
+.wish-form textarea:focus{ outline:none; border-color:var(--gold); }
+
+.wish-list{
+  width:100%;
+  margin-top:1.6em;
+  max-height:34vh;
+  overflow-y:auto;
+  display:flex; flex-direction:column; gap:.7em;
+  text-align:left;
+  padding-right:2px;
+}
+.wish-empty{
+  text-align:center;
+  font-size:.82rem;
+  color:var(--cream-dim);
+  font-style:italic;
+}
+.wish-item{
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(240,219,168,.22);
+  border-radius:12px;
+  padding:.8em .95em;
+}
+.wish-item__top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:.5em;
+  margin-bottom:.3em;
+}
+.wish-item__name{
+  font-weight:600;
+  font-size:.82rem;
+  color:var(--gold-light);
+}
+.wish-item__delete{
+  font-size:.78rem;
+  opacity:.55;
+  flex-shrink:0;
+}
+.wish-item__msg{
+  font-size:.8rem;
+  line-height:1.5;
+  color:var(--cream-dim);
+  word-break:break-word;
+}
+
+/* ---- closing ---- */
+.batik-panel__inner--close{ gap:.3em; }
+.close-box{
+  border:1.4px solid var(--gold);
+  color:var(--gold-light);
+  padding:.85em 2em;
+  border-radius:999px;
+  font-family:var(--font-display);
+  font-size:clamp(.85rem,3.2vw,1rem);
+  letter-spacing:.08em;
+  background:rgba(20,12,6,.28);
+  backdrop-filter:blur(2px);
+  transition:background .25s ease, transform .2s ease;
+}
+.close-box:active{ transform:scale(.92); }
+.close-box__icon{ font-size:1.8rem; color:var(--gold-light); line-height:1; margin-top:-2px; }
+.close-title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(1.3rem,5.6vw,1.6rem);
+  color:var(--gold-light);
+}
+.close-note{
+  margin-top:.6em;
+  font-size:.82rem;
+  line-height:1.7;
+  color:var(--cream-dim);
+}
+.batik-panel__inner--close footer {
+  margin-top: 2.5em;
+  font-size: clamp(.65rem, 2.5vw, .75rem);
+  color: var(--cream-dim);
+  opacity: .7;
+  letter-spacing: .08em;
+  font-family: var(--font-body);
+}
+/* =====================================================================
+   RESPONSIVE — tablet & desktop
+===================================================================== */
+@media (min-width:640px){
+  .cover__doors{ justify-content:center; }
+  .cover__door{ max-width:420px; }
+  .scene__bg{ object-fit:cover; }
+}
+@media (min-width:900px){
+  body{ background:var(--maroon-deepest); }
+  #cover::before{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--wood-dark);
+    z-index:-1;
+  }
+  #cover{
+    max-width:520px;
+    left:50%;
+    transform:translateX(-50%);
+    box-shadow:0 0 80px rgba(0,0,0,.6);
+  }
+  #scrollTrack{ max-width:520px; margin:0 auto; box-shadow:0 0 80px rgba(0,0,0,.6); }
+}
+
+/* =====================================================================
+   MOTION SAFETY
+===================================================================== */
+@media (prefers-reduced-motion:reduce){
+  .cloud{ animation:none; }
+  .cover__block{ animation-duration:.01s; }
+}
+</style>
 </head>
 <body>
 
@@ -86,7 +936,6 @@
           <span class="bait reveal-seq" style="--rd:5">rasa kasih dan sayang.&rdquo;</span>
         </p>
         <p class="scene1__ayat-source reveal-seq" style="--rd:6">QS. Ar-Rum: 21</p>
-        </p>
         <p class="scene1__informasi reveal-seq" style="--rd:7">ketuk radio untuk mematikan musik</p>
       </div>
 
@@ -106,7 +955,7 @@
         <p class="scene2__kicker reveal-seq" style="--rd:0">Assalamu&quot;alaikam Warrahmatullahi Wabarakatuh. Dengan menyebut nama Allah yang maha pengasih dan maha penyayang, kami bermaksud menyelenggarakan syukuran pernikahan kami:</p>
 
         <div class="scene2__person reveal-seq" style="--rd:1">
-          <h2 class="scene2__name">Ratri Dewi Utami</h2>
+          <h2 class="scene2__name">Najmi Dewi Utami</h2>
           <p class="scene2__parents">Putri kedua dari Bapak Slamet Riyadi &amp; Ibu Wahyuningsih</p>
           <p class="scene2__address">Jl. Kenanga No. 12, Turi, Sleman, D.I. Yogyakarta</p>
         </div>
@@ -126,7 +975,7 @@
       </div>
     </div>
 
-    <!-- ============== BATIK ZONE — scene 3, 4, 5 & penutup ============== -->
+    <!-- ============== BATIK ZONE — panel akad/resepsi, kisah, foto, tanda kasih, ucapan & penutup ============== -->
     <div class="scene" id="batikZone">
       <img class="scene__bg" src="assets/images/scene3-bg.webp" alt="" draggable="false">
 
@@ -173,25 +1022,113 @@
         <span>scroll</span>
       </div>
 
-      <!-- ---- PANEL 4 : carousel foto ---- -->
+      <!-- ---- PANEL LOVE STORY : kisah kami ----
+           EDIT DI SINI: ganti tahun & isi cerita sesuai kisah kalian sendiri.
+           Iso nambah utawa ngurangi item timeline neng ngisor iki. -->
+      <div class="batik-panel" id="panelLove">
+        <div class="batik-panel__inner batik-panel__inner--love" id="panelLoveInner">
+          <h3 class="batik-h reveal-seq" style="--rd:0">Kisah Kami</h3>
+
+          <div class="timeline">
+            <div class="timeline__item reveal-seq" style="--rd:1">
+              <span class="timeline__year">2019</span>
+              <div class="timeline__body">
+                <p class="timeline__title">Pertama Bertemu</p>
+                <p class="timeline__text">Dipertemukan lewat teman kuliah di Yogyakarta, awalnya sekadar kenal biasa.</p>
+              </div>
+            </div>
+            <div class="timeline__item reveal-seq" style="--rd:2">
+              <span class="timeline__year">2021</span>
+              <div class="timeline__body">
+                <p class="timeline__title">Mulai Dekat</p>
+                <p class="timeline__text">Sering ngobrol, jalan bareng, dan pelan-pelan tumbuh rasa saling percaya.</p>
+              </div>
+            </div>
+            <div class="timeline__item reveal-seq" style="--rd:3">
+              <span class="timeline__year">2023</span>
+              <div class="timeline__body">
+                <p class="timeline__title">Restu Kedua Keluarga</p>
+                <p class="timeline__text">Kedua keluarga bertemu &amp; memberi restu untuk melangkah lebih serius.</p>
+              </div>
+            </div>
+            <div class="timeline__item reveal-seq" style="--rd:4">
+              <span class="timeline__year">2025</span>
+              <div class="timeline__body">
+                <p class="timeline__title">Lamaran</p>
+                <p class="timeline__text">Bagas resmi melamar Dewi di hadapan keluarga besar.</p>
+              </div>
+            </div>
+            <div class="timeline__item reveal-seq" style="--rd:5">
+              <span class="timeline__year">2026</span>
+              <div class="timeline__body">
+                <p class="timeline__title">Menikah</p>
+                <p class="timeline__text">Melangkah ke jenjang pernikahan, insyaAllah selamanya.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHintLove" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+
+      <!-- ---- PANEL 4 : carousel foto (lebih gedhe, iso diswipe, tanpa titik bunder) ---- -->
       <div class="batik-panel" id="panel4">
         <div class="batik-panel__inner batik-panel__inner--carousel" id="panel4Inner">
-          <div class="carousel reveal-seq" style="--rd:0">
+          <h3 class="batik-h reveal-seq" style="--rd:0">Momen Kami</h3>
+          <div class="carousel reveal-seq" style="--rd:1">
             <button type="button" class="carousel__arrow carousel__arrow--prev" id="carPrev" aria-label="Foto sebelumnya">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
             <div class="carousel__frame">
               <img id="carouselImg" src="assets/images/carousel-1.webp" alt="Momen Dewi & Bagas" draggable="false">
             </div>
             <button type="button" class="carousel__arrow carousel__arrow--next" id="carNext" aria-label="Foto berikutnya">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
-          <div class="carousel__dots reveal-seq" id="carDots" style="--rd:1"></div>
+          <p class="carousel__counter reveal-seq" id="carCounter" style="--rd:2">1 / 5</p>
         </div>
       </div>
 
       <div class="scroll-hint" id="scrollHint4" aria-hidden="true">
+        <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
+        <span>scroll</span>
+      </div>
+
+      <!-- ---- PANEL TANDA KASIH : amplop digital ----
+           EDIT DI SINI: ganti nama bank & nomor rekening / e-wallet kalian. -->
+      <div class="batik-panel" id="panelGift">
+        <div class="batik-panel__inner" id="panelGiftInner">
+          <h3 class="batik-h reveal-seq" style="--rd:0">Tanda Kasih</h3>
+          <p class="gift-note reveal-seq" style="--rd:1">Doa restu Bapak/Ibu/Saudara/i merupakan karunia terindah bagi kami. Namun apabila berkenan memberi tanda kasih, dapat melalui:</p>
+
+          <div class="gift-list reveal-seq" style="--rd:2">
+            <div class="gift-card">
+              <div class="gift-card__info">
+                <p class="gift-card__bank">BCA</p>
+                <p class="gift-card__number" id="giftNum1">1234567890</p>
+                <p class="gift-card__name">a.n. Najmi Dewi Utami</p>
+              </div>
+              <button type="button" class="gift-copy-btn" data-copy-target="giftNum1">Salin</button>
+            </div>
+            <div class="gift-card">
+              <div class="gift-card__info">
+                <p class="gift-card__bank">Mandiri</p>
+                <p class="gift-card__number" id="giftNum2">0987654321</p>
+                <p class="gift-card__name">a.n. Bagas Prastantyo</p>
+              </div>
+              <button type="button" class="gift-copy-btn" data-copy-target="giftNum2">Salin</button>
+            </div>
+          </div>
+
+          <p class="gift-toast" id="giftToast">Nomor tersalin ✓</p>
+        </div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHintGift" aria-hidden="true">
         <svg class="scroll-hint__mouse" viewBox="0 0 26 42" fill="none"><rect x="1.5" y="1.5" width="23" height="39" rx="11.5" stroke="white" stroke-width="1.6"/><circle class="scroll-hint__dot" cx="13" cy="12" r="3" fill="white"/></svg>
         <span>scroll</span>
       </div>
@@ -247,6 +1184,725 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="assets/js/firebase-config.js"></script>
-<script src="assets/js/script.js"></script>
+<!-- ^ file iki tetep kepisah (isine kredensial Firebase), ora melu digabung
+     supaya gampang diganti tanpa mbukak file utama iki -->
+
+<script>
+/* =========================================================================
+   UNDANGAN DEWI & BAGAS — script (mau file kepisah script.js, saiki digabung
+   neng kene ben sakabehe cukup 1 file HTML sing diedit).
+
+   Cara kerja singkat:
+   - #scrollTrack dibuat dhuwur banget (total vh seko PHASES ing ngisor
+     iki + 100vh). #stage ing njerone position:sticky, dadi "kanvas"
+     sing tetep katon nalika discroll.
+   - Saben scroll, dihitung "scrolledVh" (piro vh sing wis kelewat),
+     banjur dicocokke karo PHASES kanggo nemtokke scene/panel endi sing
+     lagi aktif lan progress transisi (0..1) kanggo animasi zoom/fade.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  /* ===================================================================
+     0. SETUP VIEWPORT HEIGHT (dvh polyfill kanggo browser lawas/HP)
+  =================================================================== */
+  function setVH() {
+    document.documentElement.style.setProperty("--vh100", window.innerHeight + "px");
+  }
+  setVH();
+  window.addEventListener("resize", setVH);
+  window.addEventListener("orientationchange", setVH);
+
+  /* ===================================================================
+     1. GUEST NAME seko URL ?to=
+  =================================================================== */
+  (function guestName() {
+    var params = new URLSearchParams(window.location.search);
+    var to = params.get("to");
+    var el = document.getElementById("guestName");
+    if (to && el) el.textContent = decodeURIComponent(to.replace(/\+/g, " "));
+  })();
+
+  /* ===================================================================
+     2. LOADER — ilang pas kabeh gambar utama wis siap (utawa max 2.2s)
+  =================================================================== */
+  (function loader() {
+    var loaderEl = document.getElementById("loader");
+    if (!loaderEl) return;
+    var hide = function () { loaderEl.classList.add("is-hidden"); };
+    var imgs = document.querySelectorAll("#cover img, #scene1 img, #scene2 img");
+    var total = imgs.length, loaded = 0, done = false;
+    function check() {
+      loaded++;
+      if (loaded >= total && !done) { done = true; setTimeout(hide, 250); }
+    }
+    if (!total) { hide(); return; }
+    imgs.forEach(function (img) {
+      if (img.complete) check();
+      else {
+        img.addEventListener("load", check);
+        img.addEventListener("error", check);
+      }
+    });
+    setTimeout(function () { if (!done) { done = true; hide(); } }, 2200);
+  })();
+
+  /* ===================================================================
+     3. COVER — buka pintu
+  =================================================================== */
+  var cover = document.getElementById("cover");
+  var openBtn = document.getElementById("openInvitation");
+  var bgm = document.getElementById("bgm");
+  document.body.classList.add("lock-scroll");
+
+  var coverOpened = false;
+
+  if (openBtn) {
+    openBtn.addEventListener("click", function () {
+      if (cover.classList.contains("is-open")) return;
+      cover.classList.add("is-closing");
+
+      if (bgm) {
+        bgm.volume = 0.85;
+        bgm.play().then(function () {
+          var btn = document.getElementById("musicBtn");
+          if (btn) btn.classList.add("is-playing");
+        }).catch(function () { /* dibiarke, user isih iso mencet tombol musik manual */ });
+      }
+
+      setTimeout(function () {
+        cover.classList.add("is-open");
+      }, 260);
+
+      setTimeout(function () {
+        document.body.classList.remove("lock-scroll");
+        window.scrollTo(0, 0);
+        coverOpened = true;
+        if (typeof renderNow === "function") renderNow();
+      }, 260 + 950);
+    });
+  }
+
+  /* ===================================================================
+     4. MUSIK — toggle play/pause + nada mengambang
+  =================================================================== */
+  var musicBtn = document.getElementById("musicBtn");
+  var notesLayer = document.getElementById("notesLayer");
+  var noteImgs = ["not-a", "not-b", "not-c", "not-d"];
+  var noteTimer = null;
+
+  function spawnNote() {
+    if (!notesLayer) return;
+    var note = document.createElement("img");
+    var pick = noteImgs[Math.floor(Math.random() * noteImgs.length)];
+    note.src = "assets/images/" + pick + ".webp";
+    note.className = "note";
+    note.alt = "";
+    var offsetX = (Math.random() * 60 - 30).toFixed(1);
+    var rot = (Math.random() * 30 - 15).toFixed(1);
+    note.style.left = "calc(70.4% + " + offsetX + "px)";
+    note.style.top = "68%";
+    note.style.setProperty("--rot", rot + "deg");
+    note.style.width = (16 + Math.random() * 12).toFixed(0) + "px";
+    notesLayer.appendChild(note);
+    setTimeout(function () { note.remove(); }, 2700);
+  }
+
+  function startNotes() {
+    stopNotes();
+    spawnNote();
+    noteTimer = setInterval(spawnNote, 550);
+  }
+  function stopNotes() {
+    if (noteTimer) {
+      clearInterval(noteTimer);
+      noteTimer = null;
+    }
+    if (notesLayer) {
+      notesLayer.innerHTML = "";
+    }
+  }
+
+  if (musicBtn && bgm) {
+    musicBtn.addEventListener("click", function () {
+      if (bgm.paused) {
+        bgm.play().catch(function () {});
+      } else {
+        bgm.pause();
+      }
+    });
+    bgm.addEventListener("play", function () {
+      musicBtn.classList.add("is-playing");
+      startNotes();
+    });
+    bgm.addEventListener("pause", function () {
+      musicBtn.classList.remove("is-playing");
+      stopNotes();
+    });
+  }
+
+  /* ===================================================================
+     5. MEGA MENDUNG — awan batik ngambang random neng ndhuwur & ngisor
+  =================================================================== */
+  (function initClouds() {
+    var top = document.getElementById("megaTop");
+    var bottom = document.getElementById("megaBottom");
+    if (!top || !bottom) return;
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    function fill(container, edge) {
+      var count = 4;
+      for (var i = 0; i < count; i++) {
+        var img = document.createElement("img");
+        img.src = "assets/images/mega-" + (Math.random() < 0.5 ? "1" : "2") + ".webp";
+        img.alt = "";
+        img.className = "cloud";
+        var size = rand(260, 360);
+        img.style.width = size + "px";
+        img.style.left = rand(-15, 70) + "%";
+        if (edge === "top") img.style.top = rand(-35, -25) + "%";
+        else img.style.bottom = rand(-35, -25) + "%";
+        img.style.setProperty("--rot", rand(-6, 6).toFixed(1) + "deg");
+        img.style.setProperty("--sway", rand(8, 18).toFixed(0) + "px");
+        img.style.animationDuration = rand(5, 8.5).toFixed(1) + "s";
+        img.style.animationDelay = "-" + rand(0, 6).toFixed(1) + "s";
+        img.style.opacity = rand(0.75, 1).toFixed(2);
+        img.style.zIndex = Math.round(rand(1, 3));
+        container.appendChild(img);
+      }
+    }
+    fill(top, "top");
+    fill(bottom, "bottom");
+  })();
+
+  /* ===================================================================
+     6. COUNTDOWN
+  =================================================================== */
+  (function initCountdown() {
+    var el = document.getElementById("countdown");
+    if (!el) return;
+    var target = new Date(el.getAttribute("data-target")).getTime();
+    var dEl = document.getElementById("cdDays");
+    var hEl = document.getElementById("cdHours");
+    var mEl = document.getElementById("cdMinutes");
+    var sEl = document.getElementById("cdSeconds");
+    function pad(n) { return String(n).padStart(2, "0"); }
+    function tick() {
+      var diff = target - Date.now();
+      if (diff < 0) diff = 0;
+      var days = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins = Math.floor((diff % 3600000) / 60000);
+      var secs = Math.floor((diff % 60000) / 1000);
+      if (dEl) dEl.textContent = pad(days);
+      if (hEl) hEl.textContent = pad(hours);
+      if (mEl) mEl.textContent = pad(mins);
+      if (sEl) sEl.textContent = pad(secs);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ===================================================================
+     7. MAPS LINK
+  =================================================================== */
+  (function initMaps() {
+    var link = document.getElementById("mapsLink");
+    if (!link) return;
+    var url = link.getAttribute("data-maps-url");
+    if (url) link.setAttribute("href", url);
+  })();
+
+  /* ===================================================================
+     8. CAROUSEL — panel foto (gedhe, iso diswipe, tanpa titik bunder,
+        ganti karo counter teks "1 / 5")
+  =================================================================== */
+  (function initCarousel() {
+    var img = document.getElementById("carouselImg");
+    var prev = document.getElementById("carPrev");
+    var next = document.getElementById("carNext");
+    var counter = document.getElementById("carCounter");
+    if (!img || !prev || !next) return;
+
+    var total = 5; // EDIT DI SINI yen jumlah foto carousel-N.webp beda
+    var index = 0;
+
+    function render() {
+      img.src = "assets/images/carousel-" + (index + 1) + ".webp";
+      if (counter) counter.textContent = (index + 1) + " / " + total;
+    }
+    prev.addEventListener("click", function () {
+      index = (index - 1 + total) % total;
+      render();
+    });
+    next.addEventListener("click", function () {
+      index = (index + 1) % total;
+      render();
+    });
+
+    // swipe kiri/kanan neng HP
+    var startX = null;
+    var frame = img.closest(".carousel");
+    if (frame) {
+      frame.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+      frame.addEventListener("touchend", function (e) {
+        if (startX === null) return;
+        var dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 40) { dx < 0 ? next.click() : prev.click(); }
+        startX = null;
+      }, { passive: true });
+    }
+  })();
+
+  /* ===================================================================
+     9. TANDA KASIH — salin nomor rekening/e-wallet
+  =================================================================== */
+  (function initGiftCopy() {
+    var toast = document.getElementById("giftToast");
+    var btns = document.querySelectorAll(".gift-copy-btn");
+    if (!btns.length) return;
+    var toastTimer = null;
+
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    function showToast() {
+      if (!toast) return;
+      toast.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove("is-visible"); }, 1800);
+    }
+
+    btns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var targetId = btn.getAttribute("data-copy-target");
+        var el = targetId ? document.getElementById(targetId) : null;
+        if (!el) return;
+        var text = el.textContent.trim();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(showToast).catch(function () {
+            fallbackCopy(text);
+            showToast();
+          });
+        } else {
+          fallbackCopy(text);
+          showToast();
+        }
+      });
+    });
+  })();
+
+  /* ===================================================================
+     10. WISHES — kirim & tampil kanggo kabeh tamu (Firebase Firestore),
+     tiba mode cadangan localStorage yen firebase-config durung diisi.
+  =================================================================== */
+  (function initWishes() {
+    var wishForm = document.getElementById("wishForm");
+    var wishList = document.getElementById("wishList");
+    var wishEmpty = document.getElementById("wishEmpty");
+    if (!wishForm || !wishList) return;
+
+    function escapeHTML(str) {
+      var div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderItem(item) {
+      var el = document.createElement("div");
+      el.className = "wish-item";
+      el.innerHTML =
+        '<div class="wish-item__top">' +
+          '<p class="wish-item__name">' + escapeHTML(item.name) + '</p>' +
+          '<button type="button" class="wish-item__delete" aria-label="Hapus ucapan">🗑</button>' +
+        '</div>' +
+        '<p class="wish-item__msg">' + escapeHTML(item.message) + '</p>';
+      el.querySelector(".wish-item__delete").addEventListener("click", function () {
+        handleDeleteRequest(item.id);
+      });
+      return el;
+    }
+
+    function renderList(items) {
+      Array.prototype.slice.call(wishList.querySelectorAll(".wish-item")).forEach(function (el) { el.remove(); });
+      if (!items.length) { if (wishEmpty) wishEmpty.style.display = ""; return; }
+      if (wishEmpty) wishEmpty.style.display = "none";
+      items.forEach(function (item) { wishList.appendChild(renderItem(item)); });
+    }
+
+    var hasFirebaseConfig =
+      typeof INVITATION_CONFIG !== "undefined" &&
+      typeof firebase !== "undefined" &&
+      INVITATION_CONFIG.firebase &&
+      INVITATION_CONFIG.firebase.apiKey;
+
+    var wishStore;
+
+    if (hasFirebaseConfig) {
+      firebase.initializeApp(INVITATION_CONFIG.firebase);
+      var db = firebase.firestore();
+      var wishesCol = db.collection("invitations").doc(INVITATION_CONFIG.slug).collection("wishes");
+
+      wishesCol.orderBy("createdAt", "desc").onSnapshot(
+        function (snapshot) {
+          var items = snapshot.docs.map(function (doc) {
+            var d = doc.data();
+            return { id: doc.id, name: d.name, message: d.message };
+          });
+          renderList(items);
+        },
+        function (err) { console.error("Firestore error:", err); }
+      );
+
+      wishStore = {
+        add: function (name, message) {
+          return wishesCol.add({
+            name: name,
+            message: message,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        },
+        remove: function (id) { return wishesCol.doc(id).delete(); }
+      };
+    } else {
+      console.warn("Firebase durung dikonfigurasi — ucapan mung kesimpen lokal.");
+      var STORAGE_KEY = "db-wedding-wishes";
+      function loadLocal() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; } }
+      function saveLocal(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {} }
+      renderList(loadLocal().slice().reverse());
+      wishStore = {
+        add: function (name, message) {
+          var list = loadLocal();
+          list.push({ id: "local-" + Date.now(), name: name, message: message });
+          saveLocal(list);
+          renderList(list.slice().reverse());
+          return Promise.resolve();
+        },
+        remove: function (id) {
+          var list = loadLocal().filter(function (w) { return w.id !== id; });
+          saveLocal(list);
+          renderList(list.slice().reverse());
+          return Promise.resolve();
+        }
+      };
+    }
+
+    function handleDeleteRequest(id) {
+      var code = window.prompt("Masukkan kode rahasia untuk menghapus ucapan ini:");
+      if (code === null) return;
+      var secret = (typeof INVITATION_CONFIG !== "undefined" && INVITATION_CONFIG.adminSecret) || "";
+      if (code !== secret) { window.alert("Kode salah, ucapan tidak dihapus."); return; }
+      wishStore.remove(id);
+    }
+
+    wishForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var nameInput = document.getElementById("wishName");
+      var msgInput = document.getElementById("wishMessage");
+      var name = nameInput.value.trim();
+      var message = msgInput.value.trim();
+      if (!name || !message) return;
+      wishStore.add(name, message).catch(function (err) {
+        console.error("Gagal mengirim ucapan:", err);
+        window.alert("Maaf, ucapan gagal terkirim. Coba lagi, ya.");
+      });
+      wishForm.reset();
+    });
+  })();
+
+  /* ===================================================================
+     11. TUTUP UNDANGAN — mateni musik & bali neng cover (reload)
+  =================================================================== */
+  (function initClose() {
+    var btn = document.getElementById("closeBox");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      if (bgm) bgm.pause();
+      document.body.style.transition = "opacity .4s ease";
+      document.body.style.opacity = "0";
+      setTimeout(function () { window.location.reload(); }, 380);
+    });
+  })();
+
+  /* ===================================================================
+     12. SCROLL ENGINE — jantunge efek zoom-scroll & pergantian panel
+     EDIT DI SINI: angka "Hold" = suwene panel katon anteng (vh), angka
+     transisi (contone "s3toLove") = suwene fade pindah panel siji nyang
+     sabanjure. Diundhakke/dicilikke wae angkane nek pengin luwih suwe
+     utawa luwih cepet.
+  =================================================================== */
+  var PHASES = {
+    s1Hold:     150,  // ayat neng scene 1
+    s1to2:      110,  // zoom seko scene 1 -> scene 2 (mlebu bingkai)
+    s2Hold:     150,  // nama mempelai
+    s2to3:      110,  // zoom seko scene 2 -> tembok batik
+    s3Hold:     170,  // panel akad & resepsi
+    s3toLove:    90,  // transisi -> kisah kami
+    loveHold:   200,  // panel kisah kami
+    loveTo4:     90,  // transisi -> momen foto
+    s4Hold:     160,  // panel carousel foto
+    s4toGift:    90,  // transisi -> tanda kasih
+    giftHold:   170,  // panel tanda kasih
+    giftTo5:     90,  // transisi -> ucapan
+    s5Hold:     170,  // panel ucapan
+    s5toClose:   90,  // transisi -> penutup
+    closeHold:   70   // panel penutup
+  };
+
+  var a0 = 0;
+  var a1 = a0 + PHASES.s1Hold;
+  var a2 = a1 + PHASES.s1to2;
+  var a3 = a2 + PHASES.s2Hold;
+  var a4 = a3 + PHASES.s2to3;
+  var a5 = a4 + PHASES.s3Hold;
+  var a6 = a5 + PHASES.s3toLove;
+  var a7 = a6 + PHASES.loveHold;
+  var a8 = a7 + PHASES.loveTo4;
+  var a9 = a8 + PHASES.s4Hold;
+  var a10 = a9 + PHASES.s4toGift;
+  var a11 = a10 + PHASES.giftHold;
+  var a12 = a11 + PHASES.giftTo5;
+  var a13 = a12 + PHASES.s5Hold;
+  var a14 = a13 + PHASES.s5toClose;
+  var a15 = a14 + PHASES.closeHold;
+  var TOTAL_VH = a15;
+
+  var scrollTrack = document.getElementById("scrollTrack");
+  var scene1 = document.getElementById("scene1");
+  var scene2 = document.getElementById("scene2");
+  var batikZone = document.getElementById("batikZone");
+  var panel3 = document.getElementById("panel3");
+  var panelLove = document.getElementById("panelLove");
+  var panel4 = document.getElementById("panel4");
+  var panelGift = document.getElementById("panelGift");
+  var panel5 = document.getElementById("panel5");
+  var panelClose = document.getElementById("panelClose");
+  var megaTop = document.getElementById("megaTop");
+  var megaBottom = document.getElementById("megaBottom");
+
+  var ayatBlock = document.getElementById("ayatBlock");
+  var scene2Names = document.querySelector("#scene2 .scene2__names");
+  var panel3Inner = document.getElementById("panel3Inner");
+  var panelLoveInner = document.getElementById("panelLoveInner");
+  var panel4Inner = document.getElementById("panel4Inner");
+  var panelGiftInner = document.getElementById("panelGiftInner");
+  var panel5Inner = document.getElementById("panel5Inner");
+  var panelCloseInner = document.getElementById("panelCloseInner");
+
+  var hint1 = document.getElementById("scrollHint1");
+  var hint2 = document.getElementById("scrollHint2");
+  var hint3 = document.getElementById("scrollHint3");
+  var hintLove = document.getElementById("scrollHintLove");
+  var hint4 = document.getElementById("scrollHint4");
+  var hintGift = document.getElementById("scrollHintGift");
+  var hint5 = document.getElementById("scrollHint5");
+
+  function setTrackHeight() {
+    scrollTrack.style.height = (TOTAL_VH + 100) + "vh";
+  }
+  setTrackHeight();
+  window.addEventListener("resize", setTrackHeight);
+
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function t(start, end, v) { return clamp01((v - start) / (end - start)); }
+
+  function setPanel(el, opacity) {
+    if (!el) return;
+    el.style.opacity = opacity;
+    el.classList.toggle("is-active", opacity > 0.55);
+  }
+
+  function setGroupVisible(container, visible) {
+    if (!container) return;
+    var items = container.classList.contains("reveal-seq")
+      ? [container]
+      : container.querySelectorAll(".reveal-seq");
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.toggle("is-visible", visible);
+    }
+  }
+
+  function setHintVisible(el, visible) {
+    if (!el) return;
+    el.classList.toggle("is-visible", visible);
+  }
+
+  var scene1TextWasVisible = false;
+
+  function render(v) {
+
+    /* ---- Scene 1 -> 2 (zoom neng figura foto) ---- */
+    var t12 = t(a1, a2, v);
+    var s1Scale = 1 + t12 * 3.6;
+    var s1Opacity = t12 < 0.55 ? 1 : 1 - (t12 - 0.55) / 0.45;
+    scene1.style.transform = "scale(" + s1Scale.toFixed(3) + ")";
+    scene1.style.opacity = Math.max(0, s1Opacity).toFixed(3);
+
+    var s2Scale = 1.32 - 0.32 * clamp01((t12 - 0.25) / 0.75);
+    var s2Opacity = t12 < 0.35 ? 0 : (t12 - 0.35) / 0.65;
+    scene2.style.transform = "scale(" + s2Scale.toFixed(3) + ")";
+    scene2.style.opacity = clamp01(s2Opacity).toFixed(3);
+
+    /* ---- Scene 2 -> batikZone (zoom neng tembok maroon) ---- */
+    var t23 = t(a3, a4, v);
+    if (v >= a2) {
+      var s2ScaleOut = 1 + t23 * 2.8;
+      var s2OpacityOut = t23 < 0.55 ? 1 : 1 - (t23 - 0.55) / 0.45;
+      scene2.style.transform = "scale(" + s2ScaleOut.toFixed(3) + ")";
+      scene2.style.opacity = Math.max(0, s2OpacityOut).toFixed(3);
+    }
+
+    var bzScale = 1.3 - 0.3 * clamp01((t23 - 0.25) / 0.75);
+    var bzOpacity = v < a3 ? 0 : (t23 < 0.35 ? 0 : (t23 - 0.35) / 0.65);
+    batikZone.style.transform = "scale(" + bzScale.toFixed(3) + ")";
+    batikZone.style.opacity = clamp01(bzOpacity).toFixed(3);
+
+    scene1.style.pointerEvents = v < a2 ? "auto" : "none";
+    scene2.style.pointerEvents = (v >= a1 && v < a4) ? "auto" : "none";
+
+    /* ---- Panel 3 / Love / 4 / Gift / 5 / penutup (fade dalam batikZone sing tetep) ---- */
+    var t34    = t(a5, a6, v);    // panel3 -> love
+    var tL2c   = t(a7, a8, v);    // love -> carousel
+    var t45    = t(a9, a10, v);   // carousel -> gift
+    var tG2w   = t(a11, a12, v);  // gift -> ucapan
+    var t5c    = t(a13, a14, v);  // ucapan -> penutup
+
+    var op3, opLove, op4, opGift, op5, opC;
+
+    if (v < a3) op3 = 0;
+    else if (v < a4) op3 = t23;
+    else if (v < a5) op3 = 1;
+    else if (v < a6) op3 = 1 - t34;
+    else op3 = 0;
+
+    if (v < a5) opLove = 0;
+    else if (v < a6) opLove = t34;
+    else if (v < a7) opLove = 1;
+    else if (v < a8) opLove = 1 - tL2c;
+    else opLove = 0;
+
+    if (v < a7) op4 = 0;
+    else if (v < a8) op4 = tL2c;
+    else if (v < a9) op4 = 1;
+    else if (v < a10) op4 = 1 - t45;
+    else op4 = 0;
+
+    if (v < a9) opGift = 0;
+    else if (v < a10) opGift = t45;
+    else if (v < a11) opGift = 1;
+    else if (v < a12) opGift = 1 - tG2w;
+    else opGift = 0;
+
+    if (v < a11) op5 = 0;
+    else if (v < a12) op5 = tG2w;
+    else if (v < a13) op5 = 1;
+    else if (v < a14) op5 = 1 - t5c;
+    else op5 = 0;
+
+    if (v < a13) opC = 0;
+    else if (v < a14) opC = t5c;
+    else opC = 1;
+
+    setPanel(panel3, clamp01(op3));
+    setPanel(panelLove, clamp01(opLove));
+    setPanel(panel4, clamp01(op4));
+    setPanel(panelGift, clamp01(opGift));
+    setPanel(panel5, clamp01(op5));
+    setPanel(panelClose, clamp01(opC));
+
+    /* ---- Mega mendung fade + drift pas nutup ---- */
+    var cloudOpacity = v < a4 ? 0 : (v <= a13 ? 1 : clamp01(1 - t5c));
+    megaTop.style.opacity = cloudOpacity.toFixed(3);
+    megaBottom.style.opacity = cloudOpacity.toFixed(3);
+    megaTop.style.transform = "translateY(" + (-30 * (1 - cloudOpacity)).toFixed(1) + "px)";
+    megaBottom.style.transform = "translateY(" + (30 * (1 - cloudOpacity)).toFixed(1) + "px)";
+
+    /* =================================================================
+       TEXT FADE IN/OUT — saben panel "kosong dhisik", teks muncul
+       elegan, banjur ilang elegan sadurunge pindah panel sabanjure.
+    ================================================================= */
+    var scene1TextVisible = coverOpened && v >= a0 && v < (a1 - 34);
+    setGroupVisible(ayatBlock, scene1TextVisible);
+
+    if (scene1TextVisible && !scene1TextWasVisible) {
+      if (bgm && !bgm.paused) startNotes();
+    } else if (!scene1TextVisible && scene1TextWasVisible) {
+      stopNotes();
+    }
+    scene1TextWasVisible = scene1TextVisible;
+
+    var scene2TextVisible = v >= (a2 + 6) && v < (a3 - 26);
+    setGroupVisible(scene2Names, scene2TextVisible);
+
+    var panel3TextVisible = v >= (a4 + 18) && v < (a5 - 18);
+    setGroupVisible(panel3Inner, panel3TextVisible);
+
+    var panelLoveTextVisible = v >= (a6 + 18) && v < (a7 - 18);
+    setGroupVisible(panelLoveInner, panelLoveTextVisible);
+
+    var panel4TextVisible = v >= (a8 + 12) && v < (a9 - 12);
+    setGroupVisible(panel4Inner, panel4TextVisible);
+
+    var panelGiftTextVisible = v >= (a10 + 18) && v < (a11 - 18);
+    setGroupVisible(panelGiftInner, panelGiftTextVisible);
+
+    var panel5TextVisible = v >= (a12 + 18) && v < (a13 - 18);
+    setGroupVisible(panel5Inner, panel5TextVisible);
+
+    var panelCloseTextVisible = v >= (a14 + 10);
+    setGroupVisible(panelCloseInner, panelCloseTextVisible);
+
+    /* ---- petunjuk scroll (ikon mouse) ---- */
+    setHintVisible(hint1, coverOpened && v >= a0 && v < (a1 - 10));
+    setHintVisible(hint2, v >= (a2 + 4) && v < (a3 - 10));
+    setHintVisible(hint3, v >= (a4 + 10) && v < (a5 - 10));
+    setHintVisible(hintLove, v >= (a6 + 10) && v < (a7 - 10));
+    setHintVisible(hint4, v >= (a8 + 6) && v < (a9 - 10));
+    setHintVisible(hintGift, v >= (a10 + 10) && v < (a11 - 10));
+    setHintVisible(hint5, v >= (a12 + 10) && v < (a13 - 10));
+  }
+
+  /* ---- rAF loop karo "lerp" supaya animasi zoom luwih alus ---- */
+  var currentVh = 0;
+  var targetVh = 0;
+
+  function computeTargetVh() {
+    var trackTop = scrollTrack.offsetTop;
+    var vhPx = window.innerHeight;
+    var y = window.scrollY - trackTop;
+    return clamp01(y / vhPx / (TOTAL_VH / 100)) * TOTAL_VH;
+  }
+
+  function loop() {
+    targetVh = computeTargetVh();
+    var diff = targetVh - currentVh;
+    if (Math.abs(diff) > 0.015) {
+      currentVh += diff * 0.15;
+    } else {
+      currentVh = targetVh;
+    }
+    render(currentVh);
+    requestAnimationFrame(loop);
+  }
+
+  function renderNow() {
+    currentVh = computeTargetVh();
+    render(currentVh);
+  }
+
+  requestAnimationFrame(loop);
+  render(0);
+
+})();
+</script>
 </body>
 </html>
