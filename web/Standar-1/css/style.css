@@ -107,11 +107,19 @@ button { font-family: inherit; cursor: pointer; }
      native fixed pinning this way: rock solid, zero jitter. */
 }
 
-@media (min-aspect-ratio: 9/16) {
+@media (min-aspect-ratio: 9/16) and (pointer: fine) {
   /* wide/desktop viewport: letterbox the experience like a phone.
      Only HERE do we need a containing block to keep fixed/pinned content
      from escaping to full browser width — see js/main.js, which switches
-     GSAP to pinType:"transform" only when this same condition is true. */
+     GSAP to pinType:"transform" only when this same condition is true.
+     "(pointer: fine)" wajib dibarengke: tanpa iki, iPhone Safari isa
+     "keliru" katon kaya wide-viewport pas kaca lagi mbukak (chrome Safari
+     during lengkap during ndelik, dadi innerHeight during cendhek), sing
+     nyebabke #stage kejiret letterbox ing HP normal — asile: black-bar
+     kiwa-tengen (max-width kejiret) lan scroll-cue "ketutupan" (dadi
+     position:fixed marang #stage sak kabehe, dudu marang layar). Nganggo
+     "pointer: fine" (mouse tenanan), kondisi iki mung tenanan aktif ing
+     desktop/laptop, ora bakal misfire ing HP/tablet layar-sentuh. */
   #stage {
     transform: translateZ(0);
     box-shadow: 0 0 80px rgba(0,0,0,0.6);
@@ -948,7 +956,9 @@ html.no-scrollstory #section6 footer.s6-credit {
 @media (max-width: 820px) {
   .scroll-cue {
     right: 14px;
-    bottom: 16px;
+    /* + safe-area: jaga-jaga ben ora ketutupan home-indicator/gesture bar
+       ing HP sing duwe "notch" ngisor (iPhone tanpa tombol Home). */
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
   .scroll-cue__label--desktop { display: none; }
   .scroll-cue__label--mobile { display: inline-block; }
@@ -999,5 +1009,5 @@ html.no-scrollstory #section6 footer.s6-credit {
 }
 
 @media (max-width: 820px) {
-  .music-toggle { left: 12px; bottom: 16px; width: 30px; height: 30px; }
+  .music-toggle { left: 12px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 30px; height: 30px; }
 }
