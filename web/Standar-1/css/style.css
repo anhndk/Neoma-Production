@@ -83,7 +83,18 @@ button { font-family: inherit; cursor: pointer; }
 #stage {
   position: relative;
   width: 100%;
-  max-width: calc(var(--stage-h) * 0.5625); /* never wider than a 9:16 phone */
+  /* max-width (phone-shape cap) SENGAJA ora didekekke ing kene wae —
+     saiki mung ana ing njero @media (min-aspect-ratio: 9/16) and
+     (pointer: fine) ing ngisor. Alesan: rumus "var(--stage-h) * 0.5625"
+     nganggo 100svh, yaiku dhuwur viewport SING WIS DIKURANGI chrome
+     Safari (address bar + tab bar). Ing iPhone, dhuwur sing wis
+     dikurangi iki asring nggawe rasio width:height "katon" luwih amba
+     tinimbang 9:16 tenane, sanajan HP-e jelas dhuwur/portrait — akibate
+     max-width iki kejiret CENDHEK TINIMBANG LEBAR LAYAR TENANAN, gawe
+     black-bar kiwa-tengen sanajan mode letterbox desktop during aktif.
+     Ing HP/tablet ora perlu cap iki babar pisan (wis mesthi "phone
+     shaped" amarga pancen layar tenanan), dadi paling aman mung
+     ditrapke ing desktop tenanan wae — ing njero media query. */
   margin: 0 auto;
   background: var(--void);
   overflow: hidden;
@@ -121,8 +132,12 @@ button { font-family: inherit; cursor: pointer; }
      "pointer: fine" (mouse tenanan), kondisi iki mung tenanan aktif ing
      desktop/laptop, ora bakal misfire ing HP/tablet layar-sentuh. */
   #stage {
+    max-width: calc(var(--stage-h) * 0.5625); /* never wider than a 9:16 phone */
     transform: translateZ(0);
     box-shadow: 0 0 80px rgba(0,0,0,0.6);
+  }
+  #splash {
+    max-width: calc(var(--stage-h) * 0.5625);
   }
 }
 
@@ -158,7 +173,11 @@ button { font-family: inherit; cursor: pointer; }
      supaya unit cqi ing .splash-logo tetep ngukur marang lebar iki
      (dudu lebar browser mentah). */
   width: 100%;
-  max-width: calc(var(--stage-h) * 0.5625);
+  /* max-width (padha karo #stage) mung ditrapke ing desktop tenanan —
+     delok @media (min-aspect-ratio: 9/16) and (pointer: fine) ing
+     ndhuwur, alesane padha: yen dipeksa aktif ing kene (unconditional),
+     rumus 0.5625 nganggo 100svh isa kejiret cendhek tinimbang lebar
+     layar tenanan ing iPhone, splash dadi katon black-bar sedhela. */
   margin: 0 auto;
   container-type: inline-size;
   background: var(--void);
