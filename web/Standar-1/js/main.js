@@ -75,7 +75,23 @@
      ScrollTrigger gagal dimuat / error, kelas "no-scrollstory" ditambahke
      menyang  lan CSS njupuk alih nampilke kabeh konten statis
      ================================================================ */
-  const isWideStage = window.matchMedia("(min-aspect-ratio: 9/16)").matches;
+  /* isWideStage kudu mung TRUE ing desktop tenanan. Yen mung dicek nganggo
+     "(min-aspect-ratio: 9/16)" wae, iki gampang keliru ing iPhone Safari:
+     pas kaca lagi kebuka, chrome Safari (address bar + tab bar) during
+     kanthi lengkap during ndelik, dadi window.innerHeight during cendhek
+     banget — ratio width/height iPhone bisa "katon" >= 9/16 sanajan HP-e
+     jelas dhuwur/portrait. Nek kedadeyan, #stage kejiret dadi mode
+     "letterbox desktop" (transform + box-shadow) ing HP normal, sing
+     nyebabke: (1) max-width #stage dietung soko svh sing during cilik ->
+     katon black-bar kiwa-tengen, (2) #stage dadi containing block kanggo
+     kabeh anak position:fixed (kalebu .scroll-cue) -> "bottom" saiki
+     ngetung soko dhuwure #stage SAK KABEHE (ewon px), dudu soko ngisor
+     layar, dadi scroll-cue "ilang"/ketutupan.
+     Tambahan "(pointer: fine)" ndadekke kondisi mung kanggo perangkat sing
+     nganggo mouse tenanan (desktop/laptop) — HP/tablet layar-sentuh (sing
+     "pointer"-e "coarse") ora bakal tau kejiret mode iki, sepiro wae
+     aspect-ratio-ne pas kebuka. */
+  const isWideStage = window.matchMedia("(min-aspect-ratio: 9/16) and (pointer: fine)").matches;
   function stagePinType() {
     return isWideStage ? "transform" : undefined;
   }
