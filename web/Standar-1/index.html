@@ -41,6 +41,28 @@
     <img class="music-toggle__vinyl" src="assets/img/vinyl.png" alt="">
   </button>
 
+  <!-- ============ SCROLL / SWIPE CUE ============
+       Sengaja DIJABA #stage, padha persis karo alesan #musicToggle ing
+       dhuwur — nanging alesane rada beda lan luwih jero: dudu mung
+       "transform" wae sing gawe #stage dadi containing block kanggo
+       anak position:fixed, nanging "container-type: inline-size" (kanggo
+       unit cqi) SAK ETENGE UGA nggawe efek sing padha miturut spesifikasi
+       CSS Containment — SANAJAN #stage during entuk transform (contone
+       ing HP, ing njero media query aspect-ratio during during aktif).
+       Dadi nalika .scroll-cue during dilebokke NJERO #stage, "bottom"-e
+       tansah ngetung soko dhuwure #stage SAK KABEHE (ewon px, kabeh
+       scroll-story), dudu soko ngisor layar tenanan — kedadeyan iki ing
+       KABEH device/aspect-ratio, dudu mung ing desktop, mulane mbiyen
+       .music-toggle (sing pancen wis njaba #stage) tetep normal nanging
+       .scroll-cue tetep ora katon senajan mode letterbox desktop wis
+       dipateni kanggo layar sentuh. .scroll-cue ora nganggo unit cqi
+       babar pisan, dadi aman dipindhah mrene (njaba #stage). -->
+  <div class="scroll-cue" id="scrollCue" aria-hidden="true">
+    <span class="scroll-cue__label scroll-cue__label--desktop">Scroll</span>
+    <span class="scroll-cue__label scroll-cue__label--mobile">Swipe</span>
+    <span class="scroll-cue__line"><span class="scroll-cue__glow"></span></span>
+  </div>
+
 <div id="stage">
 
   <!-- ============ COVER ============ -->
@@ -68,12 +90,6 @@
       <button class="open-btn" id="open-btn" type="button">Buka Undangan</button>
     </div>
   </section>
-
-  <div class="scroll-cue" id="scrollCue" aria-hidden="true">
-    <span class="scroll-cue__label scroll-cue__label--desktop">Scroll</span>
-    <span class="scroll-cue__label scroll-cue__label--mobile">Swipe</span>
-    <span class="scroll-cue__line"><span class="scroll-cue__glow"></span></span>
-  </div>
 
   <!-- ============ SECTION 1 — ayat & identitas ============ -->
   <div class="pin-spacer-1" id="pin-spacer-1">
