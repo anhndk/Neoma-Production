@@ -107,10 +107,31 @@
   // progress 0 pas top track kena top layar, progress 1 pas bottom
   // track kena bottom layar — yaiku "scrollable" = tinggi track
   // (tabel svh ing REFACTOR-BRIEF.md) dikurangi siji layar (vh).
+  // vh sing dipakai ngitung progress DIKUNCI ing kene (dudu langsung
+  // window.innerHeight sing dibaca live saben frame kaya sadurunge).
+  // Alesan: window.innerHeight owah saben browser chrome (address bar
+  // Safari, toolbar Chrome, KAHANAN keyboard HP) mbukak/nutup — kuwi
+  // KEDADEYAN SANAJAN window.scrollY ORA OWAH BABAR PISAN (contone: tamu
+  // mandheg scroll pas cedhak kothak form, banjur NGETAP layar — tap
+  // kuwi dhewe iso micu Safari nampilke maneh address bar sing mau
+  // ndhelik). Yen vh melu owah, "scrollable" (trackHeight - vh) uga
+  // katut owah, dadi PROGRESS uga katut owah senajan scrollY tetep —
+  // akibate jendhela wektu sing nyetel #s5-pane-doa pointerEvents:auto
+  // (buildSection5Reveal ing ngisor) dadi target sing "mlaku dhewe",
+  // katon kaya kudu "pas banget" pas ngetap kothak, tur bisa uga tetep
+  // "pas banget" senajan durung ana keyboard blas (iki sing dilapurke
+  // tamu). Cara ngatasi: niru semangat svh ing CSS — vh dikunci ing
+  // nilai stabil (scrollStoryVH), mung dikalkulasi ulang pas ana
+  // owahan LEBAR layar tenanan (device diputer/di-resize tenanan),
+  // dudu saben chrome browser mbukak/nutup (sing biasane ora ngganti
+  // lebar, mung dhuwur).
+  let scrollStoryVH = window.innerHeight;
+  let scrollStoryViewportWidth = window.innerWidth;
+
   let scrollStoryRafPending = false;
   function updateScrollStory() {
     scrollStoryRafPending = false;
-    const vh = window.innerHeight;
+    const vh = scrollStoryVH;
     for (let i = 0; i < scrollStoryTracks.length; i++) {
       const track = scrollStoryTracks[i];
       const rect = track.el.getBoundingClientRect();
@@ -124,11 +145,50 @@
       if (track.onProgress) track.onProgress(progress);
     }
   }
+  // FREEZE nalika lagi fokus ngisi form ucapan (#s5-pane-doa): tanpa iki,
+  // pas keyboard HP mbukak (window.innerHeight langsung suda akeh) utawa
+  // browser dhewe auto-scroll kanggo nampilke input ndhuwur keyboard,
+  // kaloro kedadeyan kuwi micu listener "resize"/"scroll" ing ngisor iki
+  // → updateScrollStory() ngitung progress ANYAR nganggo scrollY/vh sing
+  // wis owah → progress iso "kepleset" metu saka jendhela wektu timeline
+  // sing nyetel #s5-pane-doa pointerEvents:auto (delok buildSection5Reveal
+  // ing ngisor) → kothak sing mau katon lan iso diklik dadi
+  // ndadak-ora-iso-diisi PAS pas lagi arep diklik/ngetik, dudu amarga
+  // salah posisi scroll. Iki sing dirasakke tamu minangka "kudu pas
+  // banget". Solusi: sak suwene salah siji kolom form fokus, progress
+  // dikunci (ora dihitung ulang) — resik owah maneh sepisan pas blur,
+  // nganggo posisi scroll/viewport sing wis stabil.
+  let s5FormFieldFrozen = false;
+  function initSection5ScrollStoryFreeze() {
+    $$(".s5-field").forEach((field) => {
+      field.addEventListener("focus", () => { s5FormFieldFrozen = true; });
+      field.addEventListener("blur", () => {
+        s5FormFieldFrozen = false;
+        onScrollStoryScroll(); // sinkronke maneh nganggo posisi sing wis stabil
+      });
+    });
+  }
   function onScrollStoryScroll() {
+    if (s5FormFieldFrozen) return;
     if (!scrollStoryRafPending) {
       scrollStoryRafPending = true;
       requestAnimationFrame(updateScrollStory);
     }
+  }
+  // Listener resize KUDU kapisah karo scroll (dudu langsung nyeluk
+  // onScrollStoryScroll kaya sadurunge): kene sing nemtokke KAPAN
+  // scrollStoryVH oleh di-recalibrate. Mung recalibrate yen LEBAR
+  // (innerWidth) tenanan owah — kuwi tandha resize/orientation tenanan
+  // (dudu mung chrome browser/keyboard mbukak-nutup, sing ganti dhuwur
+  // tanpa ngganti lebar). Yen sengaja diowahi saben resize event kaya
+  // sadurunge, vh dadi katut "melu" address bar/keyboard maneh — bali
+  // menyang bug sing padha.
+  function onScrollStoryResize() {
+    if (window.innerWidth !== scrollStoryViewportWidth) {
+      scrollStoryViewportWidth = window.innerWidth;
+      scrollStoryVH = window.innerHeight;
+    }
+    onScrollStoryScroll();
   }
   // Diekspos global supaya skrip inline ing index.html (splash/tombol
   // "Buka Undangan", dipisah sengaja saka main.js — delok komentare
@@ -502,6 +562,7 @@
     initMapButton();
     initCarousel();
     initSection5Interactions();
+    initSection5ScrollStoryFreeze();
     initWishes();
     initScrollCue();
 
@@ -516,7 +577,7 @@
         buildSection6();
 
         window.addEventListener("scroll", onScrollStoryScroll, { passive: true });
-        window.addEventListener("resize", onScrollStoryScroll, { passive: true });
+        window.addEventListener("resize", onScrollStoryResize, { passive: true });
         updateScrollStory(); // posisi awal sing bener sadurunge scroll pisanan
 
         scrollStoryOk = true;
