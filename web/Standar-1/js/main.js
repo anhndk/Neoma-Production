@@ -292,14 +292,29 @@
 
     const tl = gsap.timeline({ paused: true });
 
-    tl.to("#s5-pane-doa", { opacity: 1, duration: 1, ease: "power1.out" })
-      .set("#s5-pane-doa", { pointerEvents: "auto" })
-      .to("#s5-pane-doa", { opacity: 1, duration: 1.6 })
-      .to("#s5-pane-doa", { opacity: 0, duration: 0.9, ease: "power1.in" })
+    // Timeline iki tetep siji (durung dipisah dadi 2 pin-spacer/section)
+    // amarga sing sakjane nyebabke "kudu pas banget/kudu 3x scroll lagi
+    // iso diklik, scroll ke-4 ilang" DUDU amarga do'a lan gift ditumpuk
+    // dadi siji section, nanging amarga jendhela "pointerEvents: auto"
+    // mung ~40% saka total dawa scroll section iki (dietung saka
+    // durasi timeline mbiyen) — misah dadi 2 section thok, tanpa
+    // ngganti proporsi iki, ISIH bisa nglairke bug sing padha persis
+    // ing saben section anyar. Sing bener-bener didandani ing kene:
+    // proporsi fase "HOLD" (nalika ora ana animasi apa-apa lan
+    // pointerEvents wis "auto") saiki dilebokke dominan banget —
+    // ~53% kanggo do'a, ~46% kanggo gift — dene fase fade-in/fade-out
+    // (durasi 0.5) mung sithik banget saka total. #s5-pane-doa uga
+    // disetel pointerEvents:"auto" PALING WIWITAN (t=0, sadurunge
+    // fade-in rampung), dudu ngenteni opacity 1 dhisik, supaya jendhela
+    // "aman diklik"-e wiwit paling gasik sing mungkin.
+    tl.set("#s5-pane-doa", { pointerEvents: "auto" })
+      .to("#s5-pane-doa", { opacity: 1, duration: 0.5, ease: "power1.out" })
+      .to("#s5-pane-doa", { opacity: 1, duration: 5 }) // HOLD jembar — zona aman diklik
+      .to("#s5-pane-doa", { opacity: 0, duration: 0.5, ease: "power1.in" })
       .set("#s5-pane-doa", { pointerEvents: "none" })
-      .to("#s5-pane-gift", { opacity: 1, duration: 1, ease: "power1.out" }, "<")
+      .to("#s5-pane-gift", { opacity: 1, duration: 0.5, ease: "power1.out" }, "<")
       .set("#s5-pane-gift", { pointerEvents: "auto" })
-      .to("#s5-pane-gift", { opacity: 1, duration: 1.4 })
+      .to("#s5-pane-gift", { opacity: 1, duration: 4 }) // HOLD jembar
       .to("#wipe-bar-6", { yPercent: 0, duration: 1.2, ease: "power2.inOut" });
 
     registerScrollStory("#pin-spacer-5", tl);
