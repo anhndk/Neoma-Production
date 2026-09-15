@@ -516,7 +516,11 @@
         gsap.registerPlugin(ScrollTrigger);
         ScrollTrigger.config({ ignoreMobileResize: true });
 
-        try { ScrollTrigger.normalizeScroll(true); } catch (err) { /* noop */ }
+        try { /* ScrollTrigger.normalizeScroll(true); */ } catch (err) { /* noop */ }
+        // ^ dipateni: normalizeScroll ngambil-alih native scroll nganggo
+        // transform JS, iku sing nyebabke Safari ora gelem ndelikke
+        // address bar pas discroll (beda karo undangan pembanding sing
+        // scroll native/sticky, bar-e gelem ndelik normal).
 
         buildSection1();
         buildSection2();
