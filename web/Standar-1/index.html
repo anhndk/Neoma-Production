@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id" class="locked">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Undangan Pernikahan — Arka &amp; Ditha</title>
+<meta name="description" content="Undangan pernikahan Gabriel Arka Pradipta &amp; Bernadeta Ninditha Herdianti — Sabtu, 10 Oktober 2026">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<audio id="bg-music" loop preload="none" src="assets/audio/music.mp3"></audio>
+
+<!-- ============ SPLASH ============
+     Sengaja DIJABA #stage (dudu ing njerone). #stage nampa transform
+     ing desktop/wide-viewport (kanggo efek letterbox), lan transform
+     kasebut ndadekke #stage dadi "containing block" kanggo kabeh anak
+     sing position:fixed — nek #splash isih ing njero #stage, ing
+     desktop dheweke bakal "ngukur dhewe" marang dhuwure #stage SAK
+     KABEHE (kabeh section sing ewon px dhuwure), dudu marang layar
+     sing katon, dadi logo kesorong adoh metu layar (iki sing gawe
+     "logo ora katon" ing desktop). Ing njaba #stage, #splash tetep
+     fixed marang viewport asli, aman ing mode apa wae. -->
+  <div id="splash" aria-hidden="true">
+    <img class="splash-logo" src="assets/img/logo-only.svg" alt="">
+  </div>
+
+  <!-- ============ MUSIC TOGGLE (vinyl) ============
+       Sengaja DIJABA #stage (padha karo alesan #splash ing dhuwur): ing
+       desktop/wide-viewport #stage dadi "containing block" kanggo
+       position:fixed, dadi "bottom" bakal ngetung marang dhuwur #stage
+       SAK KABEHE (ewon vh, kabeh scroll-story) — tombol kesorong adoh
+       metu layar. Ing njaba #stage, tombol tetep fixed marang viewport
+       asli, aman ing desktop lan HP. -->
+  <button type="button" class="music-toggle" id="musicToggle" aria-label="Putar/hentikan musik" aria-pressed="false">
+    <img class="music-toggle__vinyl" src="assets/img/vinyl.png" alt="">
+  </button>
+
+<div id="stage">
+
+  <!-- ============ COVER ============ -->
+  <section id="cover" class="screen-fill">
+    <div class="cover-bg-layer">
+      <img class="cover-bg is-active" src="assets/img/img-1.jpg" alt="">
+      <img class="cover-bg" src="assets/img/img-2.jpg" alt="">
+      <img class="cover-bg" src="assets/img/img-3.jpg" alt="">
+    </div>
+
+    <div class="cover-scrim"></div>
+
+    <div class="cover-content">
+      <div class="cover-top">
+        <span class="kicker">Undangan</span>
+        <span class="the-date">10.10.2026</span>
+      </div>
+
+      <div class="cover-guest">
+        <span class="to-label">Kepada Yth.</span>
+        <span class="guest-name" id="guest-name">Nama Tamu</span>
+        <span class="at-place">di tempat</span>
+      </div>
+
+      <button class="open-btn" id="open-btn" type="button">Buka Undangan</button>
+    </div>
+  </section>
+
+  <div class="scroll-cue" id="scrollCue" aria-hidden="true">
+    <span class="scroll-cue__label scroll-cue__label--desktop">Scroll</span>
+    <span class="scroll-cue__label scroll-cue__label--mobile">Swipe</span>
+    <span class="scroll-cue__line"><span class="scroll-cue__glow"></span></span>
+  </div>
+
+  <!-- ============ SECTION 1 — ayat & identitas ============ -->
+  <div class="pin-spacer-1" id="pin-spacer-1">
+    <section id="section1" class="screen-fill">
+
+      <img class="s1-bg" src="assets/img/img-1.jpg" alt="Arka &amp; Ditha">
+
+      <div class="s1-verse" id="s1-verse">
+        <blockquote>
+          &ldquo;Demikianlah mereka bukan lagi dua, melainkan satu. Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia.&rdquo;
+        </blockquote>
+        <cite>Matius 19:6</cite>
+      </div>
+
+      <!-- groom panel -->
+      <div class="s1-panel from-left" id="s1-panel-groom">
+        <div class="s1-panel-inner">
+          <span class="s1-first-name">Arka</span>
+
+          <span class="s1-full-name">
+            Gabriel<br>Arka<br>Pradipta
+          </span>
+
+          <span class="s1-rule"></span>
+
+          <span class="s1-parents">
+            Putra dari :<br>
+            Bapak <br>Yohanes Dwi Cahyono</b><br>
+            &amp;<br>
+            Ibu <br>Maria Yekti Setyorini</b>
+          </span>
+
+          <span class="s1-rule"></span>
+
+          <span class="s1-address">
+            Murangan VII<br>
+            RT 03 RW 22,<br>
+            Triharjo Sleman
+          </span>
+
+          <a class="s1-ig" href="https://instagram.com/neomaprod" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.3" cy="6.7" r="1"/>
+            </svg>
+            @gab.ark__
+          </a>
+        </div>
+      </div>
+
+      <!-- bride panel -->
+      <div class="s1-panel from-right align-right" id="s1-panel-bride">
+        <div class="s1-panel-inner">
+          <span class="s1-first-name">Ditha</span>
+
+          <span class="s1-full-name">
+            Bernadeta<br>Ninditha<br>Herdianti
+          </span>
+
+          <span class="s1-rule"></span>
+
+          <span class="s1-parents">
+            Putri dari :<br>
+            Bapak <br>Agustinus Nugroho</b><br>
+            &amp;<br>
+            Ibu <br>Lidya Widyastuti</b>
+          </span>
+
+          <span class="s1-rule"></span>
+
+          <span class="s1-address">
+            Murangan VII<br>
+            RT 02 RW 22,<br>
+            Triharjo Sleman
+          </span>
+
+          <a class="s1-ig" href="https://instagram.com/neomaprod" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.3" cy="6.7" r="1"/>
+            </svg>
+            @_dithut9_
+          </a>
+        </div>
+      </div>
+
+      <div class="wipe-bar" id="wipe-bar-2"></div>
+
+    </section>
+  </div>
+
+  <!-- ============ SECTION 2 — acara ============ -->
+  <div class="pin-spacer-2" id="pin-spacer-2">
+    <section id="section2" class="screen-fill">
+
+      <img class="s2-bg" src="assets/img/img-3.jpg" alt="Arka &amp; Ditha">
+      <div class="s2-scrim"></div>
+
+      <div class="s2-content">
+
+        <div class="s2-block" id="s2-block-blessing">
+          <div class="s2-title">Pemberkatan</div>
+          <div class="s2-when">Sabtu, 10 Oktober 2026</div>
+          <div class="s2-time">Pukul 08.00 WIB</div>
+          <div class="s2-venue">
+            Gereja Katolik Paroki Santo Yoseph<br>
+            Murangan, Triharjo, Sleman
+          </div>
+        </div>
+
+        <div class="s2-block" id="s2-block-reception">
+          <div class="s2-title">Resepsi</div>
+          <div class="s2-when">Sabtu, 10 Oktober 2026</div>
+          <div class="s2-time">Pukul 10.00 WIB</div>
+          <div class="s2-venue">
+            PURI MATARAM Resto &amp; Wahana Wisata<br>
+            Jl. PJKA, Drono, Tridadi, Sleman
+          </div>
+
+          <button class="s2-map-btn" id="s2-map-btn" type="button">
+            Buka Map
+          </button>
+        </div>
+
+      </div>
+
+      <div class="wipe-bar" id="wipe-bar-3"></div>
+
+    </section>
+  </div>
+
+  <!-- ============ SECTION 3 — Kisah Kami ============ -->
+  <div class="pin-spacer-3" id="pin-spacer-3">
+    <section id="section3" class="screen-fill">
+
+      <div class="s3-content">
+        <div class="s3-title">Kisah Kami</div>
+
+        <div class="s3-timeline" id="s3-timeline">
+          <div class="s3-timeline-line" id="s3-line"></div>
+
+          <!-- items injected with inline top offsets via JS-friendly data, but written statically here -->
+
+          <div class="s3-item side-left" data-pos="0" style="top:0%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Pertama Jumpa<br>2019
+            </div>
+            <div class="s3-desc">
+              Pertama kali saling<br>
+              bertemu di bangku<br>
+              perkuliahan
+            </div>
+          </div>
+
+          <div class="s3-item side-right" data-pos="1" style="top:14%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Menjalin Kasih<br>2020
+            </div>
+            <div class="s3-desc">
+              Resmi berpacaran<br>
+              pada 2 Januari 2020
+            </div>
+          </div>
+
+          <div class="s3-item side-left" data-pos="2" style="top:28%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Sempat Terpisah<br>2022
+            </div>
+            <div class="s3-desc">
+              Hubungan sempat<br>
+              kandas pada 2022
+            </div>
+          </div>
+
+          <div class="s3-item side-right" data-pos="3" style="top:42%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Bersatu Kembali<br>2025
+            </div>
+            <div class="s3-desc">
+              Tumbuh dan memahami,<br>
+              sepakat memulai lagi
+            </div>
+          </div>
+
+          <div class="s3-item side-left" data-pos="4" style="top:56%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Bertunangan<br>2026
+            </div>
+            <div class="s3-desc">
+              Berlanjut ke jenjang<br>
+              yang lebih serius
+            </div>
+          </div>
+
+          <div class="s3-item side-right" data-pos="5" style="top:70%">
+            <span class="s3-dot"></span>
+            <div class="s3-year">
+              Menikah<br>2026
+            </div>
+            <div class="s3-desc">
+              Sekali<br>
+              untuk<br>
+              Selamanya
+            </div>
+            <div class="s3-desc"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- ============ SECTION 4 — Momen Kami ============ -->
+  <div class="pin-spacer-4" id="pin-spacer-4">
+    <section id="section4" class="screen-fill">
+
+      <div class="s4-content">
+        <div class="s4-title" id="s4-title">Momen Kami</div>
+
+        <div class="s4-carousel-wrap" id="s4-carousel-wrap">
+          <div class="s4-track" id="s4-track">
+
+            <img class="s4-slide is-active"
+                 src="assets/img/img-4.jpg"
+                 alt="Momen Arka &amp; Ditha 1">
+
+            <img class="s4-slide"
+                 src="assets/img/img-1.jpg"
+                 alt="Momen Arka &amp; Ditha 2">
+
+            <img class="s4-slide"
+                 src="assets/img/img-2.jpg"
+                 alt="Momen Arka &amp; Ditha 3">
+
+            <img class="s4-slide"
+                 src="assets/img/img-3.jpg"
+                 alt="Momen Arka &amp; Ditha 4">
+
+            <img class="s4-slide"
+                 src="assets/img/img-5.jpg"
+                 alt="Momen Arka &amp; Ditha 5">
+
+          </div>
+
+          <div class="s4-dots" id="s4-dots">
+            <span class="is-active"></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wipe-bar" id="wipe-bar-5"></div>
+
+    </section>
+  </div>
+
+  <!-- ============ SECTION 5 — Do'a & Ucapan + Tanda Kasih ============ -->
+  <div class="pin-spacer-5" id="pin-spacer-5">
+    <section id="section5" class="screen-fill">
+
+      <img class="s5-bg" src="assets/img/img-5.jpg" alt="Arka &amp; Ditha">
+      <div class="s5-overlay"></div>
+
+      <div class="s5-content">
+
+        <div class="s5-pane" id="s5-pane-doa">
+          <div class="s5-title">Do&rsquo;a &amp; Ucapan</div>
+
+          <form id="s5-form">
+            <input
+              class="s5-field"
+              type="text"
+              id="s5-name"
+              placeholder="Nama Kamu"
+              required
+            >
+
+            <textarea
+              class="s5-field"
+              id="s5-message"
+              placeholder="Tulis doa &amp; ucapan untuk kedua mempelai"
+              required
+            ></textarea>
+
+            <button class="s5-submit" type="submit">
+              Kirim Ucapan
+            </button>
+          </form>
+
+          <div class="s5-wish-list" id="s5-wish-list">
+            <p class="s5-wish-empty" id="s5-wish-empty">
+              Jadilah yang pertama mengirim do&rsquo;a &amp; ucapan.
+            </p>
+          </div>
+        </div>
+
+        <div class="s5-pane" id="s5-pane-gift">
+          <div class="s5-title">Tanda Kasih</div>
+
+          <p class="s5-note">
+            Kehadiran, do&rsquo;a dan tanda kasih dari Bapak/Ibu/Saudara/i sangat berarti bagi kami.
+          </p>
+
+          <div class="s5-gift-card">
+            <div class="s5-gift-info">
+              <b>BCA &middot; 1234567890</b>
+              <span>a.n. Gabriel Arka Pradipta</span>
+            </div>
+
+            <button
+              class="s5-copy-btn"
+              type="button"
+              data-copy="1234567890"
+              data-copy-type="digits"
+            >
+              Salin
+            </button>
+          </div>
+
+          <div class="s5-gift-card">
+            <div class="s5-gift-info">
+              <b>BCA &middot; 1234567890</b>
+              <span>a.n. Bernadeta Ninditha Herdianti</span>
+            </div>
+
+            <button
+              class="s5-copy-btn"
+              type="button"
+              data-copy="1234567890"
+              data-copy-type="digits"
+            >
+              Salin
+            </button>
+          </div>
+
+          <div class="s5-gift-card">
+            <div class="s5-gift-info">
+              <b>Murangan RT 02 RW 22, Triharjo, Sleman</b>
+              <span>a.n. Bernadeta Ninditha Herdianti (0821 2312 9999)</span>
+            </div>
+
+            <button
+              class="s5-copy-btn"
+              type="button"
+              data-copy="Murangan RT 02 RW 22, Triharjo, Sleman"
+              data-copy-type="text"
+            >
+              Salin
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="wipe-bar" id="wipe-bar-6"></div>
+
+    </section>
+  </div>
+
+  <!-- ============ SECTION 6 — Penutup ============ -->
+  <div class="pin-spacer-6" id="pin-spacer-6">
+    <section id="section6" class="screen-fill">
+
+      <div class="s6-content">
+
+        <svg
+          class="s6-flower"
+          id="s6-flower"
+          viewBox="0 0 1.8 3.2"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M0.77 0.32c0.14,0.73 0.16,1.48 0.09,2.22 -0.02,0.21 -0.04,0.42 -0.07,0.63 -0.01,0.05 0.06,0.03 0.06,-0.01 0.11,-0.74 0.15,-1.5 0.07,-2.24 -0.02,-0.21 -0.05,-0.42 -0.09,-0.63 -0.01,-0.04 -0.07,-0.01 -0.06,0.03l0 0z" fill="currentColor" data-i="0"/>
+          <path d="M0.88 2.32c-0.19,-0.19 -0.34,-0.41 -0.47,-0.65 -0.02,-0.03 -0.08,0.01 -0.06,0.04 0.13,0.25 0.29,0.47 0.48,0.67 0.02,0.02 0.07,-0.03 0.05,-0.06l0 0z" fill="currentColor" data-i="1"/>
+          <path d="M0.98 2.12c0.2,-0.26 0.35,-0.56 0.43,-0.88 0.02,-0.05 -0.05,-0.05 -0.06,-0.01 -0.08,0.31 -0.23,0.61 -0.42,0.86 -0.01,0.02 -0.01,0.04 0,0.05 0.02,0.01 0.04,-0.01 0.05,-0.02l0 0z" fill="currentColor" data-i="2"/>
+          <path d="M0.3 0.78c0.13,0.27 0.32,0.51 0.56,0.69 0.02,0.03 0.08,-0.02 0.05,-0.05 -0.23,-0.18 -0.42,-0.41 -0.55,-0.68 -0.01,-0.03 -0.07,0.01 -0.06,0.04l0 0z" fill="currentColor" data-i="3"/>
+          <path d="M0.62 1.14c-0.1,-0.07 -0.2,-0.12 -0.31,-0.14 -0.03,-0.01 -0.06,0.05 -0.02,0.06 0.1,0.03 0.19,0.07 0.27,0.13 0.03,0.02 0.08,-0.03 0.06,-0.05l0 0z" fill="currentColor" data-i="4"/>
+          <path d="M0.97 1.12c0.15,-0.22 0.3,-0.43 0.46,-0.63 0.01,-0.02 0.01,-0.04 -0.01,-0.05 -0.01,-0.01 -0.03,0.01 -0.04,0.02 -0.16,0.21 -0.32,0.42 -0.46,0.64 -0.03,0.04 0.03,0.06 0.05,0.02l0 0z" fill="currentColor" data-i="5"/>
+          <path d="M0.95 0.6c0.08,-0.08 0.15,-0.16 0.21,-0.25 0.01,-0.01 0.01,-0.03 -0.01,-0.04 -0.01,-0.01 -0.03,0.01 -0.04,0.02 -0.06,0.08 -0.13,0.16 -0.2,0.23 -0.03,0.03 0.01,0.07 0.04,0.04l0 0z" fill="currentColor" data-i="6"/>
+          <path d="M0.65 0.63c0.06,0.05 0.12,0.11 0.18,0.15 0.03,0.02 0.07,-0.04 0.04,-0.06 -0.06,-0.04 -0.11,-0.1 -0.17,-0.15 -0.02,-0.02 -0.08,0.03 -0.05,0.06l0 0z" fill="currentColor" data-i="7"/>
+          <path d="M0.78 0.25c-0.07,-0.01 -0.09,-0.13 -0.04,-0.17 0.03,-0.04 0.06,0.04 0.06,0.07 0.01,0.04 0.01,0.08 -0.01,0.12 -0.01,0.01 0,0.03 0.02,0.03 0.02,0.01 0.03,-0.01 0.04,-0.02 0.03,-0.07 0.03,-0.14 0.01,-0.2 -0.01,-0.03 -0.03,-0.06 -0.06,-0.07 -0.03,-0.02 -0.06,0 -0.09,0.02 -0.08,0.07 -0.09,0.27 0.04,0.29 0.04,0 0.07,-0.06 0.03,-0.07l0 0z" fill="currentColor" data-i="8"/>
+          <path d="M1.18 0.28c-0.01,-0.04 0,-0.08 0.01,-0.11 0.01,-0.02 0.05,-0.09 0.09,-0.05 0.01,0.02 0.01,0.07 0,0.09 -0.01,0.04 -0.03,0.06 -0.07,0.06 -0.03,-0.01 -0.07,0.06 -0.03,0.06 0.07,0.01 0.13,-0.03 0.15,-0.08 0.03,-0.05 0.04,-0.14 0,-0.18 -0.05,-0.06 -0.13,-0.01 -0.16,0.03 -0.05,0.06 -0.07,0.13 -0.06,0.2 0.01,0.04 0.07,0.01 0.07,-0.02l0 0z" fill="currentColor" data-i="9"/>
+          <path d="M0.63 0.55c-0.04,0.03 -0.1,-0.02 -0.12,-0.06 -0.01,-0.01 -0.02,-0.03 -0.03,-0.06 0,-0.02 -0.01,-0.05 0.02,-0.04 0.04,0.01 0.07,0.05 0.09,0.08 0.03,0.04 0.04,0.08 0.06,0.13 0.01,0.03 0.07,-0.01 0.06,-0.04 -0.03,-0.07 -0.06,-0.14 -0.11,-0.19 -0.05,-0.05 -0.13,-0.08 -0.17,0 -0.04,0.05 -0.01,0.13 0.03,0.18 0.05,0.06 0.12,0.09 0.19,0.06 0.04,-0.03 0.02,-0.08 -0.02,-0.06l0 0z" fill="currentColor" data-i="10"/>
+          <path d="M0.31 0.72c-0.03,-0.03 -0.06,-0.06 -0.08,-0.09 0,-0.02 -0.04,-0.11 0.01,-0.1 0.04,0.01 0.06,0.06 0.06,0.1 0.01,0.04 0.01,0.07 0.01,0.11 0,0.02 0.03,0.03 0.04,0.02 0.02,-0.01 0.03,-0.02 0.03,-0.04 0,-0.07 0,-0.13 -0.04,-0.19 -0.03,-0.05 -0.09,-0.09 -0.14,-0.05 -0.06,0.03 -0.06,0.1 -0.04,0.15 0.02,0.06 0.06,0.11 0.11,0.15 0.03,0.02 0.08,-0.04 0.04,-0.06l0 0z" fill="currentColor" data-i="11"/>
+          <path d="M0.29 0.97c-0.06,-0.07 -0.24,-0.14 -0.29,-0.01 -0.01,0.05 0.03,0.11 0.07,0.15 0.05,0.04 0.14,0 0.19,-0.02 0.04,-0.01 0.04,-0.07 0,-0.06 -0.04,0.01 -0.09,0.03 -0.13,0.03 -0.02,-0.01 -0.07,-0.06 -0.06,-0.09 0,-0.03 0.07,-0.01 0.09,-0.01 0.03,0.02 0.06,0.04 0.08,0.06 0.02,0.03 0.08,-0.02 0.05,-0.05l0 0z" fill="currentColor" data-i="12"/>
+          <path d="M1.48 0.38c0,-0.03 0.02,-0.06 0.04,-0.09 0.02,-0.02 0.06,-0.04 0.08,0 0.01,0.04 -0.01,0.07 -0.04,0.09 -0.01,0.01 -0.03,0.01 -0.05,0.02 0,0 -0.03,0.01 -0.01,0 0.03,-0.04 -0.01,-0.08 -0.04,-0.04 -0.02,0.02 -0.05,0.05 -0.03,0.09 0.01,0.02 0.04,0.02 0.07,0.02 0.07,-0.03 0.16,-0.07 0.17,-0.16 0.01,-0.07 -0.05,-0.13 -0.12,-0.1 -0.08,0.02 -0.12,0.1 -0.14,0.18 0,0.04 0.06,0.02 0.07,-0.01l0 0z" fill="currentColor" data-i="13"/>
+          <path d="M1.41 1.16c-0.01,-0.09 0.02,-0.18 0.08,-0.24 -0.01,0.01 -0.02,0.01 -0.02,0.02 0,-0.01 0.01,0.04 0.02,0.04 0,0.03 -0.01,0.05 -0.01,0.07 -0.01,0.02 -0.05,0.12 -0.07,0.08 -0.01,-0.04 -0.07,0 -0.06,0.04 0.01,0.03 0.04,0.04 0.07,0.03 0.03,0 0.06,-0.03 0.08,-0.06 0.04,-0.06 0.07,-0.15 0.04,-0.22 -0.01,-0.03 -0.03,-0.06 -0.06,-0.05 -0.04,0.01 -0.06,0.05 -0.08,0.08 -0.04,0.07 -0.06,0.15 -0.05,0.23 0,0.04 0.07,0.01 0.06,-0.02l0 0z" fill="currentColor" data-i="14"/>
+          <path d="M0.36 1.67c-0.08,-0.02 -0.15,-0.07 -0.18,-0.14 0,-0.01 -0.01,-0.03 0,-0.03 0.01,0 0.02,0 0.03,0.01 0.02,0.01 0.03,0.02 0.05,0.04 0.03,0.03 0.05,0.08 0.07,0.12 0.02,0.04 0.08,-0.01 0.07,-0.04 -0.03,-0.06 -0.07,-0.13 -0.13,-0.17 -0.05,-0.04 -0.12,-0.04 -0.15,0.03 -0.03,0.05 0.02,0.12 0.05,0.16 0.04,0.04 0.1,0.07 0.16,0.08 0.04,0.01 0.07,-0.06 0.03,-0.06l0 0z" fill="currentColor" data-i="15"/>
+          <path d="M1.08 1.97c0.12,-0.07 0.25,-0.13 0.39,-0.17 0.03,-0.01 0.03,-0.08 -0.01,-0.06 -0.14,0.04 -0.28,0.1 -0.4,0.17 -0.04,0.03 -0.02,0.08 0.02,0.06l0 0z" fill="currentColor" data-i="16"/>
+          <path d="M1.54 1.74c0.02,-0.02 0.05,-0.04 0.08,-0.05 0.03,-0.01 0.09,-0.03 0.11,0 0.02,0.04 -0.03,0.06 -0.05,0.07 -0.05,0.01 -0.09,-0.01 -0.13,-0.02 -0.04,-0.01 -0.07,0.06 -0.03,0.07 0.07,0.01 0.14,0.03 0.2,0 0.05,-0.03 0.09,-0.08 0.08,-0.14 -0.01,-0.06 -0.09,-0.06 -0.14,-0.05 -0.06,0.01 -0.12,0.04 -0.16,0.08 -0.04,0.04 0,0.08 0.04,0.04l0 0z" fill="currentColor" data-i="17"/>
+        </svg>
+
+        <div class="s6-title">Terima Kasih</div>
+
+        <div class="s6-text">
+          Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan do&rsquo;a restu kepada kami.
+        </div>
+
+        <div class="s6-signature">Arka &amp; Ditha</div>
+
+      </div>
+
+      <footer class="s6-credit">
+        &copy; <span class="s6-credit-brand">Neoma Production</span> 2026
+      </footer>
+
+    </section>
+  </div>
+
+</div><!-- /#stage -->
+
+<noscript>
+  <style>
+    #splash { display: none !important; }
+    html, html body {
+      overflow: auto !important;
+      height: auto !important;
+    }
+  </style>
+</noscript>
+
+<script>
+  /* ============================================================
+     KODE KRITIS — sengaja ditulis INLINE langsung ing HTML (dudu
+     file kapisah), supaya splash & tombol "Buka Undangan" MESTHI
+     mlaku senajan js/main.js utawa GSAP/ScrollTrigger gagal dimuat
+     amarga alesan apa wae (404, urutan loading, hosting, jaringan).
+     Vanilla JS lawas sengaja digunakke (dudu arrow function / const)
+     ben kompatibel karo browser/webview sing luwih lawas.
+     ============================================================ */
+
+  (function () {
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function addClass(el, cls) {
+      if (
+        el &&
+        (" " + el.className + " ").indexOf(" " + cls + " ") === -1
+      ) {
+        el.className = (el.className + " " + cls).trim();
+      }
+    }
+
+    function removeClass(el, cls) {
+      if (el) {
+        el.className = (" " + el.className + " ")
+          .replace(" " + cls + " ", " ")
+          .trim();
+      }
+    }
+
+    var splashHidden = false;
+
+    function hideSplash() {
+      if (splashHidden) return;
+      splashHidden = true;
+
+      var splash = byId("splash");
+
+      if (splash && splash.style.display !== "none") {
+        addClass(splash, "is-hidden");
+
+        setTimeout(function () {
+          splash.style.display = "none";
+        }, 800);
+      }
+    }
+
+    // logo fade-in
+    var splashEl = byId("splash");
+
+    setTimeout(function () {
+      addClass(splashEl, "logo-in");
+    }, 80);
+
+    /* ------------------------------------------------------------
+       Splash NEK diilangi: nunggu kabeh gambar (lan font) rampung
+       dimuat, dudu wektu tetep sing digawe kaku. Yen asset-e cepet
+       rampung (biasane pancen cepet), splash cepet ilang — yen
+       jaringan alon, splash tetep katon nganti asset rampung, tapi
+       DIBATESI safety-net supaya ora kelamaan banget.
+         MIN_SPLASH_MS : suwe paling cendhek splash katon (ben ora
+                          "kedhip" gek ilang yen asset wis ana ing cache).
+         MAX_SPLASH_MS : suwe paling dawa — sepira wae kedadeyane,
+                          splash MESTHI ilang sakdurunge wektu iki.
+       ------------------------------------------------------------ */
+    var MIN_SPLASH_MS = 650;
+    var MAX_SPLASH_MS = 4000;
+    var splashStart = Date.now();
+
+    function afterMinDelay(fn) {
+      var elapsed = Date.now() - splashStart;
+      var remaining = MIN_SPLASH_MS - elapsed;
+      if (remaining > 0) {
+        setTimeout(fn, remaining);
+      } else {
+        fn();
+      }
+    }
+
+    function waitForAssets() {
+      var imgs = [];
+      try {
+        imgs = Array.prototype.slice.call(document.images || []);
+      } catch (e) { /* noop */ }
+
+      var pending = 0;
+      var done = function () {
+        pending--;
+        if (pending <= 0) afterMinDelay(hideSplash);
+      };
+
+      for (var i = 0; i < imgs.length; i++) {
+        if (!imgs[i].complete) {
+          pending++;
+          imgs[i].addEventListener("load", done, { once: true });
+          imgs[i].addEventListener("error", done, { once: true });
+        }
+      }
+
+      var fontsDone = false;
+      if (document.fonts && document.fonts.ready) {
+        pending++;
+        document.fonts.ready.then(function () {
+          if (!fontsDone) { fontsDone = true; done(); }
+        }, function () {
+          if (!fontsDone) { fontsDone = true; done(); }
+        });
+      }
+
+      // Yen ora ana sing kudu ditunggu (kabeh wis "complete" lan
+      // document.fonts ora didhukung), langsung terus wae.
+      if (pending === 0) afterMinDelay(hideSplash);
+    }
+
+    waitForAssets();
+
+    // safety net: sepira wae kedadeyane, splash MESTHI ilang sakdurunge
+    // MAX_SPLASH_MS — supaya undangan ora "macet" ing splash yen ana
+    // gambar/font sing gagal event-e babar pisan.
+    setTimeout(hideSplash, MAX_SPLASH_MS);
+
+    function boot() {
+
+      var btn = byId("open-btn");
+      var cover = byId("cover");
+      var audio = byId("bg-music");
+      var musicToggle = byId("musicToggle");
+
+      if (!btn || !cover) return;
+
+      /* ----------------------------------------------------------
+         Toggle musik (vinyl) — muncul bareng pas undangan dibuka,
+         piringan muter nek musik playing, mandheg nek dipause.
+         Kelas "is-playing" ngetutke event audio langsung (dudu
+         status sing dicatet dhewe), dadi tetep akurat senajan
+         autoplay diblokir browser.
+         ---------------------------------------------------------- */
+      if (audio && musicToggle) {
+        audio.addEventListener("play", function () {
+          addClass(musicToggle, "is-playing");
+          musicToggle.setAttribute("aria-pressed", "true");
+        });
+        audio.addEventListener("pause", function () {
+          removeClass(musicToggle, "is-playing");
+          musicToggle.setAttribute("aria-pressed", "false");
+        });
+        musicToggle.addEventListener("click", function () {
+          if (audio.paused) {
+            try {
+              var playPromise = audio.play();
+              if (playPromise && playPromise.catch) {
+                playPromise.catch(function () { /* diblokir browser, ora masalah */ });
+              }
+            } catch (e) { /* noop */ }
+          } else {
+            audio.pause();
+          }
+        });
+      }
+
+      // cover background crossfade saben 2 detik
+      var bgs = cover.querySelectorAll(".cover-bg");
+      var idx = 0;
+
+      if (bgs.length) {
+
+        setInterval(function () {
+
+          idx = (idx + 1) % bgs.length;
+
+          for (var i = 0; i < bgs.length; i++) {
+
+            if (i === idx) {
+              addClass(bgs[i], "is-active");
+            } else {
+              removeClass(bgs[i], "is-active");
+            }
+
+          }
+
+        }, 2000);
+      }
+
+      btn.addEventListener("click", function () {
+
+        btn.disabled = true;
+
+        if (audio) {
+
+          audio.volume = 0.75;
+
+          try {
+
+            var p = audio.play();
+
+            if (p && p.catch) {
+              p.catch(function () {
+                /* durung ana file musik / autoplay diblokir */
+              });
+            }
+
+          } catch (e) {
+            /* noop */
+          }
+        }
+
+        addClass(cover, "is-hidden");
+
+        if (musicToggle) {
+          addClass(musicToggle, "is-visible");
+        }
+
+        setTimeout(function () {
+
+          removeClass(document.documentElement, "locked");
+
+          cover.style.display = "none";
+
+          if (window.ScrollTrigger) {
+
+            try {
+              window.ScrollTrigger.refresh();
+            } catch (e) {
+              /* noop */
+            }
+
+          }
+
+        }, 1050);
+
+      });
+    }
+
+    if (document.readyState === "loading") {
+
+      document.addEventListener("DOMContentLoaded", boot);
+
+    } else {
+
+      boot();
+
+    }
+
+  })();
+</script>
+
+<script src="assets/js/vendor/gsap.min.js"></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<!-- ^ file iki tetep kepisah (isine kredensial Firebase), ora melu digabung
+     supaya gampang diganti tanpa mbukak file utama iki. Yen file iki
+     gagal dimuat (404/jaringan), js/main.js otomatis mode cadangan
+     localStorage — ucapan tetep iso dikirim, mung ora kebagi antar tamu. -->
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
