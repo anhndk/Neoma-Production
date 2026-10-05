@@ -1,0 +1,3 @@
+Taruh file font kamu di folder ini dengan nama persis: font.ttf
+Font ini dipakai untuk tulisan script (nama mempelai, judul section, inisial).
+Dipanggil dari assets/css/style.css lewat @font-face 'FontLokal'.
