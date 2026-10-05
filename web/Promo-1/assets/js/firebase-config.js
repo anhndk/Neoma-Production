@@ -15,7 +15,7 @@ var INVITATION_CONFIG = {
   // Pengenal unik undangan iki. KUDU BEDA kanggo saben pembeli/undangan,
   // supaya ucapan ora kecampur karo undangan liyane. Cukup nganggo
   // huruf cilik lan strip, conto: "hidayah-firman", "budi-sinta-2026"
-  slug: "hidayah-firman",
+  slug: "promo1",
 
   // Kode rahasia kanggo mbusak ucapan spam. Wenehke mung menyang
   // pembeli (tuan rumah), aja disebar. Ganti karo kode bebas.
@@ -27,7 +27,7 @@ var INVITATION_CONFIG = {
   // ucapan) iki wis cukup aman. Yen pengen keamanan level "beneran"
   // (kaya nyimpen data pembayaran), kudu nganggo Firebase Auth utawa
   // Cloud Functions — luwih rumit setup-e, tak jelasake yen dibutuhake.
-  adminSecret: "060926",
+  adminSecret: "123456",
 
   // Kode konfigurasi Firebase — dijupuk seko Firebase Console
   // (Project Settings > Your apps > SDK setup and configuration).
