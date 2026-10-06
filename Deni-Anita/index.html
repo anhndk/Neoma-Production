@@ -23,6 +23,34 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Mrs+Saint+Delafield&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<!-- Gaya khusus section Tanda Kasih (sengaja ditaruh di sini, supaya
+     cukup upload index.html tanpa ganti style.css). -->
+<style>
+.gift-card{
+  width:100%; max-width:380px; margin-top:1.8rem;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  text-align:left;
+  border:1px solid rgba(230,205,141,.4);
+  border-radius:16px; padding:1.1rem 1.1rem 1.1rem 1.3rem;
+  background:rgba(230,205,141,.06);
+}
+.gift-card__info{ min-width:0; }
+.gift-card__bank{ font-family:var(--font-label); letter-spacing:.22em; font-size:.8rem; color:var(--gold-light); }
+.gift-card__number{ font-family:var(--font-label); font-size:1.2rem; letter-spacing:.06em; color:var(--ivory); margin-top:.4rem; white-space:nowrap; }
+.gift-card__owner{ font-size:.95rem; opacity:.8; margin-top:.35rem; }
+.gift-card__copy{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:.4rem;
+  font-family:var(--font-label); font-size:.78rem; letter-spacing:.08em;
+  border:1px solid var(--gold); color:var(--gold-light); background:transparent;
+  border-radius:999px; padding:.6em 1em; cursor:pointer;
+  transition:background .25s ease, color .25s ease;
+}
+.gift-card__copy:hover, .gift-card__copy.is-copied{ background:var(--gold); color:var(--navy-deepest); }
+@media (max-width:360px){
+  .gift-card{ flex-direction:column; align-items:flex-start; }
+  .gift-card__number{ font-size:1.1rem; }
+}
+</style>
 <!-- Jaga-jaga nek JavaScript mati: kabeh elemen "reveal" langsung
      katon normal, ora ndhelik permanen. -->
 <noscript><style>.reveal{opacity:1!important; transform:none!important;}</style></noscript>
@@ -102,7 +130,7 @@
         <div class="couple-card__frame reveal reveal--scale reveal-d1"><img src="assets/images/gallery-6.jpg" alt="Foto Deni Sarifudin"></div>
         <h3 class="couple-card__name reveal reveal--down reveal-d2">Deni Sarifudin</h3>
         <p class="couple-card__nick reveal reveal--scale reveal-d3">Deni</p>
-        <p class="couple-card__parents reveal reveal--up reveal-d4">Putra Bapak Ngatimin &amp; Ibu Tumi</p>
+        <p class="couple-card__parents reveal reveal--up reveal-d4">Putra kedua Bapak Ngatimin &amp; Ibu Tumi</p>
         <p class="couple-card__address reveal reveal--up reveal-d5">Jl. Baron Km 14, Gebang RT 04 RW 07, Kemiri,<br>Tanjungsari, Gunungkidul</p>
       </article>
 
@@ -112,8 +140,8 @@
         <div class="couple-card__frame reveal reveal--scale reveal-d1"><img src="assets/images/gallery-5.jpg" alt="Foto Anita Putri Prihatin"></div>
         <h3 class="couple-card__name reveal reveal--down reveal-d2">Anita Putri Prihatin</h3>
         <p class="couple-card__nick reveal reveal--scale reveal-d3">Anita</p>
-        <p class="couple-card__parents reveal reveal--up reveal-d4">Putri Bapak Jaka Mulyana &amp; Ibu Siti Aminah</p>
-        <p class="couple-card__address reveal reveal--up reveal-d5">Krapyak RT 09 RW 20<br>Triharjo, Sleman</p>
+        <p class="couple-card__parents reveal reveal--up reveal-d4">Putri kedua Bapak Jaka Mulyana &amp; Ibu Siti Aminah</p>
+        <p class="couple-card__address reveal reveal--up reveal-d5">Krapyak RT 09 RW 20<br>Triharjo, Sleman, Sleman</p>
       </article>
     </div>
   </section>
@@ -222,8 +250,7 @@
       <h2 class="reveal reveal--down">Kirim Doa &amp; Ucapan</h2>
     </header>
     <p class="text-section__body reveal reveal--up reveal-d1">
-      Tanpa mengurangi rasa hormat, mengingat situasi dan kondisi, kami
-      mengundang Bapak/Ibu/Saudara/i untuk turut mendoakan kedua mempelai
+      kami mengundang Bapak/Ibu/Saudara/i untuk turut mendoakan kedua mempelai
       dari mana pun berada. Doa restu Bapak/Ibu/Saudara/i merupakan suatu
       kebahagiaan bagi kami.
     </p>
@@ -234,7 +261,31 @@
     </form>
 
     <div class="wish-list reveal reveal--up reveal-d3" id="wishList">
-      <p class="wish-empty" id="wishEmpty">Jadilah yang pertama mengirim ucapan 💌</p>
+      <p class="wish-empty" id="wishEmpty">Jadilah yang pertama mengirim ucapan</p>
+    </div>
+  </section>
+
+  <!-- ---------- SECTION 5: TANDA KASIH (tanpa menu navigasi) ---------- -->
+  <section id="tanda-kasih" class="section">
+    <header class="section-head">
+      <p class="eyebrow"> </p>
+      <h2 class="reveal reveal--down">Tanda Kasih</h2>
+    </header>
+    <p class="text-section__body reveal reveal--up reveal-d1">
+      Tanpa mengurangi rasa hormat, apabila Bapak/Ibu/Saudara/i berhalangan
+      hadir namun tetap ingin memberikan tanda kasih, kami senantiasa
+      menerima dengan penuh rasa syukur.
+    </p>
+    <div class="gift-card reveal reveal--up reveal-d2">
+      <div class="gift-card__info">
+        <p class="gift-card__bank">BRI</p>
+        <p class="gift-card__number" id="giftNumber">1687 0100 1581 531</p>
+        <p class="gift-card__owner">a.n. Deni Sarifudin</p>
+      </div>
+      <button type="button" class="gift-card__copy" id="giftCopy" aria-label="Salin nomor rekening">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V6a2 2 0 012-2h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span id="giftCopyText">Salin</span>
+      </button>
     </div>
   </section>
 
@@ -289,5 +340,46 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="assets/js/firebase-config.js"></script>
 <script src="assets/js/script.js"></script>
+<script>
+// Tombol salin nomor rekening (section Tanda Kasih)
+(function () {
+  var btn = document.getElementById("giftCopy");
+  var label = document.getElementById("giftCopyText");
+  var numEl = document.getElementById("giftNumber");
+  if (!btn || !numEl) return;
+  var timer;
+
+  function done() {
+    label.textContent = "Tersalin";
+    btn.classList.add("is-copied");
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      label.textContent = "Salin";
+      btn.classList.remove("is-copied");
+    }, 2000);
+  }
+
+  function fallback(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { if (document.execCommand("copy")) done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  btn.addEventListener("click", function () {
+    var text = numEl.textContent.replace(/\s+/g, ""); // salin tanpa spasi
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text); });
+    } else {
+      fallback(text);
+    }
+  });
+})();
+</script>
 </body>
 </html>
