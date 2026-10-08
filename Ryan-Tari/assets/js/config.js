@@ -46,7 +46,7 @@ window.INVITATION_CONFIG = {
         alamat: ""
       },
       pria: {
-        nama: "Sri Lestari",
+        nama: "Sri\nLestari",
         ortu: "Putri dari Bapak Parno & Ibu Badriyah",
         alamat: ""
       }
