@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Beranda -->
+  <url>
+    <loc>https://neoma.my.id/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image>
+      <image:loc>https://neoma.my.id/assets/hero-undangan.webp</image:loc>
+      <image:title>Undangan pernikahan Neoma Production</image:title>
+    </image:image>
+  </url>
+
+  <!-- Katalog -->
+  <url>
+    <loc>https://neoma.my.id/katalogweb</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://neoma.my.id/katalog</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+
+  <!-- Portofolio -->
+  <url>
+    <loc>https://neoma.my.id/portfolio</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+
+  <!-- Demo undangan web (hanya yang sudah punya link asli) -->
+  <url><loc>https://neoma.my.id/web/Promo-1</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://neoma.my.id/web/Promo-2</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://neoma.my.id/web/Standar-1</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://neoma.my.id/web/Premium-1</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://neoma.my.id/web/Premium-2</loc><lastmod>2026-10-08</lastmod></url>
+
+</urlset>
