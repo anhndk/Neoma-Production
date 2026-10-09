@@ -457,7 +457,7 @@
   }
 
   /* ----- ucapan (Firebase / cadangan localStorage) ----- */
-  (function wishes() {
+  function initWishes() {
     var list = $('#wList'), empty = $('#wEmpty'), store;
     function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
     function render(items) {
@@ -508,6 +508,17 @@
         .catch(function () { window.alert('Maaf, ucapan gagal terkirim. Coba maneh, ya.'); })
         .then(function () { bt.disabled = false; });
     });
+  }
+  /* firebase dimuat ing latar (ora ngalangi splash); nek gagal / alon > 8 detik -> mode cadangan */
+  (function loadFirebase() {
+    var urls = ['https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js'], done = false;
+    function fin() { if (done) return; done = true; initWishes(); }
+    var timer = setTimeout(fin, 8000);
+    (function next(k) {
+      if (k >= urls.length) { clearTimeout(timer); return fin(); }
+      var sc = document.createElement('script'); sc.src = urls[k]; sc.onload = function () { next(k + 1); }; sc.onerror = function () { clearTimeout(timer); fin(); };
+      document.head.appendChild(sc);
+    })(0);
   })();
 
   var SECS = [null, S1, S2, S3, S4, S5];
@@ -746,17 +757,16 @@
     }
     try { if (!gn) { gn = buildGunungan(GOLD); gnWrap.appendChild(gn.svg); } } catch (e) { }
     await Promise.race([Promise.all(waits), new Promise(function (r) { setTimeout(r, 15000); })]);
-    var left = 1900 - (performance.now() - t0);
-    if (left > 0) await sleep(left);
-    if (!document.body.classList.contains('no-glow')) {
-      var med = await probeFps(700);
-      if (med > 26) disableGlow('FPS median ' + Math.round(med) + 'ms');
-    }
+    var left = 900 - (performance.now() - t0);      // splash minimal 0,9 detik (logo kudu sempat ketok)
+    var probe = document.body.classList.contains('no-glow') ? Promise.resolve(0) : probeFps(450);
+    var wait = left > 0 ? sleep(left) : Promise.resolve();
+    var med = (await Promise.all([probe, wait]))[0];     // tes FPS mlaku bareng karo nunggu, ora nambah suwe
+    if (med > 26) disableGlow('FPS median ' + Math.round(med) + 'ms');
     $('#splash').classList.add('out');
-    setTimeout(function () { var s = $('#splash'); if (s) s.remove(); }, 1200);
+    setTimeout(function () { var s = $('#splash'); if (s) s.remove(); }, 800);
     startCover();
   }
-  if (document.readyState === 'complete') boot(); else window.addEventListener('load', boot);
+  boot();   // script defer: DOM wis siap, aset ditunggu neng njero boot()
 
   /* debug kecil: ?s=3 mlumpat langsung (kanggo tes) */
   window.__undangan = { goTo: goTo, open: openInvitation };
