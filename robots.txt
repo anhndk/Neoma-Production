@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://neoma.my.id/sitemap.xml
+Sitemap: https://neoma.my.id/sitemap-neoma.xml
