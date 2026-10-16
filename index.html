@@ -580,7 +580,7 @@
   .portfolio__media{ display:none; }
   .portfolio__item{
     position:relative;
-    padding:22px 0;
+    padding:calc(22px * var(--pf-fit, 1)) 0;
     border-top:1px solid var(--line);
     cursor:pointer;
   }
@@ -598,7 +598,7 @@
     flex-shrink:0;
   }
   .portfolio__item .title{
-    font-size:clamp(22px, 2.8vw, 34px);
+    font-size:calc(clamp(22px, 2.8vw, 34px) * var(--pf-fit, 1));
     font-weight:600;
     color:var(--muted);
     letter-spacing:-0.01em;
@@ -701,14 +701,14 @@
   @media (max-width:820px){
     .portfolio__preview-col{ display:none; }
     .portfolio__rail{ width:18px; }
-    .portfolio__item .title{ font-size:clamp(19px,6.5vw,26px); }
+    .portfolio__item .title{ font-size:calc(clamp(19px,6.5vw,26px) * var(--pf-fit, 1)); }
     .portfolio__item{ border-top:none; padding:0; }
     .portfolio__item:last-child{ border-bottom:none; }
-    .portfolio__row{ padding:16px 0; }
+    .portfolio__row{ padding:calc(16px * var(--pf-fit, 1)) 0; }
     .portfolio__sep{
       display:flex;
       height:1px;
-      margin:14px 0;
+      margin:calc(14px * var(--pf-fit, 1)) 0;
     }
     .portfolio__sep-h{
       flex:1;
@@ -725,7 +725,7 @@
       border-radius:12px;
     }
     .portfolio__media-inner{
-      height:150px;
+      height:var(--pf-media-h, 150px);
       border-radius:12px;
       display:flex;
       align-items:flex-end;
@@ -1465,7 +1465,8 @@
               <div class="buttons-grid" id="boxButtons">
                 <a href="https://wa.me/6285747960727" target="_blank" rel="noopener" class="contact-btn">whatsapp</a>
                 <a href="https://instagram.com/neomaprod" target="_blank" rel="noopener" class="contact-btn">instagram</a>
-                <a href="mailto:neomaprod@gmail.com" class="contact-btn" style="grid-column: 1 / -1;">email</a>
+                <a href="mailto:n@neoma.my.id" class="contact-btn">email</a>
+                <a href="mailto:z@neoma.my.id" class="contact-btn">email</a>
               </div>
               <div class="google-review-wrap" id="googleReviewWrap">
                 <div class="google-review-title">we're 5 stars on google</div>
@@ -1578,8 +1579,17 @@ function initMain(){
     return { phase: clamp01(-top / max), panelH: panelH };
   }
 
+  /* AUTO-HANDOFF: posisi "kunci" section 1 lan section 2.
+     LOCK1 = kabeh kartu section 1 wis muncul (kartu rampung ing phase 0.324).
+     LOCK2 = gambar wis mapan neng section 2.
+     Sakwise kartu rampung, sak gesture scroll wae gambar dilunjurake dhewe
+     saka LOCK1 menyang LOCK2 (lan mbalik yen scroll munggah). */
+  var LOCK1 = 0.33;
+  var LOCK2 = 0.62;
+  var SNAP_DURATION = 1000; // ms, dawane animasi geser gambar
+
   function handoffProgress(phase){
-    return clamp01((phase - 0.38) / 0.24);
+    return clamp01((phase - LOCK1) / (LOCK2 - LOCK1));
   }
 
   function updateTrack(metrics){
@@ -1686,8 +1696,7 @@ function initMain(){
   update();
 
   var pauseGates = [
-    { at: 0.35, window: 0.03, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }, 
-    { at: 0.90, window: 0.04, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }  
+    { at: 0.90, window: 0.04, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }
   ];
   var GESTURE_GAP = 180;
 
@@ -1707,6 +1716,17 @@ function initMain(){
 
   function onCatalogWheel(e){
     if(!catalogSpace || !catalogPin) return;
+    var nowW = Date.now();
+    var wheelGap = nowW - lastWheelTime;
+    lastWheelTime = nowW;
+    lastUserInput = nowW;
+    // pas gambar lagi geser dhewe: wheel diblokir ben ora tabrakan
+    if(autoAnimating){ e.preventDefault(); needFreshWheel = true; return; }
+    // sakwise animasi, enteni inersia wheel/trackpad mandheg disik
+    if(needFreshWheel){
+      if(wheelGap < 160){ e.preventDefault(); return; }
+      needFreshWheel = false;
+    }
     if(e.deltaY <= 0) return;
     var phase = catalogPhase();
     var now = Date.now();
@@ -1730,12 +1750,92 @@ function initMain(){
   }
 
   var touchStartY = 0;
+
+  /* ---------- AUTO-SNAP gambar section 1 <-> section 2 ---------- */
+  var autoAnimating = false;
+  var needFreshWheel = false;
+  var lastWheelTime = 0;
+  var lastUserInput = 0;
+  var suppressSnapUntil = 0;
+  var touchActive = false;
+  var blockTouch = false;
+  var lastScrollY = window.scrollY;
+
+  function animateScrollTo(targetY, duration){
+    var startY = window.scrollY;
+    var dist = targetY - startY;
+    if(Math.abs(dist) < 2) return;
+    var htmlEl = document.documentElement;
+    autoAnimating = true;
+    htmlEl.style.scrollBehavior = 'auto'; // matikan smooth bawaan CSS sauntara
+    var t0 = null;
+    function step(ts){
+      if(t0 === null) t0 = ts;
+      var k = clamp01((ts - t0) / duration);
+      var e = k < 0.5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2; // easeInOutCubic
+      window.scrollTo(0, startY + dist * e);
+      if(k < 1){
+        requestAnimationFrame(step);
+      } else {
+        window.scrollTo(0, targetY);
+        htmlEl.style.scrollBehavior = '';
+        lastScrollY = window.scrollY;
+        autoAnimating = false;
+        needFreshWheel = true;
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function yForPhase(phase){
+    var max = Math.max(1, catalogSpace.offsetHeight - catalogPin.offsetHeight);
+    return window.scrollY + catalogSpace.getBoundingClientRect().top + phase * max;
+  }
+
+  function snapCatalogTo(phase){
+    if(touchActive) blockTouch = true;
+    animateScrollTo(yForPhase(phase), SNAP_DURATION);
+  }
+
+  function maybeSnapCatalog(){
+    var y = window.scrollY;
+    var dir = y - lastScrollY;
+    lastScrollY = y;
+    if(autoAnimating || dir === 0) return;
+    if(!catalogSpace || !catalogPin) return;
+    var now = Date.now();
+    if(now < suppressSnapUntil) return;          // lagi klik link menu
+    if(now - lastUserInput > 1500) return;       // mung nek wong sing nggulir
+    var phase = catalogPhase();
+    var E = 0.0015;
+    if(dir > 0 && phase > LOCK1 + E && phase < LOCK2 - E){
+      snapCatalogTo(LOCK2);
+    } else if(dir < 0 && phase > LOCK1 + E && phase < LOCK2 + E){
+      snapCatalogTo(LOCK1);
+    }
+  }
+  window.addEventListener('scroll', maybeSnapCatalog, {passive:true});
+  window.addEventListener('keydown', function(){ lastUserInput = Date.now(); });
+  // klik link anchor (#...) ora kena snap
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest ? ev.target.closest('a[href^="#"]') : null;
+    if(a) suppressSnapUntil = Date.now() + 2500;
+  }, true);
   function onTouchStart(e){
     if(!catalogSpace || !catalogPin) return;
     touchStartY = e.touches[0].clientY;
+    touchActive = true;
+    blockTouch = false;
+    lastUserInput = Date.now();
   }
   function onTouchMove(e){
     if(!catalogSpace || !catalogPin) return;
+    lastUserInput = Date.now();
+    // pas animasi lagi mlaku (utawa swipe sing padha isih dicekel): blokir
+    if(autoAnimating || blockTouch){
+      if(e.cancelable) e.preventDefault();
+      return;
+    }
     var dy = touchStartY - e.touches[0].clientY;
     if(dy <= 0) return;
     var phase = catalogPhase();
@@ -1748,6 +1848,8 @@ function initMain(){
     releaseFarGates(phase);
   }
   function onTouchEnd(){
+    touchActive = false;
+    lastUserInput = Date.now();
     if(!catalogSpace || !catalogPin) return;
     pauseGates.forEach(function(g){
       if(g.primed){
@@ -1795,9 +1897,9 @@ function initMain(){
 
   function scrollToCatalogPhase(phase){
     if(!catalogSpace || !catalogPin) return false;
-    var max = Math.max(1, catalogSpace.offsetHeight - catalogPin.offsetHeight);
-    var top = window.scrollY + catalogSpace.getBoundingClientRect().top + phase * max;
-    window.scrollTo({ top: top, behavior: 'smooth' });
+    var top = yForPhase(phase);
+    var dur = Math.min(1600, Math.max(800, Math.abs(top - window.scrollY) / 6));
+    animateScrollTo(top, dur);
     return true;
   }
 
@@ -1892,9 +1994,53 @@ function initMain(){
     var portfolioGrowY = 0;
     var portfolioNeedsUpdate = false;
 
+    /* Muatke list neng ruang sing ana. Biyen list digawe nggo 5 item; sakwise
+       item dadi 6 (utawa luwih) list ngluwihi kolom lan item pungkasan tiba
+       neng ngisor. Saiki jarak/font diciutke otomatis (--pf-fit) lan dhuwur
+       gambar mobile (--pf-media-h) disesuaikan nganti kabeh pas. */
+    var portfolioFitKey = '';
+    function fitPortfolioList(){
+      if(!portfolioListCol || !portfolioListEl) return;
+      var avail = portfolioListCol.clientHeight;
+      var isMobile = window.matchMedia('(max-width:820px)').matches;
+      var key = avail + '|' + isMobile + '|' + portfolioProjects.length;
+      if(key === portfolioFitKey) return;
+      portfolioFitKey = key;
+
+      function baseHeight(){
+        var mediaSum = 0;
+        portfolioMediaEls.forEach(function(m){ mediaSum += m.offsetHeight; });
+        return portfolioListEl.offsetHeight - mediaSum;
+      }
+      var wantMedia = isMobile ? 150 : 0;
+
+      portfolioListEl.style.setProperty('--pf-fit', '1');
+      portfolioListEl.style.setProperty('--pf-media-h', '150px');
+      var base1 = baseHeight();
+      var fit = 1;
+      if(base1 + wantMedia > avail){
+        fit = Math.max(0.5, Math.min(1, (avail - wantMedia - 4) / base1));
+      }
+      portfolioListEl.style.setProperty('--pf-fit', fit.toFixed(3));
+      // sepisan maneh, njaga-njaga yen ciutan ora linear persis
+      for(var k=0; k<3; k++){
+        var b = baseHeight();
+        if(b + wantMedia <= avail - 2 || fit <= 0.5) break;
+        fit = Math.max(0.5, fit * (avail - wantMedia - 4) / b);
+        portfolioListEl.style.setProperty('--pf-fit', fit.toFixed(3));
+      }
+
+      if(isMobile){
+        var room = avail - baseHeight() - 4;
+        PORTFOLIO_MEDIA_MAX_H = Math.max(0, Math.min(150, room));
+        portfolioListEl.style.setProperty('--pf-media-h', PORTFOLIO_MEDIA_MAX_H + 'px');
+      }
+    }
+
     function setPortfolioSpaceHeight(){
       var extra = (portfolioProjects.length - 1) * PORTFOLIO_STEP;
       portfolioSpace.style.height = (window.innerHeight + extra) + 'px';
+      fitPortfolioList();
     }
 
     function setPortfolioActive(i){
