@@ -1760,14 +1760,28 @@ function initMain(){
   var touchActive = false;
   var blockTouch = false;
   var lastScrollY = window.scrollY;
+  var lastDir = 1;
+  var everInteracted = false;
+  var settleTimer = null;
+  ['wheel','touchstart','keydown','mousedown'].forEach(function(evt){
+    window.addEventListener(evt, function(){ everInteracted = true; }, {passive:true});
+  });
 
-  function animateScrollTo(targetY, duration){
+  var coarsePointer = window.matchMedia('(pointer:coarse)');
+
+  function animateScrollTo(targetY, duration, retry){
     var startY = window.scrollY;
     var dist = targetY - startY;
     if(Math.abs(dist) < 2) return;
     var htmlEl = document.documentElement;
+    var bodyEl = document.body;
+    var prevBodyOverflow = bodyEl.style.overflow;
     autoAnimating = true;
     htmlEl.style.scrollBehavior = 'auto'; // matikan smooth bawaan CSS sauntara
+    /* HP/iPad: kunci scroll bawaan sauntara. Iki mateni inersia (scroll sing
+       diterusake dhewe sakwise driji lunga) sing nglawan animasi; tanpa iki
+       swipe cepet + adoh nggawe gambar ora gelem mapan. */
+    if(coarsePointer.matches) bodyEl.style.overflow = 'hidden';
     var t0 = null;
     function step(ts){
       if(t0 === null) t0 = ts;
@@ -1779,9 +1793,20 @@ function initMain(){
       } else {
         window.scrollTo(0, targetY);
         htmlEl.style.scrollBehavior = '';
+        if(coarsePointer.matches) bodyEl.style.overflow = prevBodyOverflow;
         lastScrollY = window.scrollY;
         autoAnimating = false;
         needFreshWheel = true;
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(settleCatalog, 220);
+        // cek dharatan: yen durung tekan target (inersia isih nglawan), dilunjurke maneh
+        var tries = retry || 0;
+        setTimeout(function(){
+          if(autoAnimating || touchActive || tries >= 3) return;
+          if(Math.abs(window.scrollY - targetY) > 3){
+            animateScrollTo(targetY, 250, tries + 1);
+          }
+        }, 150);
       }
     }
     requestAnimationFrame(step);
@@ -1801,17 +1826,35 @@ function initMain(){
     var y = window.scrollY;
     var dir = y - lastScrollY;
     lastScrollY = y;
-    if(autoAnimating || dir === 0) return;
+    if(dir !== 0) lastDir = dir > 0 ? 1 : -1;
+    if(autoAnimating) return;
     if(!catalogSpace || !catalogPin) return;
+    // ora ana scroll maneh 140ms = scroll mandheg; yen mandhege ing tengah zona, pasrahke menyang lock
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(settleCatalog, 140);
+    if(dir === 0) return;
     var now = Date.now();
     if(now < suppressSnapUntil) return;          // lagi klik link menu
-    if(now - lastUserInput > 1500) return;       // mung nek wong sing nggulir
+    if(!everInteracted) return;                  // ora kena scroll otomatis pas load
     var phase = catalogPhase();
     var E = 0.0015;
     if(dir > 0 && phase > LOCK1 + E && phase < LOCK2 - E){
       snapCatalogTo(LOCK2);
     } else if(dir < 0 && phase > LOCK1 + E && phase < LOCK2 + E){
       snapCatalogTo(LOCK1);
+    }
+  }
+  /* Jaring pengaman: yen scroll mandheg ing tengah-tengah zona geser (contone
+     inersia iPhone, driji isih nempel, utawa scrollTo ora nurut), gambar
+     dilunjurke menyang lock sing paling cocog, ora mandheg setengah dalan. */
+  function settleCatalog(){
+    if(autoAnimating || !everInteracted || !catalogSpace || !catalogPin) return;
+    if(touchActive){ clearTimeout(settleTimer); settleTimer = setTimeout(settleCatalog, 140); return; }
+    if(Date.now() < suppressSnapUntil) return;
+    var phase = catalogPhase();
+    var E = 0.0015;
+    if(phase > LOCK1 + E && phase < LOCK2 - E){
+      snapCatalogTo(lastDir > 0 ? LOCK2 : LOCK1);
     }
   }
   window.addEventListener('scroll', maybeSnapCatalog, {passive:true});
@@ -1850,6 +1893,8 @@ function initMain(){
   function onTouchEnd(){
     touchActive = false;
     lastUserInput = Date.now();
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(settleCatalog, 160);
     if(!catalogSpace || !catalogPin) return;
     pauseGates.forEach(function(g){
       if(g.primed){
