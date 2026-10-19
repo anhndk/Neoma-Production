@@ -1613,10 +1613,11 @@ function initMain(){
 
   var HEADLINE_END = 0.42;
   var CTA_START = 0.42, CTA_END = 0.58;
-  var CARDS_START = 0.58, CARDS_END = 0.9;
+  var CARDS_START = 0.1, CARDS_END = 0.9;
 
   function updateHeadlines(phase){
     headlineEls.forEach(function(el){
+      if(el.closest('#catalog')) return; // headline hero diurus animasi otomatis (runIntro)
       var p = progressFor(el, phase);
       var hp = clamp01(p / HEADLINE_END);
       var n = el._words.length;
@@ -1684,7 +1685,6 @@ function initMain(){
     var metrics = readCatalogMetrics();
     updateTrack(metrics);
     updateHeadlines(metrics.phase);
-    updateCtas(metrics.phase);
     updateCards(metrics.phase);
     updateScrollCue();
   }
@@ -1694,6 +1694,43 @@ function initMain(){
   window.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('resize', onScroll);
   update();
+
+  /* ---------- ANIMASI OTOMATIS hero + tombol (section 1 & 2) ---------- */
+  var introHeadlines = headlineEls.filter(function(el){ return el.closest('#catalog'); });
+  var INTRO_WORD_DELAY = 160;  // jeda antar kata (ms), gedhekke yen pengin luwih alon
+  var INTRO_WORD_DUR   = 750;  // suwene tiap kata mbukak (ms)
+  var INTRO_CTA_GAP    = 150;  // jeda sakwise kata pungkasan nganti tombol muncul (ms)
+  var INTRO_CTA_DUR    = 500;  // suwene tombol muncul (ms)
+
+  var introMaxWords = 0;
+  introHeadlines.forEach(function(el){ introMaxWords = Math.max(introMaxWords, el._words.length); });
+  var introCtaStart = Math.max(0, introMaxWords - 1) * INTRO_WORD_DELAY + INTRO_WORD_DUR + INTRO_CTA_GAP;
+
+  function runIntro(){
+    var t0 = null;
+    function step(ts){
+      if(t0 === null) t0 = ts;
+      var t = ts - t0;
+      introHeadlines.forEach(function(el){
+        el._words.forEach(function(w, i){
+          var wp = clamp01((t - i * INTRO_WORD_DELAY) / INTRO_WORD_DUR);
+          w.style.opacity = wp;
+          w.style.filter = 'blur(' + ((1 - wp) * 14) + 'px)';
+        });
+      });
+      var cp = clamp01((t - introCtaStart) / INTRO_CTA_DUR);
+      ctaEls.forEach(function(el){
+        el.style.opacity = cp;
+        el.style.transform = cp >= 1 ? '' : 'translateY(' + ((1 - cp) * 10) + 'px)';
+      });
+      if(t < introCtaStart + INTRO_CTA_DUR){
+        requestAnimationFrame(step);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  // tundha sedhela ben splash screen wis meh ilang, lagi animasi mulai
+  setTimeout(runIntro, 350);
 
   var pauseGates = [
     { at: 0.90, window: 0.04, holdGestures: 1, gesturesSwallowed: 0, primed:false, consumed:false, lastEventTime:0 }
@@ -2201,6 +2238,107 @@ function initMain(){
       startPortfolioLoop();
       document.body.classList.add('portfolio-in-view');
     }
+
+    /* ---------- AUTO-SNAP portfolio: sekali scroll = mandheg neng final form item sabanjure ---------- */
+    var PF_SNAP_DURATION = 650;  // ms, suwene geser menyang item sabanjure (gedhekke yen pengin luwih alon)
+    var PF_EPS = 0.03;
+    var pfRest = 0;              // nomer item (0 = item 01) sing lagi "mapan"; -1 = ing ndhuwur list, n = ing ngisor list
+    var pfLastY = window.scrollY;
+    var pfLastDir = 1;
+    var pfSettleTimer = null;
+    var pfBlockTouch = false;
+    var pfLastWheel = 0;
+
+    function pfMetrics(){
+      var n = portfolioProjects.length;
+      var scrollable = Math.max(1, portfolioSpace.offsetHeight - portfolioPin.offsetHeight);
+      var top = portfolioSpace.getBoundingClientRect().top;
+      return { n: n, scrollable: scrollable, top: top, pos: (-top / scrollable) * (n - 1) };
+    }
+    function pfYForIndex(i){
+      var m = pfMetrics();
+      return window.scrollY + m.top + (i / (m.n - 1)) * m.scrollable;
+    }
+    function pfSnapTo(i){
+      pfRest = i;
+      if(touchActive) pfBlockTouch = true;
+      animateScrollTo(pfYForIndex(i), PF_SNAP_DURATION);
+    }
+    function pfTarget(pos, dir, n){
+      var t = null;
+      if(dir > 0){
+        if(pos > pfRest + PF_EPS) t = pfRest + 1;
+        else if(pos < pfRest - PF_EPS) t = pfRest;
+      } else {
+        if(pos < pfRest - PF_EPS) t = pfRest - 1;
+        else if(pos > pfRest + PF_EPS) t = pfRest;
+      }
+      if(t === null || t < 0 || t > n - 1) return null;
+      return t;
+    }
+    function pfInitRest(){
+      var m = pfMetrics();
+      if(m.pos < -PF_EPS) pfRest = -1;
+      else if(m.pos > m.n - 1 + PF_EPS) pfRest = m.n;
+      else pfRest = Math.max(0, Math.min(m.n - 1, Math.round(m.pos)));
+    }
+    pfInitRest();
+
+    function pfOnScroll(){
+      var y = window.scrollY;
+      var dir = y - pfLastY;
+      pfLastY = y;
+      if(dir !== 0) pfLastDir = dir > 0 ? 1 : -1;
+      if(autoAnimating) return;
+      var m = pfMetrics();
+      if(m.pos < -PF_EPS){ pfRest = -1; return; }          // lagi ing ndhuwur list: scroll bebas
+      if(m.pos > m.n - 1 + PF_EPS){ pfRest = m.n; return; } // lagi ing ngisor list: scroll bebas
+      clearTimeout(pfSettleTimer);
+      pfSettleTimer = setTimeout(pfSettle, 160);
+      if(dir === 0) return;
+      if(Date.now() < suppressSnapUntil) return;           // lagi klik link menu
+      if(!everInteracted) return;
+      var t = pfTarget(m.pos, dir > 0 ? 1 : -1, m.n);
+      if(t !== null) pfSnapTo(t);
+    }
+    /* Jaring pengaman: yen scroll mandheg ing tengah-tengah, dilunjurke menyang item sing paling cedhak */
+    function pfSettle(){
+      if(autoAnimating || !everInteracted) return;
+      if(touchActive){ clearTimeout(pfSettleTimer); pfSettleTimer = setTimeout(pfSettle, 140); return; }
+      if(Date.now() < suppressSnapUntil) return;
+      var m = pfMetrics();
+      if(m.pos < -PF_EPS || m.pos > m.n - 1 + PF_EPS) return;
+      var r = Math.round(m.pos);
+      if(Math.abs(m.pos - r) <= PF_EPS){ pfRest = Math.max(0, Math.min(m.n - 1, r)); return; }
+      pfSnapTo(pfLastDir > 0 ? Math.min(m.n - 1, Math.ceil(m.pos)) : Math.max(0, Math.floor(m.pos)));
+    }
+    window.addEventListener('scroll', pfOnScroll, {passive:true});
+
+    function pfInView(){ return document.body.classList.contains('portfolio-in-view'); }
+    // pas lagi geser dhewe, wheel/touch diblokir ben ora tabrakan; inersia trackpad uga diredam
+    window.addEventListener('wheel', function(e){
+      if(!pfInView()) return;
+      var now = Date.now();
+      var gap = now - pfLastWheel;
+      pfLastWheel = now;
+      if(autoAnimating){ e.preventDefault(); needFreshWheel = true; return; }
+      if(needFreshWheel){
+        if(gap < 160){ e.preventDefault(); return; }
+        needFreshWheel = false;
+      }
+    }, {passive:false});
+    window.addEventListener('touchstart', function(){ touchActive = true; pfBlockTouch = false; }, {passive:true});
+    window.addEventListener('touchmove', function(e){
+      if(!pfInView()) return;
+      if(autoAnimating || pfBlockTouch){ if(e.cancelable) e.preventDefault(); }
+    }, {passive:false});
+    ['touchend','touchcancel'].forEach(function(evt){
+      window.addEventListener(evt, function(){
+        touchActive = false;
+        clearTimeout(pfSettleTimer);
+        pfSettleTimer = setTimeout(pfSettle, 160);
+      }, {passive:true});
+    });
 
     var portfolioDetail = document.getElementById('portfolioDetail');
     var portfolioDetailClose = document.getElementById('portfolioDetailClose');
